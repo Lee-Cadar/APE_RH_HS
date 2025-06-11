@@ -44,6 +44,8 @@ interface ControlCenterProps {
     timezone: string;
     elevation: string;
     isp: string;
+    postcode: string;
+    what3words: string;
   };
 }
 
@@ -201,13 +203,14 @@ export function ControlCenter({
         </div>
       </div>
 
-      {/* FIXED: Centered Modern Metrics Grid Layout - Rule of 3-6-9: 2x2 grid */}
-      <div className="relative h-[calc(100%-140px)] z-10 flex items-center justify-center px-4" 
+      {/* NEW LAYOUT: Left 40% - Processing & Network | Right 40% - Thermal & System */}
+      <div className="relative h-[calc(100%-140px)] z-10 flex space-x-6" 
            style={{ minHeight: '350px' }}>
         
-        <div className="grid grid-cols-2 grid-rows-2 gap-6 max-w-5xl w-full h-full">
-          {/* Processing Units Panel - TOP LEFT */}
-          <div className="col-span-1 row-span-1 h-full">
+        {/* Left Side - 40% - Processing & Network (stacked vertically) */}
+        <div className="w-[40%] flex flex-col space-y-6">
+          {/* Processing Units Panel - TOP */}
+          <div className="flex-1">
             <ModernPanel
               title="Processing"
               icon={Cpu}
@@ -222,8 +225,27 @@ export function ControlCenter({
             />
           </div>
           
-          {/* Thermal Control Panel - TOP RIGHT */}
-          <div className="col-span-1 row-span-1 h-full">
+          {/* Network Command Panel - BOTTOM */}
+          <div className="flex-1">
+            <ModernPanel
+              title="Network"
+              icon={Wifi}
+              color="#34c759"
+              onClick={() => onMetricClick('network')}
+              metrics={[
+                { label: 'Signal', value: networkMetrics.signalStrength.toFixed(1), unit: '%', subColor: networkMetrics.signalStrength > 80 ? '#34c759' : networkMetrics.signalStrength > 50 ? '#ff9500' : '#ff3b30' },
+                { label: 'Latency', value: networkMetrics.latency.toFixed(1), unit: 'ms', subColor: networkMetrics.latency < 50 ? '#34c759' : networkMetrics.latency < 100 ? '#ff9500' : '#ff3b30' },
+                { label: 'Download', value: formatBytes(networkMetrics.downloadSpeed).split(' ')[0], unit: formatBytes(networkMetrics.downloadSpeed).split(' ')[1], subColor: '#007aff' },
+                { label: 'Upload', value: formatBytes(networkMetrics.uploadSpeed).split(' ')[0], unit: formatBytes(networkMetrics.uploadSpeed).split(' ')[1], subColor: '#5856d6' }
+              ]}
+            />
+          </div>
+        </div>
+
+        {/* Right Side - 40% - Thermal & System (stacked vertically) */}
+        <div className="w-[40%] flex flex-col space-y-6">
+          {/* Thermal Control Panel - TOP */}
+          <div className="flex-1">
             <ModernPanel
               title="Thermal"
               icon={Thermometer}
@@ -238,24 +260,8 @@ export function ControlCenter({
             />
           </div>
 
-          {/* Network Command Panel - BOTTOM LEFT */}
-          <div className="col-span-1 row-span-1 h-full">
-            <ModernPanel
-              title="Network"
-              icon={Wifi}
-              color="#34c759"
-              onClick={() => onMetricClick('network')}
-              metrics={[
-                { label: 'Signal', value: networkMetrics.signalStrength.toFixed(1), unit: '%', subColor: networkMetrics.signalStrength > 80 ? '#34c759' : networkMetrics.signalStrength > 50 ? '#ff9500' : '#ff3b30' },
-                { label: 'Latency', value: networkMetrics.latency.toFixed(1), unit: 'ms', subColor: networkMetrics.latency < 50 ? '#34c759' : networkMetrics.latency < 100 ? '#ff9500' : '#ff3b30' },
-                { label: 'Download', value: formatBytes(networkMetrics.downloadSpeed).split(' ')[0], unit: formatBytes(networkMetrics.downloadSpeed).split(' ')[1], subColor: '#007aff' },
-                { label: 'Upload', value: formatBytes(networkMetrics.uploadSpeed).split(' ')[0], unit: formatBytes(networkMetrics.uploadSpeed).split(' ')[1], subColor: '#5856d6' }
-              ]}
-            />
-          </div>
-
-          {/* System Core Panel - BOTTOM RIGHT */}
-          <div className="col-span-1 row-span-1 h-full">
+          {/* System Core Panel - BOTTOM */}
+          <div className="flex-1">
             <ModernPanel
               title="System"
               icon={HardDrive}

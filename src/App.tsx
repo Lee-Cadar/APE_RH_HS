@@ -7,7 +7,7 @@ import { SystemDetails } from './components/SystemDetails';
 import { ConfigPanel } from './components/ConfigPanel';
 import { SystemLogs } from './components/SystemLogs';
 import { useAPESimulation } from './hooks/useAPESimulation';
-import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap } from 'lucide-react';
+import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap, Globe } from 'lucide-react';
 
 type ViewType = 'control' | 'processing' | 'network' | 'thermal' | 'system' | 'config' | 'logs';
 
@@ -22,7 +22,9 @@ function App() {
     country: "United States",
     timezone: "EST",
     elevation: "10m",
-    isp: "Verizon Business"
+    isp: "Verizon Business",
+    postcode: "10118",
+    what3words: "///index.home.raft"
   });
   
   const {
@@ -44,15 +46,12 @@ function App() {
   useEffect(() => {
     const getLocationData = async () => {
       try {
-        // Try to get user's actual location
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             async (position) => {
               const { latitude, longitude } = position.coords;
               
               try {
-                // Use a reverse geocoding service to get detailed location info
-                // For demo purposes, we'll simulate this with realistic data based on coordinates
                 const locationData = await simulateLocationLookup(latitude, longitude);
                 setLocationInfo(locationData);
                 addLog('INFO', 'GPSSystem', `Location acquired: ${locationData.address}`);
@@ -62,7 +61,6 @@ function App() {
             },
             (error) => {
               console.log('Geolocation failed, using default location');
-              // Use IP-based location as fallback
               getIPLocation();
             },
             { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
@@ -77,7 +75,6 @@ function App() {
 
     const getIPLocation = async () => {
       try {
-        // Simulate IP-based location lookup
         const ipLocationData = {
           coordinates: "37.7749°N, 122.4194°W",
           address: "1 Hacker Way, Menlo Park",
@@ -86,7 +83,9 @@ function App() {
           country: "United States",
           timezone: "PST",
           elevation: "16m",
-          isp: "Comcast Business"
+          isp: "Comcast Business",
+          postcode: "94103",
+          what3words: "///filled.count.soap"
         };
         setLocationInfo(ipLocationData);
         addLog('INFO', 'IPLocation', `IP-based location: ${ipLocationData.city}`);
@@ -98,12 +97,9 @@ function App() {
     getLocationData();
   }, [addLog]);
 
-  // Simulate detailed location lookup
   const simulateLocationLookup = async (lat: number, lng: number) => {
-    // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Return realistic location data based on coordinates
     const locations = [
       {
         lat: 40.7128, lng: -74.0060,
@@ -114,7 +110,9 @@ function App() {
         country: "United States",
         timezone: "EST",
         elevation: "10m",
-        isp: "Verizon FiOS Business"
+        isp: "Verizon FiOS Business",
+        postcode: "10118",
+        what3words: "///index.home.raft"
       },
       {
         lat: 37.7749, lng: -122.4194,
@@ -125,7 +123,9 @@ function App() {
         country: "United States",
         timezone: "PST",
         elevation: "16m",
-        isp: "AT&T Business Fiber"
+        isp: "AT&T Business Fiber",
+        postcode: "94025",
+        what3words: "///filled.count.soap"
       },
       {
         lat: 51.5074, lng: -0.1278,
@@ -136,11 +136,12 @@ function App() {
         country: "United Kingdom",
         timezone: "GMT",
         elevation: "35m",
-        isp: "BT Business"
+        isp: "BT Business",
+        postcode: "EC3A 8EP",
+        what3words: "///index.home.raft"
       }
     ];
 
-    // Find closest location or use current coordinates
     const closest = locations.find(loc => 
       Math.abs(loc.lat - lat) < 1 && Math.abs(loc.lng - lng) < 1
     ) || {
@@ -151,13 +152,14 @@ function App() {
       country: "Unknown Region",
       timezone: "UTC",
       elevation: "Unknown",
-      isp: "Local Network"
+      isp: "Local Network",
+      postcode: "00000",
+      what3words: "///unknown.location.here"
     };
 
     return closest;
   };
 
-  // Update time every second
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -222,7 +224,7 @@ function App() {
 
   return (
     <div 
-      className="relative overflow-hidden select-none modern-dashboard"
+      className="relative overflow-hidden select-none modern-dashboard flex"
       style={{ 
         width: '1044px', 
         height: '620px',
@@ -237,39 +239,201 @@ function App() {
       {/* Ambient Glow */}
       <div className="absolute inset-0 ambient-glow opacity-20"></div>
 
-      {/* Main Container with Apple-style rounded corners */}
-      <div className="absolute inset-2 modern-panel">
-        
-        {/* Floating particles */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="floating-particles"></div>
-        </div>
+      {/* Main Content Area - 90% width with 5px margins */}
+      <div className="flex-1 relative" style={{ width: '90%', margin: '5px' }}>
+        <div className="absolute inset-0 modern-panel">
+          
+          {/* Floating particles */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="floating-particles"></div>
+          </div>
 
-        {/* Header with Apple/Tesla-style design - Rule of 3 sections */}
-        <header className="relative modern-header h-16 border-b" 
+          {/* Main Header for Control Center only */}
+          {currentView === 'control' && (
+            <header className="relative modern-header h-16 border-b" 
+                    style={{ 
+                      borderColor: 'rgba(255, 255, 255, 0.1)',
+                      borderWidth: '1px',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      backdropFilter: 'blur(20px)',
+                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)'
+                    }}>
+              <div className="flex items-center justify-between h-full px-6">
+                <div className="flex items-center space-x-4">
+                  <div className="relative">
+                    <img 
+                      src="/Triangle_logo_black_nobg_no_letters.png" 
+                      alt="APE Logo" 
+                      className="w-12 h-12 logo-glow"
+                      style={{ 
+                        filter: 'brightness(0) saturate(100%) invert(100%)',
+                        animation: 'logoFloat 3s ease-in-out infinite'
+                      }}
+                    />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 animate-pulse rounded-full" 
+                         style={{ 
+                           backgroundColor: '#007aff',
+                           boxShadow: '0 0 10px #007aff'
+                         }}></div>
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-medium tracking-tight modern-font" style={{ color: '#ffffff' }}>
+                      A.P.E. COMMAND
+                    </h1>
+                    <p className="text-sm font-normal modern-font" style={{ color: '#8e8e93' }}>
+                      Adapting Performance Engine v2.1.7
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="modern-display px-4 py-2 font-medium text-sm modern-font" 
                 style={{ 
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
-                  borderWidth: '1px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  backdropFilter: 'blur(20px)',
-                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)'
+                  backgroundColor: temperature < 60 ? 'rgba(52, 199, 89, 0.1)' : temperature < 80 ? 'rgba(255, 149, 0, 0.1)' : 'rgba(255, 59, 48, 0.1)',
+                  borderColor: temperature < 60 ? 'rgba(52, 199, 89, 0.3)' : temperature < 80 ? 'rgba(255, 149, 0, 0.3)' : 'rgba(255, 59, 48, 0.3)',
+                  color: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30'
                 }}>
-          <div className="flex items-center justify-between h-full px-6">
-            {/* Left section - Logo and Title (Rule of 3: Section 1) */}
-            <div className="flex items-center space-x-4 flex-1">
-              {currentView !== 'control' && (
-                <button
-                  onClick={handleBackToControl}
-                  className="modern-button transition-all duration-300 active:scale-95 p-3"
-                  style={{ 
-                    backgroundColor: 'rgba(255, 59, 48, 0.1)',
-                    borderColor: 'rgba(255, 59, 48, 0.3)',
-                  }}
-                >
-                  <ArrowLeft className="w-5 h-5" style={{ color: '#ff3b30' }} />
-                </button>
-              )}
-              <div className="relative">
+                  {temperature < 60 ? 'OPTIMAL' : temperature < 80 ? 'WARNING' : 'CRITICAL'}
+                </div>
+              </div>
+            </header>
+          )}
+
+          {/* Navigation for Control, Config, Logs */}
+          {(currentView === 'control' || currentView === 'config' || currentView === 'logs') && (
+            <nav className="relative modern-nav h-12 border-b" 
+                 style={{ 
+                   borderColor: 'rgba(255, 255, 255, 0.1)',
+                   borderWidth: '1px',
+                   background: 'rgba(255, 255, 255, 0.03)'
+                 }}>
+              <div className="flex h-full">
+                {navigationTabs.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setCurrentView(tab.id as ViewType)}
+                      className={`flex-1 flex items-center justify-center space-x-3 font-medium text-sm transition-all duration-300 transform active:scale-95 modern-font modern-tab ${
+                        currentView === tab.id ? 'active' : ''
+                      }`}
+                      style={{ 
+                        backgroundColor: currentView === tab.id ? 'rgba(0, 122, 255, 0.1)' : 'transparent',
+                        color: currentView === tab.id ? '#007aff' : '#8e8e93',
+                        borderBottom: currentView === tab.id ? '2px solid #007aff' : '2px solid transparent'
+                      }}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span className="tracking-wide">{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </nav>
+          )}
+
+          {/* Main Content */}
+          <main className="relative p-6 overflow-hidden" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' ? 'calc(600px - 112px)' : 'calc(600px - 64px)' }}>
+            {currentView === 'control' && (
+              <ControlCenter
+                temperature={temperature}
+                performanceState={performanceState}
+                fanSpeed={fanSpeed}
+                ledColor={ledColor}
+                gpuMetrics={gpuMetrics}
+                networkMetrics={networkMetrics}
+                systemMetrics={systemMetrics}
+                onMetricClick={handleMetricClick}
+                onSendReport={handleSendReport}
+                locationInfo={locationInfo}
+              />
+            )}
+
+            {currentView === 'processing' && (
+              <ProcessingDetails
+                temperature={temperature}
+                performanceState={performanceState}
+                systemMetrics={systemMetrics}
+                gpuMetrics={gpuMetrics}
+                config={config}
+                onBack={handleBackToControl}
+                onSendReport={handleSendReport}
+              />
+            )}
+
+            {currentView === 'network' && (
+              <NetworkDetails 
+                networkMetrics={networkMetrics} 
+                onBack={handleBackToControl}
+                onSendReport={handleSendReport}
+              />
+            )}
+
+            {currentView === 'thermal' && (
+              <ThermalDetails
+                temperature={temperature}
+                performanceState={performanceState}
+                fanSpeed={fanSpeed}
+                ledColor={ledColor}
+                config={config}
+                onBack={handleBackToControl}
+                onSendReport={handleSendReport}
+              />
+            )}
+
+            {currentView === 'system' && (
+              <SystemDetails 
+                systemMetrics={systemMetrics} 
+                onBack={handleBackToControl}
+                onSendReport={handleSendReport}
+              />
+            )}
+
+            {currentView === 'config' && (
+              <div className="h-full overflow-y-auto">
+                <ConfigPanel 
+                  config={config}
+                  onConfigUpdate={updateConfig}
+                />
+              </div>
+            )}
+
+            {currentView === 'logs' && (
+              <div className="h-full">
+                <SystemLogs logs={logs} />
+              </div>
+            )}
+          </main>
+
+          {/* Critical Alert Overlay */}
+          {temperature > 85 && (
+            <div className="fixed top-6 right-6 modern-alert p-4 shadow-2xl animate-pulse z-50 rounded-2xl"
+                 style={{ 
+                   backgroundColor: 'rgba(255, 59, 48, 0.1)',
+                   borderColor: 'rgba(255, 59, 48, 0.3)',
+                   borderWidth: '1px',
+                   backdropFilter: 'blur(20px)'
+                 }}>
+              <div className="flex items-center space-x-3">
+                <div className="w-4 h-4 animate-ping rounded-full" 
+                     style={{ backgroundColor: '#ff3b30' }}></div>
+                <span className="font-medium text-sm modern-font" style={{ color: '#ff3b30' }}>
+                  CRITICAL TEMPERATURE
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Right Sidebar - 10% width */}
+      <div className="w-[10%] relative">
+        <div className="absolute inset-2 modern-panel">
+          {/* Right Sidebar Header */}
+          <div className="h-full flex flex-col p-4 space-y-6">
+            
+            {/* Logo Section */}
+            <div className="text-center">
+              <div className="relative mx-auto w-12 h-12 mb-3">
                 <img 
                   src="/Triangle_logo_black_nobg_no_letters.png" 
                   alt="APE Logo" 
@@ -285,205 +449,81 @@ function App() {
                        boxShadow: '0 0 10px #007aff'
                      }}></div>
               </div>
-              <div>
-                <h1 className="text-xl font-medium tracking-tight modern-font" style={{ color: '#ffffff' }}>
-                  A.P.E. COMMAND
-                </h1>
-                <p className="text-sm font-normal modern-font" style={{ color: '#8e8e93' }}>
-                  Adapting Performance Engine v2.1.7
-                </p>
+              <div className="text-xs font-medium modern-font" style={{ color: '#ffffff' }}>
+                A.P.E.
+              </div>
+              <div className="text-xs font-normal modern-font" style={{ color: '#8e8e93' }}>
+                v2.1.7
               </div>
             </div>
 
-            {/* Center section - Date and Location (Rule of 3: Section 2) */}
-            <div className="flex items-center space-x-6 flex-1 justify-center">
-              <div className="modern-display px-4 py-2">
-                <Calendar className="w-4 h-4 mb-1" style={{ color: '#007aff' }} />
-                <div className="text-center">
-                  <div className="text-sm font-medium modern-font" style={{ color: '#ffffff' }}>
-                    {formatDate(currentTime)}
-                  </div>
-                  <div className="text-xs font-normal modern-font" style={{ color: '#8e8e93' }}>
-                    {formatTime(currentTime)} {locationInfo.timezone}
-                  </div>
-                </div>
+            {/* Time & Date */}
+            <div className="modern-display p-3 text-center">
+              <Calendar className="w-4 h-4 mx-auto mb-2" style={{ color: '#007aff' }} />
+              <div className="text-xs font-medium modern-font mb-1" style={{ color: '#ffffff' }}>
+                {formatDate(currentTime)}
               </div>
-              
-              <div className="modern-display px-4 py-2">
-                <MapPin className="w-4 h-4 mb-1" style={{ color: '#34c759' }} />
-                <div className="text-center">
-                  <div className="text-sm font-medium modern-font" style={{ color: '#ffffff' }}>
-                    {locationInfo.city.split(',')[0]}
-                  </div>
-                  <div className="text-xs font-normal modern-font" style={{ color: '#8e8e93' }}>
-                    {locationInfo.coordinates}
-                  </div>
-                </div>
+              <div className="text-xs font-normal modern-font" style={{ color: '#8e8e93' }}>
+                {formatTime(currentTime)}
+              </div>
+              <div className="text-xs font-normal modern-font" style={{ color: '#8e8e93' }}>
+                {locationInfo.timezone}
               </div>
             </div>
             
-            {/* Right section - Status indicators (Rule of 3: Section 3) */}
-            <div className="flex items-center space-x-4 flex-1 justify-end">
-              <div className="modern-display px-3 py-2 font-medium text-sm modern-font" 
-              style={{ 
-                backgroundColor: temperature < 60 ? 'rgba(52, 199, 89, 0.1)' : temperature < 80 ? 'rgba(255, 149, 0, 0.1)' : 'rgba(255, 59, 48, 0.1)',
-                borderColor: temperature < 60 ? 'rgba(52, 199, 89, 0.3)' : temperature < 80 ? 'rgba(255, 149, 0, 0.3)' : 'rgba(255, 59, 48, 0.3)',
-                color: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30'
-              }}>
-                {temperature < 60 ? 'OPTIMAL' : temperature < 80 ? 'WARNING' : 'CRITICAL'}
+            {/* Location Info */}
+            <div className="modern-display p-3 text-center">
+              <MapPin className="w-4 h-4 mx-auto mb-2" style={{ color: '#34c759' }} />
+              <div className="text-xs font-medium modern-font mb-1" style={{ color: '#ffffff' }}>
+                {locationInfo.postcode}
               </div>
-              
-              <div className="modern-display px-3 py-2 modern-font">
-                <Thermometer className="w-4 h-4" style={{ color: '#007aff' }} />
-                <span className="text-sm font-medium ml-2" style={{ color: '#ffffff' }}>
+              <div className="text-xs font-normal modern-font mb-1" style={{ color: '#8e8e93' }}>
+                {locationInfo.city.split(',')[0]}
+              </div>
+              <div className="text-xs font-normal modern-font" style={{ color: '#8e8e93' }}>
+                {locationInfo.coordinates}
+              </div>
+            </div>
+
+            {/* What3Words */}
+            <div className="modern-display p-3 text-center">
+              <Globe className="w-4 h-4 mx-auto mb-2" style={{ color: '#ff9500' }} />
+              <div className="text-xs font-medium modern-font mb-1" style={{ color: '#ffffff' }}>
+                What3Words
+              </div>
+              <div className="text-xs font-normal modern-font" style={{ color: '#8e8e93' }}>
+                {locationInfo.what3words}
+              </div>
+            </div>
+            
+            {/* Status Indicators */}
+            <div className="space-y-3">
+              <div className="modern-display p-2 text-center">
+                <Thermometer className="w-3 h-3 mx-auto mb-1" style={{ color: '#ff9500' }} />
+                <div className="text-xs font-medium modern-font" style={{ color: '#ffffff' }}>
                   {temperature.toFixed(1)}°C
-                </span>
+                </div>
               </div>
               
-              <div className="modern-display px-3 py-2 modern-font">
-                <Activity className="w-4 h-4" style={{ color: '#ff9500' }} />
-                <span className="text-sm font-medium ml-2" style={{ color: '#ffffff' }}>
+              <div className="modern-display p-2 text-center">
+                <Activity className="w-3 h-3 mx-auto mb-1" style={{ color: '#007aff' }} />
+                <div className="text-xs font-medium modern-font" style={{ color: '#ffffff' }}>
                   {systemMetrics.cpuUsage.toFixed(1)}%
-                </span>
+                </div>
               </div>
               
-              <div className={`w-8 h-8 modern-led animate-pulse rounded-full`} style={{ 
+              <div className={`w-6 h-6 mx-auto modern-led animate-pulse rounded-full`} style={{ 
                 backgroundColor: ledColor === 'green' ? '#34c759' : ledColor === 'yellow' ? '#ff9500' : '#ff3b30',
-                boxShadow: `0 0 20px ${ledColor === 'green' ? '#34c759' : ledColor === 'yellow' ? '#ff9500' : '#ff3b30'}`
+                boxShadow: `0 0 15px ${ledColor === 'green' ? '#34c759' : ledColor === 'yellow' ? '#ff9500' : '#ff3b30'}`
               }}>
                 <div className="absolute inset-1 bg-gradient-to-br from-white/30 to-transparent rounded-full"></div>
               </div>
             </div>
           </div>
-        </header>
-
-        {/* Navigation with modern tabs - Rule of 3 tabs */}
-        {(currentView === 'control' || currentView === 'config' || currentView === 'logs') && (
-          <nav className="relative modern-nav h-12 border-b" 
-               style={{ 
-                 borderColor: 'rgba(255, 255, 255, 0.1)',
-                 borderWidth: '1px',
-                 background: 'rgba(255, 255, 255, 0.03)'
-               }}>
-            <div className="flex h-full">
-              {navigationTabs.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setCurrentView(tab.id as ViewType)}
-                    className={`flex-1 flex items-center justify-center space-x-3 font-medium text-sm transition-all duration-300 transform active:scale-95 modern-font modern-tab ${
-                      currentView === tab.id ? 'active' : ''
-                    }`}
-                    style={{ 
-                      backgroundColor: currentView === tab.id ? 'rgba(0, 122, 255, 0.1)' : 'transparent',
-                      color: currentView === tab.id ? '#007aff' : '#8e8e93',
-                      borderBottom: currentView === tab.id ? '2px solid #007aff' : '2px solid transparent'
-                    }}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span className="tracking-wide">{tab.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </nav>
-        )}
-
-        {/* Main Content */}
-        <main className="relative p-6 overflow-hidden" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' ? 'calc(600px - 112px)' : 'calc(600px - 64px)' }}>
-          {currentView === 'control' && (
-            <ControlCenter
-              temperature={temperature}
-              performanceState={performanceState}
-              fanSpeed={fanSpeed}
-              ledColor={ledColor}
-              gpuMetrics={gpuMetrics}
-              networkMetrics={networkMetrics}
-              systemMetrics={systemMetrics}
-              onMetricClick={handleMetricClick}
-              onSendReport={handleSendReport}
-              locationInfo={locationInfo}
-            />
-          )}
-
-          {currentView === 'processing' && (
-            <ProcessingDetails
-              temperature={temperature}
-              performanceState={performanceState}
-              systemMetrics={systemMetrics}
-              gpuMetrics={gpuMetrics}
-              config={config}
-              onBack={handleBackToControl}
-              onSendReport={handleSendReport}
-            />
-          )}
-
-          {currentView === 'network' && (
-            <NetworkDetails 
-              networkMetrics={networkMetrics} 
-              onBack={handleBackToControl}
-              onSendReport={handleSendReport}
-            />
-          )}
-
-          {currentView === 'thermal' && (
-            <ThermalDetails
-              temperature={temperature}
-              performanceState={performanceState}
-              fanSpeed={fanSpeed}
-              ledColor={ledColor}
-              config={config}
-              onBack={handleBackToControl}
-              onSendReport={handleSendReport}
-            />
-          )}
-
-          {currentView === 'system' && (
-            <SystemDetails 
-              systemMetrics={systemMetrics} 
-              onBack={handleBackToControl}
-              onSendReport={handleSendReport}
-            />
-          )}
-
-          {currentView === 'config' && (
-            <div className="h-full overflow-y-auto">
-              <ConfigPanel 
-                config={config}
-                onConfigUpdate={updateConfig}
-              />
-            </div>
-          )}
-
-          {currentView === 'logs' && (
-            <div className="h-full">
-              <SystemLogs logs={logs} />
-            </div>
-          )}
-        </main>
-
-        {/* Critical Alert Overlay with modern styling */}
-        {temperature > 85 && (
-          <div className="fixed top-6 right-6 modern-alert p-4 shadow-2xl animate-pulse z-50 rounded-2xl"
-               style={{ 
-                 backgroundColor: 'rgba(255, 59, 48, 0.1)',
-                 borderColor: 'rgba(255, 59, 48, 0.3)',
-                 borderWidth: '1px',
-                 backdropFilter: 'blur(20px)'
-               }}>
-            <div className="flex items-center space-x-3">
-              <div className="w-4 h-4 animate-ping rounded-full" 
-                   style={{ backgroundColor: '#ff3b30' }}></div>
-              <span className="font-medium text-sm modern-font" style={{ color: '#ff3b30' }}>
-                CRITICAL TEMPERATURE
-              </span>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
 
-      {/* Global Modern Styles with lighter fonts */}
+      {/* Global Modern Styles */}
       <style jsx>{`
         .modern-dashboard {
           position: relative;
@@ -492,7 +532,7 @@ function App() {
         
         .modern-font {
           font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          font-weight: 500; /* Reduced from 600 to 500 */
+          font-weight: 500;
           letter-spacing: -0.01em;
         }
         
