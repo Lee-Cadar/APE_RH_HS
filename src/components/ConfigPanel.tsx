@@ -44,89 +44,243 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
   };
 
   return (
-    <div className="h-full flex">
+    <div className="h-full flex flex-col">
       {/* Floating background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="floating-particles"></div>
       </div>
 
-      {/* Left Side - 40% - Email & Temperature */}
-      <div className="w-[40%] pr-3 space-y-6 relative">
-        {/* Email Configuration */}
-        <div className="modern-panel p-6 shadow-lg h-[48%]">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="p-3 rounded-2xl" style={{ backgroundColor: 'rgba(52, 199, 89, 0.2)' }}>
-              <Mail className="w-6 h-6" style={{ color: '#34c759' }} />
-            </div>
-            <h3 className="text-xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>Email Reports</h3>
-          </div>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
-                Email Address
-              </label>
-              <input
-                type="email"
-                value={localConfig.email.address}
-                onChange={(e) => handleConfigChange('email.address', e.target.value)}
-                className="modern-input w-full px-3 py-2 modern-font text-sm"
-                style={{ 
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
-                  color: '#ffffff',
-                }}
-                placeholder="admin@ape-system.com"
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
-                  SMTP Server
-                </label>
-                <input
-                  type="text"
-                  value={localConfig.email.smtp_server}
-                  onChange={(e) => handleConfigChange('email.smtp_server', e.target.value)}
-                  className="modern-input w-full px-3 py-2 modern-font text-sm"
-                  style={{ 
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                    color: '#ffffff',
-                  }}
-                />
+      {/* Main Configuration Content */}
+      <div className="flex-1 flex">
+        {/* Left Side - 40% - Temperature & Cooling */}
+        <div className="w-[40%] pr-3 space-y-6 relative">
+          {/* Temperature Control */}
+          <div className="modern-panel p-6 shadow-lg h-[48%]">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="p-3 rounded-2xl" style={{ backgroundColor: 'rgba(255, 149, 0, 0.2)' }}>
+                <Settings className="w-6 h-6" style={{ color: '#ff9500' }} />
               </div>
+              <h3 className="text-xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>Thermal Thresholds</h3>
+            </div>
+            <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
-                  Port
+                  Normal Threshold (°C)
                 </label>
                 <input
                   type="number"
-                  value={localConfig.email.port}
-                  onChange={(e) => handleConfigChange('email.port', parseInt(e.target.value))}
+                  value={localConfig.temperature_thresholds.normal}
+                  onChange={(e) => handleConfigChange('temperature_thresholds.normal', parseInt(e.target.value))}
                   className="modern-input w-full px-3 py-2 modern-font text-sm"
                   style={{ 
                     background: 'rgba(255, 255, 255, 0.05)',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
                     color: '#ffffff',
                   }}
+                  min="0"
+                  max="100"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+                  Warning Threshold (°C)
+                </label>
+                <input
+                  type="number"
+                  value={localConfig.temperature_thresholds.warning}
+                  onChange={(e) => handleConfigChange('temperature_thresholds.warning', parseInt(e.target.value))}
+                  className="modern-input w-full px-3 py-2 modern-font text-sm"
+                  style={{ 
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    color: '#ffffff',
+                  }}
+                  min="0"
+                  max="100"
                 />
               </div>
             </div>
+          </div>
 
-            <div>
-              <label className="flex items-center space-x-3">
-                <input
-                  type="checkbox"
-                  checked={localConfig.email.daily_reports}
-                  onChange={(e) => handleConfigChange('email.daily_reports', e.target.checked)}
-                  className="w-4 h-4 rounded"
-                />
-                <span className="text-sm modern-font font-medium" style={{ color: '#ffffff' }}>
-                  Enable Daily Reports
-                </span>
-              </label>
+          {/* Cooling System Control */}
+          <div className="modern-panel p-6 shadow-lg h-[48%]">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="p-3 rounded-2xl" style={{ backgroundColor: 'rgba(0, 122, 255, 0.2)' }}>
+                <Settings className="w-6 h-6" style={{ color: '#007aff' }} />
+              </div>
+              <h3 className="text-xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>Cooling System</h3>
             </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+                  Minimum Fan Speed (%)
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={localConfig.fan_speeds.min}
+                  onChange={(e) => handleConfigChange('fan_speeds.min', parseInt(e.target.value))}
+                  className="w-full h-2 appearance-none cursor-pointer modern-slider"
+                />
+                <div className="flex justify-between text-xs modern-font mt-1" style={{ color: '#8e8e93' }}>
+                  <span>Idle</span>
+                  <span className="font-medium" style={{ color: '#ffffff' }}>{localConfig.fan_speeds.min}%</span>
+                  <span>Maximum</span>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+                  Maximum Fan Speed (%)
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={localConfig.fan_speeds.max}
+                  onChange={(e) => handleConfigChange('fan_speeds.max', parseInt(e.target.value))}
+                  className="w-full h-2 appearance-none cursor-pointer modern-slider"
+                />
+                <div className="flex justify-between text-xs modern-font mt-1" style={{ color: '#8e8e93' }}>
+                  <span>Idle</span>
+                  <span className="font-medium" style={{ color: '#ffffff' }}>{localConfig.fan_speeds.max}%</span>
+                  <span>Maximum</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side - 40% - System Parameters */}
+        <div className="w-[40%] pl-3 space-y-6 relative">
+          {/* System Parameters */}
+          <div className="modern-panel p-6 shadow-lg h-full">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="p-3 rounded-2xl" style={{ backgroundColor: 'rgba(88, 86, 214, 0.2)' }}>
+                <Settings className="w-6 h-6" style={{ color: '#5856d6' }} />
+              </div>
+              <h3 className="text-xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>System Parameters</h3>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+                  Polling Interval (seconds)
+                </label>
+                <input
+                  type="number"
+                  value={localConfig.polling_interval}
+                  onChange={(e) => handleConfigChange('polling_interval', parseInt(e.target.value))}
+                  className="modern-input w-full px-3 py-2 modern-font text-sm"
+                  style={{ 
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    color: '#ffffff',
+                  }}
+                  min="1"
+                  max="60"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+                  Log Level
+                </label>
+                <select
+                  value={localConfig.logging.level}
+                  onChange={(e) => handleConfigChange('logging.level', e.target.value)}
+                  className="modern-input w-full px-3 py-2 modern-font text-sm"
+                  style={{ 
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    color: '#ffffff',
+                  }}
+                >
+                  <option value="DEBUG">Debug</option>
+                  <option value="INFO">Info</option>
+                  <option value="WARNING">Warning</option>
+                  <option value="ERROR">Error</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Email Configuration - Bottom Section */}
+      <div className="mt-6 modern-panel p-6 shadow-lg relative">
+        <div className="flex items-center space-x-3 mb-6">
+          <div className="p-3 rounded-2xl" style={{ backgroundColor: 'rgba(52, 199, 89, 0.2)' }}>
+            <Mail className="w-6 h-6" style={{ color: '#34c759' }} />
+          </div>
+          <h3 className="text-xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>Email Reports</h3>
+        </div>
+        <div className="grid grid-cols-4 gap-6">
+          <div>
+            <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+              Email Address
+            </label>
+            <input
+              type="email"
+              value={localConfig.email.address}
+              onChange={(e) => handleConfigChange('email.address', e.target.value)}
+              className="modern-input w-full px-3 py-2 modern-font text-sm"
+              style={{ 
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                color: '#ffffff',
+              }}
+              placeholder="admin@ape-system.com"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+              SMTP Server
+            </label>
+            <input
+              type="text"
+              value={localConfig.email.smtp_server}
+              onChange={(e) => handleConfigChange('email.smtp_server', e.target.value)}
+              className="modern-input w-full px-3 py-2 modern-font text-sm"
+              style={{ 
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                color: '#ffffff',
+              }}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+              Port
+            </label>
+            <input
+              type="number"
+              value={localConfig.email.port}
+              onChange={(e) => handleConfigChange('email.port', parseInt(e.target.value))}
+              className="modern-input w-full px-3 py-2 modern-font text-sm"
+              style={{ 
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                color: '#ffffff',
+              }}
+            />
+          </div>
+
+          <div className="flex flex-col justify-between">
+            <label className="flex items-center space-x-3 mb-4">
+              <input
+                type="checkbox"
+                checked={localConfig.email.daily_reports}
+                onChange={(e) => handleConfigChange('email.daily_reports', e.target.checked)}
+                className="w-4 h-4 rounded"
+              />
+              <span className="text-sm modern-font font-medium" style={{ color: '#ffffff' }}>
+                Enable Daily Reports
+              </span>
+            </label>
 
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -156,162 +310,10 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
             </div>
           </div>
         </div>
-
-        {/* Temperature Control */}
-        <div className="modern-panel p-6 shadow-lg h-[48%]">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="p-3 rounded-2xl" style={{ backgroundColor: 'rgba(255, 149, 0, 0.2)' }}>
-              <Settings className="w-6 h-6" style={{ color: '#ff9500' }} />
-            </div>
-            <h3 className="text-xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>Thermal Thresholds</h3>
-          </div>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
-                Normal Threshold (°C)
-              </label>
-              <input
-                type="number"
-                value={localConfig.temperature_thresholds.normal}
-                onChange={(e) => handleConfigChange('temperature_thresholds.normal', parseInt(e.target.value))}
-                className="modern-input w-full px-3 py-2 modern-font text-sm"
-                style={{ 
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
-                  color: '#ffffff',
-                }}
-                min="0"
-                max="100"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
-                Warning Threshold (°C)
-              </label>
-              <input
-                type="number"
-                value={localConfig.temperature_thresholds.warning}
-                onChange={(e) => handleConfigChange('temperature_thresholds.warning', parseInt(e.target.value))}
-                className="modern-input w-full px-3 py-2 modern-font text-sm"
-                style={{ 
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
-                  color: '#ffffff',
-                }}
-                min="0"
-                max="100"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Side - 40% - Cooling & System */}
-      <div className="w-[40%] pl-3 space-y-6 relative">
-        {/* Cooling System Control */}
-        <div className="modern-panel p-6 shadow-lg h-[48%]">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="p-3 rounded-2xl" style={{ backgroundColor: 'rgba(0, 122, 255, 0.2)' }}>
-              <Settings className="w-6 h-6" style={{ color: '#007aff' }} />
-            </div>
-            <h3 className="text-xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>Cooling System</h3>
-          </div>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
-                Minimum Fan Speed (%)
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={localConfig.fan_speeds.min}
-                onChange={(e) => handleConfigChange('fan_speeds.min', parseInt(e.target.value))}
-                className="w-full h-2 appearance-none cursor-pointer modern-slider"
-              />
-              <div className="flex justify-between text-xs modern-font mt-1" style={{ color: '#8e8e93' }}>
-                <span>Idle</span>
-                <span className="font-medium" style={{ color: '#ffffff' }}>{localConfig.fan_speeds.min}%</span>
-                <span>Maximum</span>
-              </div>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
-                Maximum Fan Speed (%)
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={localConfig.fan_speeds.max}
-                onChange={(e) => handleConfigChange('fan_speeds.max', parseInt(e.target.value))}
-                className="w-full h-2 appearance-none cursor-pointer modern-slider"
-              />
-              <div className="flex justify-between text-xs modern-font mt-1" style={{ color: '#8e8e93' }}>
-                <span>Idle</span>
-                <span className="font-medium" style={{ color: '#ffffff' }}>{localConfig.fan_speeds.max}%</span>
-                <span>Maximum</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* System Parameters */}
-        <div className="modern-panel p-6 shadow-lg h-[48%]">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="p-3 rounded-2xl" style={{ backgroundColor: 'rgba(88, 86, 214, 0.2)' }}>
-              <Settings className="w-6 h-6" style={{ color: '#5856d6' }} />
-            </div>
-            <h3 className="text-xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>System Parameters</h3>
-          </div>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
-                Polling Interval (seconds)
-              </label>
-              <input
-                type="number"
-                value={localConfig.polling_interval}
-                onChange={(e) => handleConfigChange('polling_interval', parseInt(e.target.value))}
-                className="modern-input w-full px-3 py-2 modern-font text-sm"
-                style={{ 
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
-                  color: '#ffffff',
-                }}
-                min="1"
-                max="60"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
-                Log Level
-              </label>
-              <select
-                value={localConfig.logging.level}
-                onChange={(e) => handleConfigChange('logging.level', e.target.value)}
-                className="modern-input w-full px-3 py-2 modern-font text-sm"
-                style={{ 
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
-                  color: '#ffffff',
-                }}
-              >
-                <option value="DEBUG">Debug</option>
-                <option value="INFO">Info</option>
-                <option value="WARNING">Warning</option>
-                <option value="ERROR">Error</option>
-              </select>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Control Buttons - Bottom Center */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center space-x-4">
+      <div className="mt-6 flex items-center justify-center space-x-4">
         {hasChanges && (
           <div className="flex items-center space-x-3 px-4 py-2 modern-display"
                style={{ 

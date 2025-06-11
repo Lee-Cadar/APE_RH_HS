@@ -141,32 +141,8 @@ export function ControlCenter({
         <div className="floating-elements"></div>
       </div>
 
-      {/* Central Logo with modern breathing effect - MOVED TO BACK */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0">
-        <div className="relative">
-          <img 
-            src="/triangle2.png" 
-            alt="APE Logo" 
-            className="object-contain opacity-3"
-            style={{ 
-              width: '150px', 
-              height: '150px',
-              filter: 'brightness(0) saturate(100%) invert(100%)',
-              animation: 'modernLogoBreath 6s ease-in-out infinite'
-            }}
-          />
-          <div 
-            className="absolute inset-0 opacity-5"
-            style={{
-              background: 'radial-gradient(circle, #007aff 0%, transparent 70%)',
-              animation: 'modernGlowPulse 6s ease-in-out infinite'
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Header - Rule of 3 sections */}
-      <div className="modern-panel-header p-4 shadow-lg mb-4 relative z-10">
+      {/* Header with Generate Report Button */}
+      <div className="modern-panel-header p-4 shadow-lg mb-6 relative z-10">
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <h2 className="text-xl font-medium tracking-tight modern-font" style={{ color: '#ffffff' }}>
@@ -203,7 +179,7 @@ export function ControlCenter({
         </div>
       </div>
 
-      {/* NEW LAYOUT: Left 40% - Processing & Network | Right 40% - Thermal & System */}
+      {/* Main Content Grid: Left 40% - Processing & Network | Right 40% - Thermal & System */}
       <div className="relative h-[calc(100%-140px)] z-10 flex space-x-6" 
            style={{ minHeight: '350px' }}>
         
@@ -309,6 +285,27 @@ export function ControlCenter({
           transform: translateY(-2px) scale(1.02);
         }
         
+        .modern-button {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          backdrop-filter: blur(20px);
+          transition: all 0.3s ease;
+        }
+        
+        .modern-button:hover {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.2);
+          transform: translateY(-1px);
+        }
+        
+        .modern-display {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          backdrop-filter: blur(20px);
+        }
+        
         .floating-elements {
           position: absolute;
           top: -50%;
@@ -320,36 +317,6 @@ export function ControlCenter({
             radial-gradient(circle at 80% 80%, rgba(52, 199, 89, 0.02) 0%, transparent 50%),
             radial-gradient(circle at 40% 60%, rgba(255, 149, 0, 0.01) 0%, transparent 50%);
           animation: floatElements 50s linear infinite;
-        }
-        
-        @keyframes modernLogoBreath {
-          0% { 
-            opacity: 0.03; 
-            transform: scale(1);
-          }
-          50% { 
-            opacity: 0.08; 
-            transform: scale(1.05);
-          }
-          100% { 
-            opacity: 0.03; 
-            transform: scale(1);
-          }
-        }
-        
-        @keyframes modernGlowPulse {
-          0% { 
-            opacity: 0.03; 
-            transform: scale(1);
-          }
-          50% { 
-            opacity: 0.1; 
-            transform: scale(1.2);
-          }
-          100% { 
-            opacity: 0.03; 
-            transform: scale(1);
-          }
         }
         
         @keyframes floatElements {

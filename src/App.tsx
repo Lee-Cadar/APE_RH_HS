@@ -224,7 +224,7 @@ function App() {
 
   return (
     <div 
-      className="relative overflow-hidden select-none modern-dashboard flex"
+      className="relative overflow-hidden select-none modern-dashboard"
       style={{ 
         width: '1044px', 
         height: '620px',
@@ -239,289 +239,203 @@ function App() {
       {/* Ambient Glow */}
       <div className="absolute inset-0 ambient-glow opacity-20"></div>
 
-      {/* Main Content Area - 90% width with 5px margins */}
-      <div className="flex-1 relative" style={{ width: '90%', margin: '5px' }}>
-        <div className="absolute inset-0 modern-panel">
-          
-          {/* Floating particles */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="floating-particles"></div>
-          </div>
-
-          {/* Main Header for Control Center only */}
-          {currentView === 'control' && (
-            <header className="relative modern-header h-16 border-b" 
-                    style={{ 
-                      borderColor: 'rgba(255, 255, 255, 0.1)',
-                      borderWidth: '1px',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      backdropFilter: 'blur(20px)',
-                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)'
-                    }}>
-              <div className="flex items-center justify-between h-full px-6">
-                <div className="flex items-center space-x-4">
-                  <div className="relative">
-                    <img 
-                      src="/Triangle_logo_black_nobg_no_letters.png" 
-                      alt="APE Logo" 
-                      className="w-12 h-12 logo-glow"
-                      style={{ 
-                        filter: 'brightness(0) saturate(100%) invert(100%)',
-                        animation: 'logoFloat 3s ease-in-out infinite'
-                      }}
-                    />
-                    <div className="absolute -top-1 -right-1 w-3 h-3 animate-pulse rounded-full" 
-                         style={{ 
-                           backgroundColor: '#007aff',
-                           boxShadow: '0 0 10px #007aff'
-                         }}></div>
-                  </div>
-                  <div>
-                    <h1 className="text-xl font-medium tracking-tight modern-font" style={{ color: '#ffffff' }}>
-                      A.P.E. COMMAND
-                    </h1>
-                    <p className="text-sm font-normal modern-font" style={{ color: '#8e8e93' }}>
-                      Adapting Performance Engine v2.1.7
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="modern-display px-4 py-2 font-medium text-sm modern-font" 
-                style={{ 
-                  backgroundColor: temperature < 60 ? 'rgba(52, 199, 89, 0.1)' : temperature < 80 ? 'rgba(255, 149, 0, 0.1)' : 'rgba(255, 59, 48, 0.1)',
-                  borderColor: temperature < 60 ? 'rgba(52, 199, 89, 0.3)' : temperature < 80 ? 'rgba(255, 149, 0, 0.3)' : 'rgba(255, 59, 48, 0.3)',
-                  color: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30'
-                }}>
-                  {temperature < 60 ? 'OPTIMAL' : temperature < 80 ? 'WARNING' : 'CRITICAL'}
-                </div>
-              </div>
-            </header>
-          )}
-
-          {/* Navigation for Control, Config, Logs */}
-          {(currentView === 'control' || currentView === 'config' || currentView === 'logs') && (
-            <nav className="relative modern-nav h-12 border-b" 
-                 style={{ 
-                   borderColor: 'rgba(255, 255, 255, 0.1)',
-                   borderWidth: '1px',
-                   background: 'rgba(255, 255, 255, 0.03)'
-                 }}>
-              <div className="flex h-full">
-                {navigationTabs.map((tab) => {
-                  const Icon = tab.icon;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setCurrentView(tab.id as ViewType)}
-                      className={`flex-1 flex items-center justify-center space-x-3 font-medium text-sm transition-all duration-300 transform active:scale-95 modern-font modern-tab ${
-                        currentView === tab.id ? 'active' : ''
-                      }`}
-                      style={{ 
-                        backgroundColor: currentView === tab.id ? 'rgba(0, 122, 255, 0.1)' : 'transparent',
-                        color: currentView === tab.id ? '#007aff' : '#8e8e93',
-                        borderBottom: currentView === tab.id ? '2px solid #007aff' : '2px solid transparent'
-                      }}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span className="tracking-wide">{tab.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </nav>
-          )}
-
-          {/* Main Content */}
-          <main className="relative p-6 overflow-hidden" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' ? 'calc(600px - 112px)' : 'calc(600px - 64px)' }}>
-            {currentView === 'control' && (
-              <ControlCenter
-                temperature={temperature}
-                performanceState={performanceState}
-                fanSpeed={fanSpeed}
-                ledColor={ledColor}
-                gpuMetrics={gpuMetrics}
-                networkMetrics={networkMetrics}
-                systemMetrics={systemMetrics}
-                onMetricClick={handleMetricClick}
-                onSendReport={handleSendReport}
-                locationInfo={locationInfo}
-              />
-            )}
-
-            {currentView === 'processing' && (
-              <ProcessingDetails
-                temperature={temperature}
-                performanceState={performanceState}
-                systemMetrics={systemMetrics}
-                gpuMetrics={gpuMetrics}
-                config={config}
-                onBack={handleBackToControl}
-                onSendReport={handleSendReport}
-              />
-            )}
-
-            {currentView === 'network' && (
-              <NetworkDetails 
-                networkMetrics={networkMetrics} 
-                onBack={handleBackToControl}
-                onSendReport={handleSendReport}
-              />
-            )}
-
-            {currentView === 'thermal' && (
-              <ThermalDetails
-                temperature={temperature}
-                performanceState={performanceState}
-                fanSpeed={fanSpeed}
-                ledColor={ledColor}
-                config={config}
-                onBack={handleBackToControl}
-                onSendReport={handleSendReport}
-              />
-            )}
-
-            {currentView === 'system' && (
-              <SystemDetails 
-                systemMetrics={systemMetrics} 
-                onBack={handleBackToControl}
-                onSendReport={handleSendReport}
-              />
-            )}
-
-            {currentView === 'config' && (
-              <div className="h-full overflow-y-auto">
-                <ConfigPanel 
-                  config={config}
-                  onConfigUpdate={updateConfig}
-                />
-              </div>
-            )}
-
-            {currentView === 'logs' && (
-              <div className="h-full">
-                <SystemLogs logs={logs} />
-              </div>
-            )}
-          </main>
-
-          {/* Critical Alert Overlay */}
-          {temperature > 85 && (
-            <div className="fixed top-6 right-6 modern-alert p-4 shadow-2xl animate-pulse z-50 rounded-2xl"
-                 style={{ 
-                   backgroundColor: 'rgba(255, 59, 48, 0.1)',
-                   borderColor: 'rgba(255, 59, 48, 0.3)',
-                   borderWidth: '1px',
-                   backdropFilter: 'blur(20px)'
-                 }}>
-              <div className="flex items-center space-x-3">
-                <div className="w-4 h-4 animate-ping rounded-full" 
-                     style={{ backgroundColor: '#ff3b30' }}></div>
-                <span className="font-medium text-sm modern-font" style={{ color: '#ff3b30' }}>
-                  CRITICAL TEMPERATURE
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Right Sidebar - 10% width */}
-      <div className="w-[10%] relative">
-        <div className="absolute inset-2 modern-panel">
-          {/* Right Sidebar Header */}
-          <div className="h-full flex flex-col p-4 space-y-6">
-            
-            {/* Logo Section */}
-            <div className="text-center">
-              <div className="relative mx-auto w-12 h-12 mb-3">
-                <img 
-                  src="/Triangle_logo_black_nobg_no_letters.png" 
-                  alt="APE Logo" 
-                  className="w-12 h-12 logo-glow"
-                  style={{ 
-                    filter: 'brightness(0) saturate(100%) invert(100%)',
-                    animation: 'logoFloat 3s ease-in-out infinite'
-                  }}
-                />
-                <div className="absolute -top-1 -right-1 w-3 h-3 animate-pulse rounded-full" 
-                     style={{ 
-                       backgroundColor: '#007aff',
-                       boxShadow: '0 0 10px #007aff'
-                     }}></div>
-              </div>
-              <div className="text-xs font-medium modern-font" style={{ color: '#ffffff' }}>
-                A.P.E.
-              </div>
-              <div className="text-xs font-normal modern-font" style={{ color: '#8e8e93' }}>
-                v2.1.7
-              </div>
-            </div>
-
-            {/* Time & Date */}
-            <div className="modern-display p-3 text-center">
-              <Calendar className="w-4 h-4 mx-auto mb-2" style={{ color: '#007aff' }} />
-              <div className="text-xs font-medium modern-font mb-1" style={{ color: '#ffffff' }}>
-                {formatDate(currentTime)}
-              </div>
-              <div className="text-xs font-normal modern-font" style={{ color: '#8e8e93' }}>
-                {formatTime(currentTime)}
-              </div>
-              <div className="text-xs font-normal modern-font" style={{ color: '#8e8e93' }}>
-                {locationInfo.timezone}
-              </div>
-            </div>
-            
-            {/* Location Info */}
-            <div className="modern-display p-3 text-center">
-              <MapPin className="w-4 h-4 mx-auto mb-2" style={{ color: '#34c759' }} />
-              <div className="text-xs font-medium modern-font mb-1" style={{ color: '#ffffff' }}>
-                {locationInfo.postcode}
-              </div>
-              <div className="text-xs font-normal modern-font mb-1" style={{ color: '#8e8e93' }}>
-                {locationInfo.city.split(',')[0]}
-              </div>
-              <div className="text-xs font-normal modern-font" style={{ color: '#8e8e93' }}>
-                {locationInfo.coordinates}
-              </div>
-            </div>
-
-            {/* What3Words */}
-            <div className="modern-display p-3 text-center">
-              <Globe className="w-4 h-4 mx-auto mb-2" style={{ color: '#ff9500' }} />
-              <div className="text-xs font-medium modern-font mb-1" style={{ color: '#ffffff' }}>
-                What3Words
-              </div>
-              <div className="text-xs font-normal modern-font" style={{ color: '#8e8e93' }}>
-                {locationInfo.what3words}
-              </div>
-            </div>
-            
-            {/* Status Indicators */}
-            <div className="space-y-3">
-              <div className="modern-display p-2 text-center">
-                <Thermometer className="w-3 h-3 mx-auto mb-1" style={{ color: '#ff9500' }} />
-                <div className="text-xs font-medium modern-font" style={{ color: '#ffffff' }}>
-                  {temperature.toFixed(1)}°C
-                </div>
-              </div>
-              
-              <div className="modern-display p-2 text-center">
-                <Activity className="w-3 h-3 mx-auto mb-1" style={{ color: '#007aff' }} />
-                <div className="text-xs font-medium modern-font" style={{ color: '#ffffff' }}>
-                  {systemMetrics.cpuUsage.toFixed(1)}%
-                </div>
-              </div>
-              
-              <div className={`w-6 h-6 mx-auto modern-led animate-pulse rounded-full`} style={{ 
-                backgroundColor: ledColor === 'green' ? '#34c759' : ledColor === 'yellow' ? '#ff9500' : '#ff3b30',
-                boxShadow: `0 0 15px ${ledColor === 'green' ? '#34c759' : ledColor === 'yellow' ? '#ff9500' : '#ff3b30'}`
+      {/* Top Header with Date, GPS, Location */}
+      <header className="relative modern-header h-16 border-b" 
+              style={{ 
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                borderWidth: '1px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                backdropFilter: 'blur(20px)',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)'
               }}>
-                <div className="absolute inset-1 bg-gradient-to-br from-white/30 to-transparent rounded-full"></div>
+        <div className="flex items-center justify-between h-full px-6">
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-3">
+              <Calendar className="w-5 h-5" style={{ color: '#007aff' }} />
+              <div>
+                <div className="text-sm font-medium modern-font" style={{ color: '#ffffff' }}>
+                  {formatDate(currentTime)}
+                </div>
+                <div className="text-xs modern-font" style={{ color: '#8e8e93' }}>
+                  {formatTime(currentTime)} {locationInfo.timezone}
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <MapPin className="w-5 h-5" style={{ color: '#34c759' }} />
+              <div>
+                <div className="text-sm font-medium modern-font" style={{ color: '#ffffff' }}>
+                  {locationInfo.postcode}
+                </div>
+                <div className="text-xs modern-font" style={{ color: '#8e8e93' }}>
+                  {locationInfo.city.split(',')[0]}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <Globe className="w-5 h-5" style={{ color: '#ff9500' }} />
+              <div>
+                <div className="text-sm font-medium modern-font" style={{ color: '#ffffff' }}>
+                  {locationInfo.what3words}
+                </div>
+                <div className="text-xs modern-font" style={{ color: '#8e8e93' }}>
+                  {locationInfo.coordinates}
+                </div>
               </div>
             </div>
           </div>
+          
+          <div className="modern-display px-4 py-2 font-medium text-sm modern-font" 
+          style={{ 
+            backgroundColor: temperature < 60 ? 'rgba(52, 199, 89, 0.1)' : temperature < 80 ? 'rgba(255, 149, 0, 0.1)' : 'rgba(255, 59, 48, 0.1)',
+            borderColor: temperature < 60 ? 'rgba(52, 199, 89, 0.3)' : temperature < 80 ? 'rgba(255, 149, 0, 0.3)' : 'rgba(255, 59, 48, 0.3)',
+            color: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30'
+          }}>
+            {temperature < 60 ? 'OPTIMAL' : temperature < 80 ? 'WARNING' : 'CRITICAL'}
+          </div>
+        </div>
+      </header>
+
+      {/* Centered Logo with Breathing Animation */}
+      <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="relative">
+          <img 
+            src="/Triangle_logo_black_nobg.png" 
+            alt="APE Logo" 
+            className="object-contain breathing-logo"
+            style={{ 
+              width: '80px', 
+              height: '80px',
+              filter: 'brightness(0) saturate(100%) invert(100%)',
+            }}
+          />
         </div>
       </div>
+
+      {/* Navigation for Control, Config, Logs */}
+      {(currentView === 'control' || currentView === 'config' || currentView === 'logs') && (
+        <nav className="relative modern-nav h-12 border-b" 
+             style={{ 
+               borderColor: 'rgba(255, 255, 255, 0.1)',
+               borderWidth: '1px',
+               background: 'rgba(255, 255, 255, 0.03)'
+             }}>
+          <div className="flex h-full">
+            {navigationTabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setCurrentView(tab.id as ViewType)}
+                  className={`flex-1 flex items-center justify-center space-x-3 font-medium text-sm transition-all duration-300 transform active:scale-95 modern-font modern-tab ${
+                    currentView === tab.id ? 'active' : ''
+                  }`}
+                  style={{ 
+                    backgroundColor: currentView === tab.id ? 'rgba(0, 122, 255, 0.1)' : 'transparent',
+                    color: currentView === tab.id ? '#007aff' : '#8e8e93',
+                    borderBottom: currentView === tab.id ? '2px solid #007aff' : '2px solid transparent'
+                  }}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="tracking-wide">{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+      )}
+
+      {/* Main Content - Now Scrollable */}
+      <main className="relative overflow-y-auto" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' ? 'calc(620px - 112px)' : 'calc(620px - 64px)' }}>
+        <div className="p-6">
+          {currentView === 'control' && (
+            <ControlCenter
+              temperature={temperature}
+              performanceState={performanceState}
+              fanSpeed={fanSpeed}
+              ledColor={ledColor}
+              gpuMetrics={gpuMetrics}
+              networkMetrics={networkMetrics}
+              systemMetrics={systemMetrics}
+              onMetricClick={handleMetricClick}
+              onSendReport={handleSendReport}
+              locationInfo={locationInfo}
+            />
+          )}
+
+          {currentView === 'processing' && (
+            <ProcessingDetails
+              temperature={temperature}
+              performanceState={performanceState}
+              systemMetrics={systemMetrics}
+              gpuMetrics={gpuMetrics}
+              config={config}
+              onBack={handleBackToControl}
+              onSendReport={handleSendReport}
+            />
+          )}
+
+          {currentView === 'network' && (
+            <NetworkDetails 
+              networkMetrics={networkMetrics} 
+              onBack={handleBackToControl}
+              onSendReport={handleSendReport}
+            />
+          )}
+
+          {currentView === 'thermal' && (
+            <ThermalDetails
+              temperature={temperature}
+              performanceState={performanceState}
+              fanSpeed={fanSpeed}
+              ledColor={ledColor}
+              config={config}
+              onBack={handleBackToControl}
+              onSendReport={handleSendReport}
+            />
+          )}
+
+          {currentView === 'system' && (
+            <SystemDetails 
+              systemMetrics={systemMetrics} 
+              onBack={handleBackToControl}
+              onSendReport={handleSendReport}
+            />
+          )}
+
+          {currentView === 'config' && (
+            <ConfigPanel 
+              config={config}
+              onConfigUpdate={updateConfig}
+            />
+          )}
+
+          {currentView === 'logs' && (
+            <SystemLogs logs={logs} />
+          )}
+        </div>
+      </main>
+
+      {/* Critical Alert Overlay */}
+      {temperature > 85 && (
+        <div className="fixed top-6 right-6 modern-alert p-4 shadow-2xl animate-pulse z-50 rounded-2xl"
+             style={{ 
+               backgroundColor: 'rgba(255, 59, 48, 0.1)',
+               borderColor: 'rgba(255, 59, 48, 0.3)',
+               borderWidth: '1px',
+               backdropFilter: 'blur(20px)'
+             }}>
+          <div className="flex items-center space-x-3">
+            <div className="w-4 h-4 animate-ping rounded-full" 
+                 style={{ backgroundColor: '#ff3b30' }}></div>
+            <span className="font-medium text-sm modern-font" style={{ color: '#ff3b30' }}>
+              CRITICAL TEMPERATURE
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Global Modern Styles */}
       <style jsx>{`
@@ -532,7 +446,7 @@ function App() {
         
         .modern-font {
           font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          font-weight: 500;
+          font-weight: 400;
           letter-spacing: -0.01em;
         }
         
@@ -550,37 +464,8 @@ function App() {
           animation: ambientPulse 8s ease-in-out infinite;
         }
         
-        .modern-panel {
-          background: rgba(28, 28, 30, 0.8);
-          backdrop-filter: blur(40px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 20px;
-          box-shadow: 
-            0 8px 32px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-        
         .modern-header {
-          border-radius: 20px 20px 0 0;
-        }
-        
-        .modern-button {
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
-          backdrop-filter: blur(20px);
-          transition: all 0.3s ease;
-        }
-        
-        .modern-button:hover {
-          background: rgba(255, 255, 255, 0.1);
-          border-color: rgba(255, 255, 255, 0.2);
-          transform: translateY(-1px);
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        }
-        
-        .modern-button:active {
-          transform: translateY(0px);
+          border-radius: 0;
         }
         
         .modern-display {
@@ -588,11 +473,6 @@ function App() {
           border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 12px;
           backdrop-filter: blur(20px);
-        }
-        
-        .modern-led {
-          position: relative;
-          border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .modern-nav {
@@ -613,21 +493,8 @@ function App() {
           border: 1px solid rgba(255, 59, 48, 0.3);
         }
         
-        .logo-glow {
-          filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
-        }
-        
-        .floating-particles {
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: 
-            radial-gradient(circle at 20% 20%, rgba(0, 122, 255, 0.03) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(52, 199, 89, 0.02) 0%, transparent 50%),
-            radial-gradient(circle at 40% 60%, rgba(255, 149, 0, 0.01) 0%, transparent 50%);
-          animation: particleFloat 40s linear infinite;
+        .breathing-logo {
+          animation: breathingAnimation 3s ease-in-out infinite;
         }
         
         @keyframes gridFloat {
@@ -640,27 +507,19 @@ function App() {
           50% { opacity: 0.4; }
         }
         
-        @keyframes logoFloat {
+        @keyframes breathingAnimation {
           0% { 
-            transform: translateY(0px);
-            filter: brightness(0) saturate(100%) invert(100%);
+            transform: scale(1);
+            opacity: 0.8;
           }
           50% { 
-            transform: translateY(-2px);
-            filter: brightness(0) saturate(100%) invert(100%) drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+            transform: scale(1.1);
+            opacity: 1;
           }
           100% { 
-            transform: translateY(0px);
-            filter: brightness(0) saturate(100%) invert(100%);
+            transform: scale(1);
+            opacity: 0.8;
           }
-        }
-        
-        @keyframes particleFloat {
-          0% { transform: translate(0, 0) rotate(0deg); }
-          25% { transform: translate(-2%, -2%) rotate(90deg); }
-          50% { transform: translate(-4%, 0%) rotate(180deg); }
-          75% { transform: translate(-2%, 2%) rotate(270deg); }
-          100% { transform: translate(0, 0) rotate(360deg); }
         }
       `}</style>
     </div>
