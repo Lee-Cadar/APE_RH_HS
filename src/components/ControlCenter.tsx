@@ -66,7 +66,7 @@ export function ControlCenter({
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB/s`;
   };
 
-  // Modern Unified Panel Component
+  // Modern Unified Panel Component with Rule of 3-6-9
   const ModernPanel = ({ 
     title, 
     icon: Icon, 
@@ -90,7 +90,7 @@ export function ControlCenter({
             <div className="p-2 rounded-xl" style={{ backgroundColor: `${color}20` }}>
               <Icon className="w-6 h-6" style={{ color }} />
             </div>
-            <h3 className="text-lg font-bold modern-font tracking-tight" style={{ color: '#ffffff' }}>
+            <h3 className="text-lg font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>
               {title}
             </h3>
           </div>
@@ -101,10 +101,11 @@ export function ControlCenter({
                }}></div>
         </div>
         
+        {/* Rule of 3-6-9: 2x2 grid for 4 metrics */}
         <div className="grid grid-cols-2 gap-4">
           {metrics.map((metric, index) => (
             <div key={index} className="text-center">
-              <div className="text-2xl font-bold modern-font mb-2" 
+              <div className="text-2xl font-medium modern-font mb-2" 
                    style={{ 
                      color: metric.subColor || color,
                      fontFamily: '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
@@ -162,21 +163,21 @@ export function ControlCenter({
         </div>
       </div>
 
-      {/* Header */}
+      {/* Header - Rule of 3 sections */}
       <div className="modern-panel-header p-4 shadow-lg mb-4 relative z-10">
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold tracking-tight modern-font" style={{ color: '#ffffff' }}>
+          <div className="flex-1">
+            <h2 className="text-xl font-medium tracking-tight modern-font" style={{ color: '#ffffff' }}>
               Command Center
             </h2>
-            <p className="font-medium text-sm modern-font mt-1" style={{ color: '#8e8e93' }}>
+            <p className="font-normal text-sm modern-font mt-1" style={{ color: '#8e8e93' }}>
               Real-time system monitoring and control
             </p>
           </div>
-          <div className="flex items-center space-x-3">
+          <div className="flex-1 flex justify-center">
             <button
               onClick={() => onSendReport('all')}
-              className="modern-button px-6 py-2 transition-all duration-300 flex items-center space-x-2 modern-font text-sm font-semibold"
+              className="modern-button px-6 py-2 transition-all duration-300 flex items-center space-x-2 modern-font text-sm font-medium"
               style={{ 
                 backgroundColor: 'rgba(0, 122, 255, 0.1)',
                 color: '#007aff',
@@ -186,7 +187,9 @@ export function ControlCenter({
               <Mail className="w-4 h-4" />
               <span>Generate Report</span>
             </button>
-            <div className="modern-display px-4 py-2 font-semibold text-sm modern-font" 
+          </div>
+          <div className="flex-1 flex justify-end">
+            <div className="modern-display px-4 py-2 font-medium text-sm modern-font" 
             style={{ 
               backgroundColor: temperature < 60 ? 'rgba(52, 199, 89, 0.1)' : temperature < 80 ? 'rgba(255, 149, 0, 0.1)' : 'rgba(255, 59, 48, 0.1)',
               color: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30',
@@ -198,7 +201,7 @@ export function ControlCenter({
         </div>
       </div>
 
-      {/* FIXED: Centered Modern Metrics Grid Layout - NO OVERLAPPING */}
+      {/* FIXED: Centered Modern Metrics Grid Layout - Rule of 3-6-9: 2x2 grid */}
       <div className="relative h-[calc(100%-140px)] z-10 flex items-center justify-center px-4" 
            style={{ minHeight: '350px' }}>
         
@@ -269,7 +272,7 @@ export function ControlCenter({
         </div>
       </div>
 
-      {/* Enhanced Modern CSS animations */}
+      {/* Enhanced Modern CSS animations with lighter fonts */}
       <style jsx>{`
         .modern-panel-header {
           background: rgba(255, 255, 255, 0.05);

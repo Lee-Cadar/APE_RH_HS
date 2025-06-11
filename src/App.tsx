@@ -245,7 +245,7 @@ function App() {
           <div className="floating-particles"></div>
         </div>
 
-        {/* Header with Apple/Tesla-style design */}
+        {/* Header with Apple/Tesla-style design - Rule of 3 sections */}
         <header className="relative modern-header h-16 border-b" 
                 style={{ 
                   borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -255,8 +255,8 @@ function App() {
                   boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)'
                 }}>
           <div className="flex items-center justify-between h-full px-6">
-            {/* Left side - Logo and Title */}
-            <div className="flex items-center space-x-4">
+            {/* Left section - Logo and Title (Rule of 3: Section 1) */}
+            <div className="flex items-center space-x-4 flex-1">
               {currentView !== 'control' && (
                 <button
                   onClick={handleBackToControl}
@@ -286,24 +286,24 @@ function App() {
                      }}></div>
               </div>
               <div>
-                <h1 className="text-xl font-bold tracking-tight modern-font" style={{ color: '#ffffff' }}>
+                <h1 className="text-xl font-medium tracking-tight modern-font" style={{ color: '#ffffff' }}>
                   A.P.E. COMMAND
                 </h1>
-                <p className="text-sm font-medium modern-font" style={{ color: '#8e8e93' }}>
+                <p className="text-sm font-normal modern-font" style={{ color: '#8e8e93' }}>
                   Adapting Performance Engine v2.1.7
                 </p>
               </div>
             </div>
 
-            {/* Center - Date and Location with modern styling */}
-            <div className="flex items-center space-x-6">
+            {/* Center section - Date and Location (Rule of 3: Section 2) */}
+            <div className="flex items-center space-x-6 flex-1 justify-center">
               <div className="modern-display px-4 py-2">
                 <Calendar className="w-4 h-4 mb-1" style={{ color: '#007aff' }} />
                 <div className="text-center">
-                  <div className="text-sm font-semibold modern-font" style={{ color: '#ffffff' }}>
+                  <div className="text-sm font-medium modern-font" style={{ color: '#ffffff' }}>
                     {formatDate(currentTime)}
                   </div>
-                  <div className="text-xs font-medium modern-font" style={{ color: '#8e8e93' }}>
+                  <div className="text-xs font-normal modern-font" style={{ color: '#8e8e93' }}>
                     {formatTime(currentTime)} {locationInfo.timezone}
                   </div>
                 </div>
@@ -312,19 +312,19 @@ function App() {
               <div className="modern-display px-4 py-2">
                 <MapPin className="w-4 h-4 mb-1" style={{ color: '#34c759' }} />
                 <div className="text-center">
-                  <div className="text-sm font-semibold modern-font" style={{ color: '#ffffff' }}>
+                  <div className="text-sm font-medium modern-font" style={{ color: '#ffffff' }}>
                     {locationInfo.city.split(',')[0]}
                   </div>
-                  <div className="text-xs font-medium modern-font" style={{ color: '#8e8e93' }}>
+                  <div className="text-xs font-normal modern-font" style={{ color: '#8e8e93' }}>
                     {locationInfo.coordinates}
                   </div>
                 </div>
               </div>
             </div>
             
-            {/* Right side - Status indicators with modern styling */}
-            <div className="flex items-center space-x-4">
-              <div className="modern-display px-3 py-2 font-semibold text-sm modern-font" 
+            {/* Right section - Status indicators (Rule of 3: Section 3) */}
+            <div className="flex items-center space-x-4 flex-1 justify-end">
+              <div className="modern-display px-3 py-2 font-medium text-sm modern-font" 
               style={{ 
                 backgroundColor: temperature < 60 ? 'rgba(52, 199, 89, 0.1)' : temperature < 80 ? 'rgba(255, 149, 0, 0.1)' : 'rgba(255, 59, 48, 0.1)',
                 borderColor: temperature < 60 ? 'rgba(52, 199, 89, 0.3)' : temperature < 80 ? 'rgba(255, 149, 0, 0.3)' : 'rgba(255, 59, 48, 0.3)',
@@ -335,14 +335,14 @@ function App() {
               
               <div className="modern-display px-3 py-2 modern-font">
                 <Thermometer className="w-4 h-4" style={{ color: '#007aff' }} />
-                <span className="text-sm font-semibold ml-2" style={{ color: '#ffffff' }}>
+                <span className="text-sm font-medium ml-2" style={{ color: '#ffffff' }}>
                   {temperature.toFixed(1)}°C
                 </span>
               </div>
               
               <div className="modern-display px-3 py-2 modern-font">
                 <Activity className="w-4 h-4" style={{ color: '#ff9500' }} />
-                <span className="text-sm font-semibold ml-2" style={{ color: '#ffffff' }}>
+                <span className="text-sm font-medium ml-2" style={{ color: '#ffffff' }}>
                   {systemMetrics.cpuUsage.toFixed(1)}%
                 </span>
               </div>
@@ -357,7 +357,7 @@ function App() {
           </div>
         </header>
 
-        {/* Navigation with modern tabs */}
+        {/* Navigation with modern tabs - Rule of 3 tabs */}
         {(currentView === 'control' || currentView === 'config' || currentView === 'logs') && (
           <nav className="relative modern-nav h-12 border-b" 
                style={{ 
@@ -372,7 +372,7 @@ function App() {
                   <button
                     key={tab.id}
                     onClick={() => setCurrentView(tab.id as ViewType)}
-                    className={`flex-1 flex items-center justify-center space-x-3 font-semibold text-sm transition-all duration-300 transform active:scale-95 modern-font modern-tab ${
+                    className={`flex-1 flex items-center justify-center space-x-3 font-medium text-sm transition-all duration-300 transform active:scale-95 modern-font modern-tab ${
                       currentView === tab.id ? 'active' : ''
                     }`}
                     style={{ 
@@ -475,7 +475,7 @@ function App() {
             <div className="flex items-center space-x-3">
               <div className="w-4 h-4 animate-ping rounded-full" 
                    style={{ backgroundColor: '#ff3b30' }}></div>
-              <span className="font-semibold text-sm modern-font" style={{ color: '#ff3b30' }}>
+              <span className="font-medium text-sm modern-font" style={{ color: '#ff3b30' }}>
                 CRITICAL TEMPERATURE
               </span>
             </div>
@@ -483,7 +483,7 @@ function App() {
         )}
       </div>
 
-      {/* Global Modern Styles */}
+      {/* Global Modern Styles with lighter fonts */}
       <style jsx>{`
         .modern-dashboard {
           position: relative;
@@ -492,7 +492,7 @@ function App() {
         
         .modern-font {
           font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          font-weight: 600;
+          font-weight: 500; /* Reduced from 600 to 500 */
           letter-spacing: -0.01em;
         }
         
