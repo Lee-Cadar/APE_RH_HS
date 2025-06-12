@@ -53,25 +53,25 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
       {/* Main Configuration Content */}
       <div className="flex-1 flex">
         {/* Left Side - 40% - Temperature & Cooling */}
-        <div className="w-[40%] pr-3 space-y-6 relative">
+        <div className="w-[40%] pr-4 space-y-8 relative">
           {/* Temperature Control */}
-          <div className="modern-panel p-6 shadow-lg h-[48%]">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="p-3 rounded-2xl" style={{ backgroundColor: 'rgba(255, 149, 0, 0.2)' }}>
-                <Settings className="w-6 h-6" style={{ color: '#ff9500' }} />
+          <div className="modern-panel p-8 shadow-lg h-[48%]">
+            <div className="flex items-center space-x-4 mb-8">
+              <div className="p-4 rounded-2xl" style={{ backgroundColor: 'rgba(255, 149, 0, 0.2)' }}>
+                <Settings className="w-7 h-7" style={{ color: '#ff9500' }} />
               </div>
-              <h3 className="text-xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>Thermal Thresholds</h3>
+              <h3 className="text-2xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>Thermal Thresholds</h3>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+                <label className="block text-base font-medium mb-3 modern-font" style={{ color: '#ffffff' }}>
                   Normal Threshold (°C)
                 </label>
                 <input
                   type="number"
                   value={localConfig.temperature_thresholds.normal}
                   onChange={(e) => handleConfigChange('temperature_thresholds.normal', parseInt(e.target.value))}
-                  className="modern-input w-full px-3 py-2 modern-font text-sm"
+                  className="modern-input w-full px-4 py-3 modern-font text-base"
                   style={{ 
                     background: 'rgba(255, 255, 255, 0.05)',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -83,14 +83,14 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+                <label className="block text-base font-medium mb-3 modern-font" style={{ color: '#ffffff' }}>
                   Warning Threshold (°C)
                 </label>
                 <input
                   type="number"
                   value={localConfig.temperature_thresholds.warning}
                   onChange={(e) => handleConfigChange('temperature_thresholds.warning', parseInt(e.target.value))}
-                  className="modern-input w-full px-3 py-2 modern-font text-sm"
+                  className="modern-input w-full px-4 py-3 modern-font text-base"
                   style={{ 
                     background: 'rgba(255, 255, 255, 0.05)',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -104,16 +104,16 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
           </div>
 
           {/* Cooling System Control */}
-          <div className="modern-panel p-6 shadow-lg h-[48%]">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="p-3 rounded-2xl" style={{ backgroundColor: 'rgba(0, 122, 255, 0.2)' }}>
-                <Settings className="w-6 h-6" style={{ color: '#007aff' }} />
+          <div className="modern-panel p-8 shadow-lg h-[48%]">
+            <div className="flex items-center space-x-4 mb-8">
+              <div className="p-4 rounded-2xl" style={{ backgroundColor: 'rgba(0, 122, 255, 0.2)' }}>
+                <Settings className="w-7 h-7" style={{ color: '#007aff' }} />
               </div>
-              <h3 className="text-xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>Cooling System</h3>
+              <h3 className="text-2xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>Cooling System</h3>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+                <label className="block text-base font-medium mb-3 modern-font" style={{ color: '#ffffff' }}>
                   Minimum Fan Speed (%)
                 </label>
                 <input
@@ -122,9 +122,9 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
                   max="100"
                   value={localConfig.fan_speeds.min}
                   onChange={(e) => handleConfigChange('fan_speeds.min', parseInt(e.target.value))}
-                  className="w-full h-2 appearance-none cursor-pointer modern-slider"
+                  className="w-full h-3 appearance-none cursor-pointer modern-slider"
                 />
-                <div className="flex justify-between text-xs modern-font mt-1" style={{ color: '#8e8e93' }}>
+                <div className="flex justify-between text-sm modern-font mt-2" style={{ color: '#8e8e93' }}>
                   <span>Idle</span>
                   <span className="font-medium" style={{ color: '#ffffff' }}>{localConfig.fan_speeds.min}%</span>
                   <span>Maximum</span>
@@ -132,7 +132,7 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+                <label className="block text-base font-medium mb-3 modern-font" style={{ color: '#ffffff' }}>
                   Maximum Fan Speed (%)
                 </label>
                 <input
@@ -141,9 +141,9 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
                   max="100"
                   value={localConfig.fan_speeds.max}
                   onChange={(e) => handleConfigChange('fan_speeds.max', parseInt(e.target.value))}
-                  className="w-full h-2 appearance-none cursor-pointer modern-slider"
+                  className="w-full h-3 appearance-none cursor-pointer modern-slider"
                 />
-                <div className="flex justify-between text-xs modern-font mt-1" style={{ color: '#8e8e93' }}>
+                <div className="flex justify-between text-sm modern-font mt-2" style={{ color: '#8e8e93' }}>
                   <span>Idle</span>
                   <span className="font-medium" style={{ color: '#ffffff' }}>{localConfig.fan_speeds.max}%</span>
                   <span>Maximum</span>
@@ -154,25 +154,25 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
         </div>
 
         {/* Right Side - 40% - System Parameters */}
-        <div className="w-[40%] pl-3 space-y-6 relative">
+        <div className="w-[40%] pl-4 space-y-8 relative">
           {/* System Parameters */}
-          <div className="modern-panel p-6 shadow-lg h-full">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="p-3 rounded-2xl" style={{ backgroundColor: 'rgba(88, 86, 214, 0.2)' }}>
-                <Settings className="w-6 h-6" style={{ color: '#5856d6' }} />
+          <div className="modern-panel p-8 shadow-lg h-full">
+            <div className="flex items-center space-x-4 mb-8">
+              <div className="p-4 rounded-2xl" style={{ backgroundColor: 'rgba(88, 86, 214, 0.2)' }}>
+                <Settings className="w-7 h-7" style={{ color: '#5856d6' }} />
               </div>
-              <h3 className="text-xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>System Parameters</h3>
+              <h3 className="text-2xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>System Parameters</h3>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+                <label className="block text-base font-medium mb-3 modern-font" style={{ color: '#ffffff' }}>
                   Polling Interval (seconds)
                 </label>
                 <input
                   type="number"
                   value={localConfig.polling_interval}
                   onChange={(e) => handleConfigChange('polling_interval', parseInt(e.target.value))}
-                  className="modern-input w-full px-3 py-2 modern-font text-sm"
+                  className="modern-input w-full px-4 py-3 modern-font text-base"
                   style={{ 
                     background: 'rgba(255, 255, 255, 0.05)',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -184,13 +184,13 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+                <label className="block text-base font-medium mb-3 modern-font" style={{ color: '#ffffff' }}>
                   Log Level
                 </label>
                 <select
                   value={localConfig.logging.level}
                   onChange={(e) => handleConfigChange('logging.level', e.target.value)}
-                  className="modern-input w-full px-3 py-2 modern-font text-sm"
+                  className="modern-input w-full px-4 py-3 modern-font text-base"
                   style={{ 
                     background: 'rgba(255, 255, 255, 0.05)',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -209,23 +209,23 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
       </div>
 
       {/* Email Configuration - Bottom Section */}
-      <div className="mt-6 modern-panel p-6 shadow-lg relative">
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="p-3 rounded-2xl" style={{ backgroundColor: 'rgba(52, 199, 89, 0.2)' }}>
-            <Mail className="w-6 h-6" style={{ color: '#34c759' }} />
+      <div className="mt-8 modern-panel p-8 shadow-lg relative">
+        <div className="flex items-center space-x-4 mb-8">
+          <div className="p-4 rounded-2xl" style={{ backgroundColor: 'rgba(52, 199, 89, 0.2)' }}>
+            <Mail className="w-7 h-7" style={{ color: '#34c759' }} />
           </div>
-          <h3 className="text-xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>Email Reports</h3>
+          <h3 className="text-2xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>Email Reports</h3>
         </div>
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid grid-cols-4 gap-8">
           <div>
-            <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+            <label className="block text-base font-medium mb-3 modern-font" style={{ color: '#ffffff' }}>
               Email Address
             </label>
             <input
               type="email"
               value={localConfig.email.address}
               onChange={(e) => handleConfigChange('email.address', e.target.value)}
-              className="modern-input w-full px-3 py-2 modern-font text-sm"
+              className="modern-input w-full px-4 py-3 modern-font text-base"
               style={{ 
                 background: 'rgba(255, 255, 255, 0.05)',
                 borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -236,14 +236,14 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
           </div>
           
           <div>
-            <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+            <label className="block text-base font-medium mb-3 modern-font" style={{ color: '#ffffff' }}>
               SMTP Server
             </label>
             <input
               type="text"
               value={localConfig.email.smtp_server}
               onChange={(e) => handleConfigChange('email.smtp_server', e.target.value)}
-              className="modern-input w-full px-3 py-2 modern-font text-sm"
+              className="modern-input w-full px-4 py-3 modern-font text-base"
               style={{ 
                 background: 'rgba(255, 255, 255, 0.05)',
                 borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -253,14 +253,14 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2 modern-font" style={{ color: '#ffffff' }}>
+            <label className="block text-base font-medium mb-3 modern-font" style={{ color: '#ffffff' }}>
               Port
             </label>
             <input
               type="number"
               value={localConfig.email.port}
               onChange={(e) => handleConfigChange('email.port', parseInt(e.target.value))}
-              className="modern-input w-full px-3 py-2 modern-font text-sm"
+              className="modern-input w-full px-4 py-3 modern-font text-base"
               style={{ 
                 background: 'rgba(255, 255, 255, 0.05)',
                 borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -270,41 +270,41 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
           </div>
 
           <div className="flex flex-col justify-between">
-            <label className="flex items-center space-x-3 mb-4">
+            <label className="flex items-center space-x-4 mb-6">
               <input
                 type="checkbox"
                 checked={localConfig.email.daily_reports}
                 onChange={(e) => handleConfigChange('email.daily_reports', e.target.checked)}
-                className="w-4 h-4 rounded"
+                className="w-5 h-5 rounded"
               />
-              <span className="text-sm modern-font font-medium" style={{ color: '#ffffff' }}>
+              <span className="text-base modern-font font-medium" style={{ color: '#ffffff' }}>
                 Enable Daily Reports
               </span>
             </label>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={testEmailConnection}
-                className="modern-button px-3 py-2 transition-all duration-300 flex items-center space-x-2 modern-font text-sm"
+                className="modern-button px-4 py-3 transition-all duration-300 flex items-center space-x-2 modern-font text-base"
                 style={{ 
                   backgroundColor: 'rgba(52, 199, 89, 0.1)',
                   borderColor: 'rgba(52, 199, 89, 0.3)',
                   color: '#34c759',
                 }}
               >
-                <Mail className="w-4 h-4" />
+                <Mail className="w-5 h-5" />
                 <span>Test</span>
               </button>
               <button
                 onClick={generateTestReport}
-                className="modern-button px-3 py-2 transition-all duration-300 flex items-center space-x-2 modern-font text-sm"
+                className="modern-button px-4 py-3 transition-all duration-300 flex items-center space-x-2 modern-font text-base"
                 style={{ 
                   backgroundColor: 'rgba(52, 199, 89, 0.1)',
                   borderColor: 'rgba(52, 199, 89, 0.3)',
                   color: '#34c759',
                 }}
               >
-                <FileText className="w-4 h-4" />
+                <FileText className="w-5 h-5" />
                 <span>Report</span>
               </button>
             </div>
@@ -313,35 +313,35 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
       </div>
 
       {/* Control Buttons - Bottom Center */}
-      <div className="mt-6 flex items-center justify-center space-x-4">
+      <div className="mt-8 flex items-center justify-center space-x-6">
         {hasChanges && (
-          <div className="flex items-center space-x-3 px-4 py-2 modern-display"
+          <div className="flex items-center space-x-4 px-6 py-3 modern-display"
                style={{ 
                  backgroundColor: 'rgba(255, 59, 48, 0.1)',
                  borderColor: 'rgba(255, 59, 48, 0.3)',
                  color: '#ff3b30',
                }}>
-            <AlertTriangle className="w-4 h-4 animate-pulse" />
-            <span className="text-sm modern-font font-medium">Unsaved Changes</span>
+            <AlertTriangle className="w-5 h-5 animate-pulse" />
+            <span className="text-base modern-font font-medium">Unsaved Changes</span>
           </div>
         )}
         <button
           onClick={handleReset}
           disabled={!hasChanges}
-          className="modern-button px-6 py-3 transition-all duration-300 flex items-center space-x-2 modern-font disabled:opacity-50"
+          className="modern-button px-8 py-4 transition-all duration-300 flex items-center space-x-3 modern-font disabled:opacity-50"
           style={{ 
             backgroundColor: hasChanges ? 'rgba(142, 142, 147, 0.1)' : 'rgba(142, 142, 147, 0.05)',
             borderColor: 'rgba(142, 142, 147, 0.3)',
             color: '#8e8e93',
           }}
         >
-          <RotateCcw className="w-4 h-4" />
+          <RotateCcw className="w-5 h-5" />
           <span>Reset</span>
         </button>
         <button
           onClick={handleSave}
           disabled={!hasChanges}
-          className="modern-button px-6 py-3 transition-all duration-300 flex items-center space-x-2 modern-font disabled:opacity-50"
+          className="modern-button px-8 py-4 transition-all duration-300 flex items-center space-x-3 modern-font disabled:opacity-50"
           style={{ 
             backgroundColor: hasChanges ? 'rgba(0, 122, 255, 0.1)' : 'rgba(0, 122, 255, 0.05)',
             borderColor: 'rgba(0, 122, 255, 0.3)',
@@ -349,7 +349,7 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
             boxShadow: hasChanges ? '0 0 15px rgba(0, 122, 255, 0.3)' : 'none'
           }}
         >
-          <Save className="w-4 h-4" />
+          <Save className="w-5 h-5" />
           <span>Save Changes</span>
         </button>
       </div>
@@ -408,8 +408,8 @@ export function ConfigPanel({ config, onConfigUpdate }: ConfigPanelProps) {
         
         .modern-slider::-webkit-slider-thumb {
           appearance: none;
-          width: 16px;
-          height: 16px;
+          width: 20px;
+          height: 20px;
           border-radius: 50%;
           background: #007aff;
           cursor: pointer;

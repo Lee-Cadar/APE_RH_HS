@@ -28,13 +28,13 @@ export function SystemLogs({ logs }: SystemLogsProps) {
   const getLogIcon = (level: string) => {
     switch (level) {
       case 'ERROR':
-        return <X className="w-4 h-4" style={{ color: '#ff3b30' }} />;
+        return <X className="w-5 h-5" style={{ color: '#ff3b30' }} />;
       case 'WARNING':
-        return <AlertTriangle className="w-4 h-4" style={{ color: '#ff9500' }} />;
+        return <AlertTriangle className="w-5 h-5" style={{ color: '#ff9500' }} />;
       case 'INFO':
-        return <Info className="w-4 h-4" style={{ color: '#34c759' }} />;
+        return <Info className="w-5 h-5" style={{ color: '#34c759' }} />;
       default:
-        return <AlertCircle className="w-4 h-4" style={{ color: '#8e8e93' }} />;
+        return <AlertCircle className="w-5 h-5" style={{ color: '#8e8e93' }} />;
     }
   };
 
@@ -75,32 +75,32 @@ export function SystemLogs({ logs }: SystemLogsProps) {
       </div>
 
       {/* Left Side - 40% - Controls & Stats */}
-      <div className="w-[40%] pr-3 space-y-6 relative">
+      <div className="w-[40%] pr-4 space-y-8 relative">
         {/* Controls */}
-        <div className="modern-panel p-6 shadow-lg h-[48%]">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="modern-button p-3"
+        <div className="modern-panel p-8 shadow-lg h-[48%]">
+          <div className="flex items-center space-x-4 mb-8">
+            <div className="modern-button p-4"
                  style={{ 
                    backgroundColor: 'rgba(0, 122, 255, 0.1)',
                    borderColor: 'rgba(0, 122, 255, 0.3)',
                  }}>
-              <Shield className="w-6 h-6" style={{ color: '#007aff' }} />
+              <Shield className="w-7 h-7" style={{ color: '#007aff' }} />
             </div>
-            <h3 className="text-xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>
+            <h3 className="text-2xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>
               System Logs
             </h3>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4" style={{ color: '#8e8e93' }} />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: '#8e8e93' }} />
               <input
                 type="text"
                 placeholder="Search logs..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="modern-input w-full pl-10 pr-3 py-2 modern-font text-sm"
+                className="modern-input w-full pl-12 pr-4 py-3 modern-font text-base"
                 style={{ 
                   background: 'rgba(255, 255, 255, 0.05)',
                   borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -110,12 +110,12 @@ export function SystemLogs({ logs }: SystemLogsProps) {
             </div>
 
             {/* Filter */}
-            <div className="flex items-center space-x-3">
-              <Filter className="w-4 h-4" style={{ color: '#8e8e93' }} />
+            <div className="flex items-center space-x-4">
+              <Filter className="w-5 h-5" style={{ color: '#8e8e93' }} />
               <select
                 value={filterLevel}
                 onChange={(e) => setFilterLevel(e.target.value)}
-                className="modern-input flex-1 px-3 py-2 modern-font text-sm"
+                className="modern-input flex-1 px-4 py-3 modern-font text-base"
                 style={{ 
                   background: 'rgba(255, 255, 255, 0.05)',
                   borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -132,28 +132,28 @@ export function SystemLogs({ logs }: SystemLogsProps) {
 
             {/* Auto-scroll & Export */}
             <div className="flex items-center justify-between">
-              <label className="flex items-center space-x-2">
+              <label className="flex items-center space-x-3">
                 <input
                   type="checkbox"
                   checked={autoScroll}
                   onChange={(e) => setAutoScroll(e.target.checked)}
-                  className="w-4 h-4 rounded"
+                  className="w-5 h-5 rounded"
                 />
-                <span className="text-sm modern-font" style={{ color: '#ffffff' }}>
+                <span className="text-base modern-font" style={{ color: '#ffffff' }}>
                   Auto-scroll
                 </span>
               </label>
               
               <button
                 onClick={exportLogs}
-                className="modern-button px-4 py-2 transition-all duration-300 flex items-center space-x-2 modern-font text-sm"
+                className="modern-button px-6 py-3 transition-all duration-300 flex items-center space-x-3 modern-font text-base"
                 style={{ 
                   backgroundColor: 'rgba(0, 122, 255, 0.1)',
                   borderColor: 'rgba(0, 122, 255, 0.3)',
                   color: '#007aff'
                 }}
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-5 h-5" />
                 <span>Export</span>
               </button>
             </div>
@@ -161,20 +161,21 @@ export function SystemLogs({ logs }: SystemLogsProps) {
         </div>
 
         {/* Stats */}
-        <div className="modern-panel p-6 shadow-lg h-[48%]">
-          <h4 className="text-lg font-medium modern-font mb-4" style={{ color: '#ffffff' }}>Log Statistics</h4>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="modern-display p-4 text-center">
+        <div className="modern-panel p-8 shadow-lg h-[48%]">
+          <h4 className="text-xl font-medium modern-font mb-6" style={{ color: '#ffffff' }}>Log Statistics</h4>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="modern-display p-6 text-center">
               <div className="text-2xl font-medium modern-font" 
                    style={{ 
                      color: '#007aff',
-                     fontFamily: '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
+                     fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                     fontSize: '22px'
                    }}>
                 {filteredLogs.length}
               </div>
-              <div className="text-xs modern-font mt-1" style={{ color: '#8e8e93' }}>Total</div>
+              <div className="text-sm modern-font mt-2" style={{ color: '#8e8e93' }}>Total</div>
             </div>
-            <div className="modern-display p-4 text-center"
+            <div className="modern-display p-6 text-center"
                  style={{ 
                    backgroundColor: 'rgba(255, 59, 48, 0.05)',
                    borderColor: 'rgba(255, 59, 48, 0.2)',
@@ -182,13 +183,14 @@ export function SystemLogs({ logs }: SystemLogsProps) {
               <div className="text-2xl font-medium modern-font" 
                    style={{ 
                      color: '#ff3b30',
-                     fontFamily: '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
+                     fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                     fontSize: '22px'
                    }}>
                 {filteredLogs.filter(log => log.level === 'ERROR').length}
               </div>
-              <div className="text-xs modern-font mt-1" style={{ color: '#ff3b30' }}>Errors</div>
+              <div className="text-sm modern-font mt-2" style={{ color: '#ff3b30' }}>Errors</div>
             </div>
-            <div className="modern-display p-4 text-center"
+            <div className="modern-display p-6 text-center"
                  style={{ 
                    backgroundColor: 'rgba(255, 149, 0, 0.05)',
                    borderColor: 'rgba(255, 149, 0, 0.2)',
@@ -196,13 +198,14 @@ export function SystemLogs({ logs }: SystemLogsProps) {
               <div className="text-2xl font-medium modern-font" 
                    style={{ 
                      color: '#ff9500',
-                     fontFamily: '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
+                     fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                     fontSize: '22px'
                    }}>
                 {filteredLogs.filter(log => log.level === 'WARNING').length}
               </div>
-              <div className="text-xs modern-font mt-1" style={{ color: '#ff9500' }}>Warnings</div>
+              <div className="text-sm modern-font mt-2" style={{ color: '#ff9500' }}>Warnings</div>
             </div>
-            <div className="modern-display p-4 text-center"
+            <div className="modern-display p-6 text-center"
                  style={{ 
                    backgroundColor: 'rgba(52, 199, 89, 0.05)',
                    borderColor: 'rgba(52, 199, 89, 0.2)',
@@ -210,24 +213,25 @@ export function SystemLogs({ logs }: SystemLogsProps) {
               <div className="text-2xl font-medium modern-font" 
                    style={{ 
                      color: '#34c759',
-                     fontFamily: '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
+                     fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                     fontSize: '22px'
                    }}>
                 {filteredLogs.filter(log => log.level === 'INFO').length}
               </div>
-              <div className="text-xs modern-font mt-1" style={{ color: '#34c759' }}>Info</div>
+              <div className="text-sm modern-font mt-2" style={{ color: '#34c759' }}>Info</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Right Side - 40% - Log Entries */}
-      <div className="w-[40%] pl-3 relative">
+      <div className="w-[40%] pl-4 relative">
         <div className="modern-panel shadow-lg h-full">
-          <div className="h-full overflow-y-auto p-6 space-y-3">
+          <div className="h-full overflow-y-auto p-8 space-y-4">
             {filteredLogs.length === 0 ? (
-              <div className="text-center py-12" style={{ color: '#8e8e93' }}>
-                <AlertCircle className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p className="modern-font">No log entries match your current filters</p>
+              <div className="text-center py-16" style={{ color: '#8e8e93' }}>
+                <AlertCircle className="w-16 h-16 mx-auto mb-6 opacity-50" />
+                <p className="modern-font text-lg">No log entries match your current filters</p>
               </div>
             ) : (
               filteredLogs.map((log, index) => {
@@ -235,7 +239,7 @@ export function SystemLogs({ logs }: SystemLogsProps) {
                 return (
                   <div
                     key={index}
-                    className="flex items-start space-x-3 p-3 transition-all duration-300 modern-display"
+                    className="flex items-start space-x-4 p-4 transition-all duration-300 modern-display"
                     style={{ 
                       backgroundColor: 'rgba(255, 255, 255, 0.03)',
                       borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -245,8 +249,8 @@ export function SystemLogs({ logs }: SystemLogsProps) {
                       {getLogIcon(log.level)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <span className={`px-2 py-1 text-xs font-medium modern-font modern-display`}
+                      <div className="flex items-center space-x-4 mb-3">
+                        <span className={`px-3 py-1 text-sm font-medium modern-font modern-display`}
                               style={{ 
                                 color: levelColors.color,
                                 backgroundColor: levelColors.backgroundColor,
@@ -254,7 +258,7 @@ export function SystemLogs({ logs }: SystemLogsProps) {
                               }}>
                           {log.level}
                         </span>
-                        <span className="text-xs modern-font px-2 py-1 modern-display"
+                        <span className="text-sm modern-font px-3 py-1 modern-display"
                               style={{ 
                                 color: '#007aff',
                                 backgroundColor: 'rgba(0, 122, 255, 0.1)',
@@ -262,9 +266,9 @@ export function SystemLogs({ logs }: SystemLogsProps) {
                               }}>
                           {log.component}
                         </span>
-                        <span className="text-xs modern-font" style={{ color: '#8e8e93' }}>{log.timestamp}</span>
+                        <span className="text-sm modern-font" style={{ color: '#8e8e93' }}>{log.timestamp}</span>
                       </div>
-                      <p className="text-sm modern-font" style={{ color: '#ffffff' }}>{log.message}</p>
+                      <p className="text-base modern-font" style={{ color: '#ffffff' }}>{log.message}</p>
                     </div>
                   </div>
                 );
