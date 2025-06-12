@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react';
 
 interface ExitPageProps {
   currentTime: Date;
-  isLeftScreen?: boolean;
   fontSizes: any;
 }
 
-export function ExitPage({ currentTime, isLeftScreen = false, fontSizes }: ExitPageProps) {
+export function ExitPage({ currentTime, fontSizes }: ExitPageProps) {
   const [fadeOut, setFadeOut] = useState(false);
   const [countdown, setCountdown] = useState(5);
 
@@ -57,11 +56,10 @@ export function ExitPage({ currentTime, isLeftScreen = false, fontSizes }: ExitP
         fadeOut ? 'opacity-0' : 'opacity-100'
       }`}
       style={{ 
-        width: 'calc(100% - 20px)', 
-        height: 'calc(100vh - 20px)',
+        width: '100vw', 
+        height: '100vh',
         background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 30%, #2a2a2a 70%, #1a1a1a 100%)',
-        fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        margin: '10px'
+        fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
       }}
     >
       {/* Animated Background */}
@@ -70,53 +68,39 @@ export function ExitPage({ currentTime, isLeftScreen = false, fontSizes }: ExitP
         <div className="exit-particles"></div>
       </div>
 
-      {/* Header for right screen only */}
-      {!isLeftScreen && (
-        <header className="absolute top-0 left-0 right-0 modern-header border-b z-20" 
-                style={{ 
-                  height: '80px',
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
-                  borderWidth: '1px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  backdropFilter: 'blur(20px)',
-                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)'
-                }}>
-          <div className="flex items-center justify-between h-full px-8">
-            <div className="flex items-center space-x-4">
-              <div className="font-bold modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
-                APE SYSTEM
-              </div>
-              <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
-                Advanced Performance Engine
-              </div>
+      {/* Header */}
+      <header className="absolute top-0 left-0 right-0 modern-header border-b z-20" 
+              style={{ 
+                height: '80px',
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                borderWidth: '1px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                backdropFilter: 'blur(20px)',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)'
+              }}>
+        <div className="flex items-center justify-between h-full px-8">
+          <div className="flex items-center space-x-4">
+            <div className="font-bold modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
+              APE SYSTEM
             </div>
-            
-            <div className="relative">
-              <img 
-                src="/Triangle_logo_black_nobg_no_letters copy.png" 
-                alt="APE Logo" 
-                className="object-contain breathing-logo"
-                style={{ 
-                  width: '60px', 
-                  height: '60px',
-                }}
-              />
+            <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
+              Advanced Performance Engine
             </div>
           </div>
-        </header>
-      )}
-
-      {/* Time and Date for left screen only */}
-      {isLeftScreen && (
-        <div className="absolute top-8 left-8 z-10">
-          <div className="font-bold modern-font mb-2" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
-            {formatTime(currentTime)}
-          </div>
-          <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
-            {formatTimeWithTimezone(currentTime)}
+          
+          <div className="relative">
+            <img 
+              src="/Triangle_logo_black_nobg_no_letters copy.png" 
+              alt="APE Logo" 
+              className="object-contain breathing-logo"
+              style={{ 
+                width: '60px', 
+                height: '60px',
+              }}
+            />
           </div>
         </div>
-      )}
+      </header>
 
       {/* Main Logo - Centered and scaled to 80% of screen height */}
       <div className="relative z-10 flex items-center justify-center flex-1">
@@ -126,24 +110,12 @@ export function ExitPage({ currentTime, isLeftScreen = false, fontSizes }: ExitP
           className="object-contain breathing-logo-large"
           style={{ 
             width: 'auto', 
-            height: '80vh',
-            maxWidth: '80vw',
+            height: '60vh',
+            maxWidth: '60vw',
             filter: 'brightness(0.8) sepia(1) hue-rotate(200deg) saturate(1.5)'
           }}
         />
       </div>
-
-      {/* APE DECK branding for left screen only */}
-      {isLeftScreen && (
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 text-center">
-          <div className="font-bold modern-font" style={{ color: '#007aff', opacity: 0.7, fontSize: fontSizes.h1 }}>
-            APE DECK
-          </div>
-          <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
-            Advanced Performance Engine Interface
-          </div>
-        </div>
-      )}
 
       {/* Shutdown message */}
       <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 text-center z-10">

@@ -1,5 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Power, RotateCcw, Moon, X, CheckCircle, AlertCircle, User, Camera, Fingerprint, Lock, ArrowLeft } from 'lucide-react';
+import { 
+  Shield01Icon, 
+  PowerIcon, 
+  Rotate01Icon, 
+  Moon01Icon, 
+  Cancel01Icon, 
+  CheckmarkCircle01Icon, 
+  AlertCircleIcon, 
+  User01Icon, 
+  Camera01Icon, 
+  Fingerprint01Icon, 
+  Lock01Icon, 
+  ArrowLeft01Icon,
+  Eye01Icon,
+  EyeClosedIcon
+} from '@hugeicons/react';
 
 interface IntroPageProps {
   onAuthenticated: () => void;
@@ -8,19 +23,82 @@ interface IntroPageProps {
 }
 
 export function IntroPage({ onAuthenticated, fontSizes, currentTime }: IntroPageProps) {
-  const [authMethod, setAuthMethod] = useState<'face' | 'fingerprint' | 'pin'>('face');
+  const [authMethod, setAuthMethod] = useState<'password' | 'pin' | 'face' | 'fingerprint'>('password');
+  const [password, setPassword] = useState('');
   const [pin, setPin] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [authProgress, setAuthProgress] = useState(0);
-  const [authStatus, setAuthStatus] = useState<'idle' | 'scanning' | 'success' | 'failed'>('idle');
+  const [authStatus, setAuthStatus] = useState<'idle' | 'authenticating' | 'success' | 'failed'>('idle');
   const [showPowerConfirm, setShowPowerConfirm] = useState<string | null>(null);
+  const [showAuthOptions, setShowAuthOptions] = useState(false);
 
-  const handleAuthentication = async () => {
+  const handlePasswordSubmit = async () => {
+    if (password.length === 0) return;
+    
     setIsAuthenticating(true);
-    setAuthStatus('scanning');
+    setAuthStatus('authenticating');
     setAuthProgress(0);
 
     // Simulate authentication progress
+    const progressInterval = setInterval(() => {
+      setAuthProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          return 100;
+        }
+        return prev + 20;
+      });
+    }, 200);
+
+    // Simulate authentication delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // Accept any password for demo (or specific ones)
+    if (password.length > 0) {
+      setAuthStatus('success');
+      setTimeout(() => {
+        onAuthenticated();
+      }, 1000);
+    } else {
+      setAuthStatus('failed');
+      setTimeout(() => {
+        setAuthStatus('idle');
+        setIsAuthenticating(false);
+        setAuthProgress(0);
+        setPassword('');
+      }, 2000);
+    }
+  };
+
+  const handlePinSubmit = async () => {
+    if (pin.length !== 4) return;
+    
+    setIsAuthenticating(true);
+    setAuthStatus('authenticating');
+    
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    if (pin.length === 4) {
+      setAuthStatus('success');
+      setTimeout(() => {
+        onAuthenticated();
+      }, 1000);
+    } else {
+      setAuthStatus('failed');
+      setTimeout(() => {
+        setAuthStatus('idle');
+        setIsAuthenticating(false);
+        setPin('');
+      }, 2000);
+    }
+  };
+
+  const handleBiometricAuth = async () => {
+    setIsAuthenticating(true);
+    setAuthStatus('authenticating');
+    setAuthProgress(0);
+
     const progressInterval = setInterval(() => {
       setAuthProgress(prev => {
         if (prev >= 100) {
@@ -31,10 +109,8 @@ export function IntroPage({ onAuthenticated, fontSizes, currentTime }: IntroPage
       });
     }, 200);
 
-    // Simulate authentication delay
     await new Promise(resolve => setTimeout(resolve, 2500));
 
-    // Simulate success (90% chance)
     const isSuccess = Math.random() > 0.1;
     
     if (isSuccess) {
@@ -48,31 +124,6 @@ export function IntroPage({ onAuthenticated, fontSizes, currentTime }: IntroPage
         setAuthStatus('idle');
         setIsAuthenticating(false);
         setAuthProgress(0);
-      }, 2000);
-    }
-  };
-
-  const handlePinSubmit = async () => {
-    if (pin.length !== 4) return;
-    
-    setIsAuthenticating(true);
-    setAuthStatus('scanning');
-    
-    // Simulate PIN verification
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Accept PIN "1234" or any 4-digit PIN for demo
-    if (pin === '1234' || pin.length === 4) {
-      setAuthStatus('success');
-      setTimeout(() => {
-        onAuthenticated();
-      }, 1000);
-    } else {
-      setAuthStatus('failed');
-      setTimeout(() => {
-        setAuthStatus('idle');
-        setIsAuthenticating(false);
-        setPin('');
       }, 2000);
     }
   };
@@ -97,423 +148,291 @@ export function IntroPage({ onAuthenticated, fontSizes, currentTime }: IntroPage
     console.log(`Executing power command: ${command}`);
   };
 
-  const authMethods = [
-    {
-      id: 'face',
-      name: 'Facial Recognition',
-      icon: Camera,
-      description: 'Use camera for facial recognition',
-      color: '#007aff'
-    },
-    {
-      id: 'fingerprint',
-      name: 'Fingerprint',
-      icon: Fingerprint,
-      description: 'Touch sensor for fingerprint scan',
-      color: '#34c759'
-    },
-    {
-      id: 'pin',
-      name: 'PIN Code',
-      icon: Lock,
-      description: 'Enter 4-digit security PIN',
-      color: '#ff9500'
-    }
-  ];
-
-  const currentMethod = authMethods.find(method => method.id === authMethod);
-
-  const formatTimeWithTimezone = (date: Date) => {
-    const time = date.toLocaleTimeString('en-US', {
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('en-US', {
       hour12: true,
       hour: 'numeric',
       minute: '2-digit'
     });
-    const dateStr = date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
+  };
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric'
     });
-    return `${time} BST, ${dateStr}`;
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-black overflow-hidden"
+    <div className="fixed inset-0 z-50 flex flex-col bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 overflow-hidden"
          style={{ 
-           width: 'calc(100% - 20px)', 
-           height: 'calc(100vh - 20px)',
-           margin: '10px',
-           borderRadius: '20px'
+           width: '100vw', 
+           height: '100vh',
+           backgroundImage: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 25%, #2563eb 50%, #1d4ed8 75%, #1e3a8a 100%)',
+           fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif'
          }}>
-      {/* Animated Background matching main app */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="animated-grid"></div>
-        <div className="animated-grid-2"></div>
-        <div className="floating-particles"></div>
-        <div className="floating-particles-2"></div>
-        <div className="floating-particles-3"></div>
-        <div className="energy-waves"></div>
-        <div className="energy-waves-2"></div>
-        <div className="pulse-rings"></div>
-        <div className="pulse-rings-2"></div>
-        <div className="pulse-rings-3"></div>
-        <div className="data-streams"></div>
-        <div className="data-streams-2"></div>
-        <div className="data-streams-3"></div>
-        <div className="circuit-lines"></div>
-        <div className="circuit-lines-2"></div>
-        <div className="tech-dots"></div>
-        <div className="tech-dots-2"></div>
+      
+      {/* Windows-style background pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="windows-pattern"></div>
       </div>
 
-      {/* Logo Background - matching main app */}
-      <div className="absolute top-0 right-0 w-full h-full overflow-visible pointer-events-none z-0">
-        <div className="absolute -right-1/6 top-1/2 transform -translate-y-1/2">
-          <img 
-            src="/Triangle_logo_black_nobg_no_letters copy.png" 
-            alt="APE Logo Background" 
-            className="object-contain opacity-30 breathing-logo-bg-random"
-            style={{ 
-              width: '1260px', 
-              height: '1260px',
-              filter: 'brightness(0.3) sepia(1) hue-rotate(200deg) saturate(2)'
-            }}
-          />
+      {/* Power buttons - Top Right */}
+      <div className="absolute top-4 right-4 z-20 flex space-x-2">
+        <button
+          onClick={() => setShowPowerConfirm('sleep')}
+          className="windows-power-button"
+          title="Sleep"
+        >
+          <Moon01Icon className="w-5 h-5 text-white" />
+        </button>
+        <button
+          onClick={() => setShowPowerConfirm('reset')}
+          className="windows-power-button"
+          title="Restart"
+        >
+          <Rotate01Icon className="w-5 h-5 text-white" />
+        </button>
+        <button
+          onClick={() => setShowPowerConfirm('shutdown')}
+          className="windows-power-button"
+          title="Shut down"
+        >
+          <PowerIcon className="w-5 h-5 text-white" />
+        </button>
+      </div>
+
+      {/* Time and Date - Bottom Left */}
+      <div className="absolute bottom-6 left-6 z-20 text-white">
+        <div className="text-6xl font-light mb-2" style={{ fontFamily: '"Segoe UI Light", sans-serif' }}>
+          {formatTime(currentTime)}
+        </div>
+        <div className="text-xl font-normal opacity-90">
+          {formatDate(currentTime)}
         </div>
       </div>
 
-      {/* Time and Date - Top Left (same position on both screens) */}
-      <div className="absolute top-8 left-8 z-10">
-        <div className="font-bold modern-font mb-2" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
-          {currentTime.toLocaleTimeString('en-US', { hour12: true, hour: 'numeric', minute: '2-digit' })}
-        </div>
-        <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
-          {formatTimeWithTimezone(currentTime)}
-        </div>
-      </div>
-
-      {/* Header with Power Buttons - matching main app layout */}
-      <header className="relative modern-header border-b z-20" 
-              style={{ 
-                height: '80px',
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-                borderWidth: '1px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                backdropFilter: 'blur(20px)',
-                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)'
-              }}>
-        <div className="flex items-center justify-between h-full px-8">
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 rounded-2xl" style={{ backgroundColor: 'rgba(0, 122, 255, 0.2)' }}>
-                <Shield className="w-8 h-8" style={{ color: '#007aff' }} />
-              </div>
-              <div>
-                <div className="font-bold modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
-                  APE SECURITY SYSTEM
-                </div>
-                <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
-                  Advanced Performance Engine - Authentication Required
-                </div>
-              </div>
+      {/* Main Login Area - Center Right */}
+      <div className="absolute right-20 top-1/2 transform -translate-y-1/2 z-20">
+        <div className="windows-login-panel">
+          {/* User Avatar */}
+          <div className="text-center mb-8">
+            <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-2xl">
+              <User01Icon className="w-16 h-16 text-white" />
             </div>
+            <h2 className="text-2xl font-normal text-white mb-2">Administrator</h2>
+            <p className="text-blue-200 text-sm">APE System</p>
           </div>
-          
-          {/* Power Button Module */}
-          <div className="flex items-center space-x-4">
-            {/* Reset Button */}
-            <button
-              onClick={() => setShowPowerConfirm('reset')}
-              className="modern-button p-3 transition-all duration-300 hover:scale-105"
-              style={{ 
-                backgroundColor: 'rgba(255, 59, 48, 0.1)',
-                borderColor: 'rgba(255, 59, 48, 0.3)',
-              }}
-              title="System Reset"
-            >
-              <RotateCcw className="w-6 h-6" style={{ color: '#ff3b30' }} />
-            </button>
 
-            {/* Shutdown Button */}
-            <button
-              onClick={() => setShowPowerConfirm('shutdown')}
-              className="modern-button p-3 transition-all duration-300 hover:scale-105"
-              style={{ 
-                backgroundColor: 'rgba(255, 149, 0, 0.1)',
-                borderColor: 'rgba(255, 149, 0, 0.3)',
-              }}
-              title="System Shutdown"
-            >
-              <Power className="w-6 h-6" style={{ color: '#ff9500' }} />
-            </button>
-
-            {/* Sleep Button */}
-            <button
-              onClick={() => setShowPowerConfirm('sleep')}
-              className="modern-button p-3 transition-all duration-300 hover:scale-105"
-              style={{ 
-                backgroundColor: 'rgba(88, 86, 214, 0.1)',
-                borderColor: 'rgba(88, 86, 214, 0.3)',
-              }}
-              title="System Sleep"
-            >
-              <Moon className="w-6 h-6" style={{ color: '#5856d6' }} />
-            </button>
-
-            {/* Logo */}
-            <div className="relative ml-6">
-              <img 
-                src="/Triangle_logo_black_nobg_no_letters copy.png" 
-                alt="APE Logo" 
-                className="object-contain breathing-logo"
-                style={{ 
-                  width: '60px', 
-                  height: '60px',
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Authentication Content */}
-      <main className="relative flex-1 flex items-center justify-center z-10">
-        <div className="w-[90vw] max-w-2xl modern-panel shadow-2xl">
-          {/* Authentication Methods */}
-          <div className="p-8 border-b border-white/10">
-            <div className="grid grid-cols-3 gap-6 mb-8">
-              {authMethods.map((method) => (
+          {/* Authentication Form */}
+          <div className="space-y-6">
+            {authMethod === 'password' && (
+              <div className="space-y-4">
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && password.length > 0 && handlePasswordSubmit()}
+                    className="windows-input"
+                    placeholder="Password"
+                    disabled={isAuthenticating}
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeClosedIcon className="w-5 h-5" /> : <Eye01Icon className="w-5 h-5" />}
+                  </button>
+                </div>
+                
                 <button
-                  key={method.id}
-                  onClick={() => setAuthMethod(method.id as any)}
-                  disabled={isAuthenticating}
-                  className="modern-button p-6 transition-all duration-300 text-center"
-                  style={{
-                    backgroundColor: authMethod === method.id ? `${method.color}20` : 'rgba(255, 255, 255, 0.05)',
-                    borderColor: authMethod === method.id ? method.color : 'rgba(255, 255, 255, 0.1)',
-                    borderWidth: '2px'
-                  }}
+                  onClick={handlePasswordSubmit}
+                  disabled={password.length === 0 || isAuthenticating}
+                  className="windows-submit-button"
                 >
-                  <method.icon className="mx-auto mb-3" 
-                              style={{ 
-                                color: authMethod === method.id ? method.color : '#8e8e93',
-                                width: parseInt(fontSizes.iconSize) * 2 + 'px',
-                                height: parseInt(fontSizes.iconSize) * 2 + 'px'
-                              }} />
-                  <div className="font-bold tech-font" 
-                       style={{ 
-                         color: authMethod === method.id ? method.color : '#ffffff',
-                         fontSize: fontSizes.h2
-                       }}>
-                    {method.name}
-                  </div>
-                  <div className="tech-font mt-2" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
-                    {method.description}
-                  </div>
+                  {isAuthenticating ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Signing in...</span>
+                    </div>
+                  ) : (
+                    <span>Sign in</span>
+                  )}
                 </button>
-              ))}
-            </div>
-          </div>
+              </div>
+            )}
 
-          {/* Authentication Interface */}
-          <div className="p-8">
-            {authMethod === 'pin' ? (
-              <div className="text-center space-y-6">
-                <div>
-                  <h3 className="font-bold tech-font mb-3" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
-                    Enter Security PIN
-                  </h3>
-                  <p className="tech-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
-                    Enter your 4-digit security code
-                  </p>
-                </div>
-
-                <div className="relative max-w-xs mx-auto">
+            {authMethod === 'pin' && (
+              <div className="space-y-4">
+                <div className="text-center">
                   <input
                     type="password"
                     value={pin}
                     onChange={(e) => setPin(e.target.value.slice(0, 4))}
                     onKeyPress={(e) => e.key === 'Enter' && pin.length === 4 && handlePinSubmit()}
-                    className="w-full px-6 py-4 text-center tracking-widest modern-input"
-                    style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                      borderColor: 'rgba(255, 255, 255, 0.2)',
-                      color: '#ffffff',
-                      fontFamily: 'Technology, monospace',
-                      fontSize: fontSizes.h1
-                    }}
-                    placeholder="••••"
+                    className="windows-input text-center text-2xl tracking-widest"
+                    placeholder="PIN"
                     maxLength={4}
                     disabled={isAuthenticating}
                   />
                 </div>
-
+                
                 <button
                   onClick={handlePinSubmit}
                   disabled={pin.length !== 4 || isAuthenticating}
-                  className="modern-button px-8 py-3 transition-all duration-300 disabled:opacity-50"
-                  style={{
-                    backgroundColor: pin.length === 4 ? 'rgba(255, 149, 0, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                    borderColor: pin.length === 4 ? '#ff9500' : 'rgba(255, 255, 255, 0.1)',
-                    color: pin.length === 4 ? '#ff9500' : '#8e8e93'
-                  }}
+                  className="windows-submit-button"
                 >
-                  <span className="tech-font font-bold" style={{ fontSize: fontSizes.h2 }}>
-                    {isAuthenticating ? 'AUTHENTICATING...' : 'AUTHENTICATE'}
-                  </span>
+                  {isAuthenticating ? 'Verifying...' : 'Sign in'}
                 </button>
               </div>
-            ) : (
-              <div className="text-center space-y-8">
-                <div>
-                  <currentMethod.icon className="mx-auto mb-6" 
-                                   style={{ 
-                                     color: currentMethod.color,
-                                     width: parseInt(fontSizes.iconSize) * 4 + 'px',
-                                     height: parseInt(fontSizes.iconSize) * 4 + 'px'
-                                   }} />
-                  <h3 className="font-bold tech-font mb-3" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
-                    {currentMethod.name}
-                  </h3>
-                  <p className="tech-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
-                    {authMethod === 'face' ? 'Position your face in front of the camera' : 'Place your finger on the sensor'}
-                  </p>
-                </div>
+            )}
 
-                {/* Biometric Scanner Visualization */}
-                <div className="relative w-48 h-48 mx-auto">
-                  <div className="absolute inset-0 rounded-full border-4 border-dashed animate-spin"
-                       style={{ 
-                         borderColor: currentMethod.color,
-                         opacity: authStatus === 'scanning' ? 1 : 0.3,
-                         animationDuration: '3s'
-                       }}></div>
-                  
-                  <div className="absolute inset-4 rounded-full flex items-center justify-center"
-                       style={{ 
-                         backgroundColor: `${currentMethod.color}10`,
-                         border: `2px solid ${currentMethod.color}50`
-                       }}>
+            {(authMethod === 'face' || authMethod === 'fingerprint') && (
+              <div className="space-y-6 text-center">
+                <div className="relative w-32 h-32 mx-auto">
+                  <div className="absolute inset-0 rounded-full border-4 border-blue-300 animate-pulse"></div>
+                  <div className="w-full h-full rounded-full bg-blue-100 flex items-center justify-center">
                     {authMethod === 'face' ? (
-                      <User className="w-16 h-16" style={{ color: currentMethod.color }} />
+                      <Camera01Icon className="w-12 h-12 text-blue-600" />
                     ) : (
-                      <Fingerprint className="w-16 h-16" style={{ color: currentMethod.color }} />
+                      <Fingerprint01Icon className="w-12 h-12 text-blue-600" />
                     )}
                   </div>
-
-                  {/* Progress Ring */}
-                  {authStatus === 'scanning' && (
+                  
+                  {authStatus === 'authenticating' && (
                     <svg className="absolute inset-0 w-full h-full transform -rotate-90">
                       <circle
                         cx="50%"
                         cy="50%"
-                        r="90"
+                        r="60"
                         fill="none"
-                        stroke={currentMethod.color}
+                        stroke="#3b82f6"
                         strokeWidth="4"
                         strokeLinecap="round"
-                        strokeDasharray={`${2 * Math.PI * 90}`}
-                        strokeDashoffset={`${2 * Math.PI * 90 * (1 - authProgress / 100)}`}
+                        strokeDasharray={`${2 * Math.PI * 60}`}
+                        strokeDashoffset={`${2 * Math.PI * 60 * (1 - authProgress / 100)}`}
                         className="transition-all duration-200"
                       />
                     </svg>
                   )}
                 </div>
-
+                
+                <p className="text-white text-sm">
+                  {authMethod === 'face' ? 'Look at the camera' : 'Touch the fingerprint sensor'}
+                </p>
+                
                 <button
-                  onClick={handleAuthentication}
+                  onClick={handleBiometricAuth}
                   disabled={isAuthenticating}
-                  className="modern-button px-8 py-3 transition-all duration-300 disabled:opacity-50"
-                  style={{
-                    backgroundColor: `${currentMethod.color}20`,
-                    borderColor: currentMethod.color,
-                    color: currentMethod.color
-                  }}
+                  className="windows-submit-button"
                 >
-                  <span className="tech-font font-bold" style={{ fontSize: fontSizes.h2 }}>
-                    {isAuthenticating ? 'SCANNING...' : 'START SCAN'}
-                  </span>
+                  {isAuthenticating ? 'Scanning...' : 'Use biometric'}
                 </button>
               </div>
             )}
 
             {/* Status Messages */}
             {authStatus === 'success' && (
-              <div className="mt-8 flex items-center justify-center space-x-3">
-                <CheckCircle className="w-8 h-8" style={{ color: '#34c759' }} />
-                <span className="tech-font font-bold" style={{ color: '#34c759', fontSize: fontSizes.h2 }}>
-                  Authentication Successful - Initializing System...
-                </span>
+              <div className="flex items-center justify-center space-x-2 text-green-400">
+                <CheckmarkCircle01Icon className="w-5 h-5" />
+                <span className="text-sm">Welcome! Starting system...</span>
               </div>
             )}
 
             {authStatus === 'failed' && (
-              <div className="mt-8 flex items-center justify-center space-x-3">
-                <AlertCircle className="w-8 h-8" style={{ color: '#ff3b30' }} />
-                <span className="tech-font font-bold" style={{ color: '#ff3b30', fontSize: fontSizes.h2 }}>
-                  Authentication Failed - Please Try Again
-                </span>
+              <div className="flex items-center justify-center space-x-2 text-red-400">
+                <AlertCircleIcon className="w-5 h-5" />
+                <span className="text-sm">Sign-in failed. Please try again.</span>
+              </div>
+            )}
+          </div>
+
+          {/* Sign-in Options */}
+          <div className="mt-8 space-y-3">
+            <button
+              onClick={() => setShowAuthOptions(!showAuthOptions)}
+              className="w-full text-blue-200 hover:text-white text-sm py-2 transition-colors"
+            >
+              Sign-in options
+            </button>
+
+            {showAuthOptions && (
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setAuthMethod('password')}
+                  className={`windows-auth-option ${authMethod === 'password' ? 'active' : ''}`}
+                >
+                  <Lock01Icon className="w-5 h-5" />
+                  <span className="text-xs">Password</span>
+                </button>
+                <button
+                  onClick={() => setAuthMethod('pin')}
+                  className={`windows-auth-option ${authMethod === 'pin' ? 'active' : ''}`}
+                >
+                  <Shield01Icon className="w-5 h-5" />
+                  <span className="text-xs">PIN</span>
+                </button>
+                <button
+                  onClick={() => setAuthMethod('face')}
+                  className={`windows-auth-option ${authMethod === 'face' ? 'active' : ''}`}
+                >
+                  <Camera01Icon className="w-5 h-5" />
+                  <span className="text-xs">Face</span>
+                </button>
+                <button
+                  onClick={() => setAuthMethod('fingerprint')}
+                  className={`windows-auth-option ${authMethod === 'fingerprint' ? 'active' : ''}`}
+                >
+                  <Fingerprint01Icon className="w-5 h-5" />
+                  <span className="text-xs">Fingerprint</span>
+                </button>
               </div>
             )}
           </div>
         </div>
-      </main>
+      </div>
 
       {/* Power Confirmation Modal */}
       {showPowerConfirm && (
-        <div className="fixed inset-0 z-60 bg-black/80 backdrop-blur-sm flex items-center justify-center">
-          <div className="modern-panel p-8 max-w-md w-full mx-4">
+        <div className="fixed inset-0 z-60 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+          <div className="windows-modal">
             <div className="text-center">
-              <div className="p-4 rounded-2xl mx-auto mb-6 w-fit"
-                   style={{ 
-                     backgroundColor: showPowerConfirm === 'reset' ? 'rgba(255, 59, 48, 0.2)' :
-                                     showPowerConfirm === 'shutdown' ? 'rgba(255, 149, 0, 0.2)' :
-                                     'rgba(88, 86, 214, 0.2)'
-                   }}>
-                {showPowerConfirm === 'reset' && <RotateCcw className="w-12 h-12" style={{ color: '#ff3b30' }} />}
-                {showPowerConfirm === 'shutdown' && <Power className="w-12 h-12" style={{ color: '#ff9500' }} />}
-                {showPowerConfirm === 'sleep' && <Moon className="w-12 h-12" style={{ color: '#5856d6' }} />}
+              <div className="p-4 rounded-full mx-auto mb-4 w-fit bg-blue-100">
+                {showPowerConfirm === 'reset' && <Rotate01Icon className="w-8 h-8 text-blue-600" />}
+                {showPowerConfirm === 'shutdown' && <PowerIcon className="w-8 h-8 text-blue-600" />}
+                {showPowerConfirm === 'sleep' && <Moon01Icon className="w-8 h-8 text-blue-600" />}
               </div>
               
-              <h3 className="font-bold tech-font mb-4" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
-                Confirm {showPowerConfirm.charAt(0).toUpperCase() + showPowerConfirm.slice(1)}
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                {showPowerConfirm === 'reset' && 'Restart your PC?'}
+                {showPowerConfirm === 'shutdown' && 'Shut down your PC?'}
+                {showPowerConfirm === 'sleep' && 'Put your PC to sleep?'}
               </h3>
               
-              <p className="tech-font mb-8" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
-                Are you sure you want to {showPowerConfirm} the system?
-                {showPowerConfirm === 'reset' && ' This will restart the computer immediately.'}
-                {showPowerConfirm === 'shutdown' && ' This will power off the computer immediately.'}
-                {showPowerConfirm === 'sleep' && ' This will put the computer into sleep mode.'}
+              <p className="text-gray-600 mb-6">
+                {showPowerConfirm === 'reset' && 'Your PC will restart immediately. Make sure you save your work.'}
+                {showPowerConfirm === 'shutdown' && 'Your PC will shut down completely.'}
+                {showPowerConfirm === 'sleep' && 'Your PC will go to sleep. You can wake it up by pressing any key.'}
               </p>
               
-              <div className="flex space-x-4">
+              <div className="flex space-x-3">
                 <button
                   onClick={() => setShowPowerConfirm(null)}
-                  className="flex-1 modern-button px-6 py-3 transition-all duration-300"
-                  style={{ 
-                    backgroundColor: 'rgba(142, 142, 147, 0.1)',
-                    borderColor: 'rgba(142, 142, 147, 0.3)',
-                    color: '#8e8e93'
-                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
                 >
-                  <span className="tech-font font-bold" style={{ fontSize: fontSizes.h2 }}>Cancel</span>
+                  Cancel
                 </button>
                 <button
                   onClick={() => handlePowerAction(showPowerConfirm)}
-                  className="flex-1 modern-button px-6 py-3 transition-all duration-300"
-                  style={{ 
-                    backgroundColor: showPowerConfirm === 'reset' ? 'rgba(255, 59, 48, 0.2)' :
-                                    showPowerConfirm === 'shutdown' ? 'rgba(255, 149, 0, 0.2)' :
-                                    'rgba(88, 86, 214, 0.2)',
-                    borderColor: showPowerConfirm === 'reset' ? '#ff3b30' :
-                                showPowerConfirm === 'shutdown' ? '#ff9500' :
-                                '#5856d6',
-                    color: showPowerConfirm === 'reset' ? '#ff3b30' :
-                          showPowerConfirm === 'shutdown' ? '#ff9500' :
-                          '#5856d6'
-                  }}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                 >
-                  <span className="tech-font font-bold" style={{ fontSize: fontSizes.h2 }}>Confirm</span>
+                  {showPowerConfirm === 'reset' && 'Restart'}
+                  {showPowerConfirm === 'shutdown' && 'Shut down'}
+                  {showPowerConfirm === 'sleep' && 'Sleep'}
                 </button>
               </div>
             </div>
@@ -521,438 +440,120 @@ export function IntroPage({ onAuthenticated, fontSizes, currentTime }: IntroPage
         </div>
       )}
 
-      {/* Enhanced Styles matching main app */}
+      {/* Styles */}
       <style jsx>{`
-        .modern-panel {
-          background: rgba(0, 0, 0, 0.95);
-          backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 20px;
+        .windows-pattern {
+          background-image: 
+            radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+          background-size: 100px 100px;
+          animation: patternMove 20s linear infinite;
         }
         
-        .modern-button {
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
-          backdrop-filter: blur(20px);
-          transition: all 0.3s ease;
-        }
-        
-        .modern-button:hover:not(:disabled) {
+        .windows-power-button {
+          width: 40px;
+          height: 40px;
           background: rgba(255, 255, 255, 0.1);
-          border-color: rgba(255, 255, 255, 0.2);
-          transform: translateY(-1px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+          backdrop-filter: blur(10px);
         }
         
-        .modern-input {
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
-          backdrop-filter: blur(20px);
-          transition: all 0.3s ease;
+        .windows-power-button:hover {
+          background: rgba(255, 255, 255, 0.2);
+          border-color: rgba(255, 255, 255, 0.3);
         }
         
-        .modern-input:focus {
-          outline: none;
-          border-color: rgba(0, 122, 255, 0.5);
-          box-shadow: 0 0 20px rgba(0, 122, 255, 0.2);
-        }
-        
-        .modern-header {
-          border-radius: 0;
-        }
-        
-        .tech-font {
-          font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-        
-        .modern-font {
-          font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-        
-        .breathing-logo {
-          animation: breathingAnimation 4s ease-in-out infinite;
-        }
-        
-        .breathing-logo-bg-random {
-          animation: breathingBgRandomAnimation 8s ease-in-out infinite;
-        }
-        
-        /* All background animations from main app */
-        .animated-grid {
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background-image: 
-            linear-gradient(rgba(0, 122, 255, 0.08) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 122, 255, 0.08) 1px, transparent 1px);
-          background-size: 80px 80px;
-          animation: gridPulse 8s linear infinite;
-        }
-        
-        .animated-grid-2 {
-          position: absolute;
-          top: -30%;
-          left: -30%;
-          width: 160%;
-          height: 160%;
-          background-image: 
-            linear-gradient(rgba(52, 199, 89, 0.05) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(52, 199, 89, 0.05) 1px, transparent 1px);
-          background-size: 120px 120px;
-          animation: gridPulse 12s linear infinite reverse;
-        }
-        
-        .floating-particles {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: 
-            radial-gradient(circle at 20% 30%, rgba(0, 122, 255, 0.06) 0%, transparent 50%),
-            radial-gradient(circle at 80% 70%, rgba(52, 199, 89, 0.04) 0%, transparent 50%),
-            radial-gradient(circle at 40% 80%, rgba(255, 149, 0, 0.03) 0%, transparent 50%);
-          animation: particleFloat 15s ease-in-out infinite;
-        }
-        
-        .floating-particles-2 {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: 
-            radial-gradient(circle at 60% 20%, rgba(88, 86, 214, 0.05) 0%, transparent 40%),
-            radial-gradient(circle at 30% 60%, rgba(255, 59, 48, 0.03) 0%, transparent 45%),
-            radial-gradient(circle at 90% 40%, rgba(0, 122, 255, 0.04) 0%, transparent 35%);
-          animation: particleFloat 20s ease-in-out infinite reverse;
-        }
-        
-        .floating-particles-3 {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: 
-            radial-gradient(circle at 10% 90%, rgba(255, 149, 0, 0.04) 0%, transparent 30%),
-            radial-gradient(circle at 70% 10%, rgba(52, 199, 89, 0.03) 0%, transparent 40%);
-          animation: particleFloat 25s ease-in-out infinite;
-        }
-        
-        .energy-waves {
-          position: absolute;
-          top: 0;
-          right: 0;
-          width: 60%;
-          height: 100%;
-          background: 
-            linear-gradient(45deg, transparent 40%, rgba(0, 122, 255, 0.03) 50%, transparent 60%),
-            linear-gradient(-45deg, transparent 40%, rgba(52, 199, 89, 0.03) 50%, transparent 60%);
-          animation: energyWave 12s linear infinite;
-        }
-        
-        .energy-waves-2 {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 50%;
-          height: 100%;
-          background: 
-            linear-gradient(135deg, transparent 45%, rgba(255, 149, 0, 0.02) 55%, transparent 65%),
-            linear-gradient(-135deg, transparent 45%, rgba(88, 86, 214, 0.02) 55%, transparent 65%);
-          animation: energyWave 18s linear infinite reverse;
-        }
-        
-        .data-streams {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: 
-            linear-gradient(90deg, transparent 0%, rgba(0, 122, 255, 0.02) 25%, transparent 50%, rgba(52, 199, 89, 0.02) 75%, transparent 100%);
-          animation: dataFlow 20s linear infinite;
-        }
-        
-        .data-streams-2 {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: 
-            linear-gradient(45deg, transparent 0%, rgba(255, 149, 0, 0.015) 30%, transparent 60%, rgba(88, 86, 214, 0.015) 90%, transparent 100%);
-          animation: dataFlow 30s linear infinite reverse;
-        }
-        
-        .data-streams-3 {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: 
-            linear-gradient(-45deg, transparent 10%, rgba(255, 59, 48, 0.01) 40%, transparent 70%);
-          animation: dataFlow 25s linear infinite;
-        }
-        
-        .pulse-rings {
-          position: absolute;
-          top: 50%;
-          right: 25%;
-          width: 500px;
-          height: 500px;
-          transform: translate(50%, -50%);
-        }
-        
-        .pulse-rings::before,
-        .pulse-rings::after {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 200px;
-          height: 200px;
-          border: 2px solid rgba(0, 122, 255, 0.1);
-          border-radius: 50%;
-          transform: translate(-50%, -50%);
-          animation: pulseRing 6s ease-out infinite;
-        }
-        
-        .pulse-rings::after {
-          animation-delay: 3s;
-          border-color: rgba(52, 199, 89, 0.1);
-        }
-        
-        .pulse-rings-2 {
-          position: absolute;
-          top: 30%;
-          left: 20%;
-          width: 300px;
-          height: 300px;
-        }
-        
-        .pulse-rings-2::before,
-        .pulse-rings-2::after {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 150px;
-          height: 150px;
-          border: 1px solid rgba(255, 149, 0, 0.08);
-          border-radius: 50%;
-          transform: translate(-50%, -50%);
-          animation: pulseRing 8s ease-out infinite;
-        }
-        
-        .pulse-rings-2::after {
-          animation-delay: 4s;
-          border-color: rgba(88, 86, 214, 0.08);
-        }
-        
-        .pulse-rings-3 {
-          position: absolute;
-          top: 70%;
-          right: 60%;
+        .windows-login-panel {
           width: 400px;
-          height: 400px;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(20px);
+          border-radius: 8px;
+          padding: 40px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        .pulse-rings-3::before {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 100px;
-          height: 100px;
-          border: 1px solid rgba(255, 59, 48, 0.06);
-          border-radius: 50%;
-          transform: translate(-50%, -50%);
-          animation: pulseRing 10s ease-out infinite;
-        }
-        
-        .circuit-lines {
-          position: absolute;
-          top: 0;
-          left: 0;
+        .windows-input {
           width: 100%;
-          height: 100%;
-          background: 
-            linear-gradient(0deg, transparent 49%, rgba(0, 122, 255, 0.02) 50%, transparent 51%),
-            linear-gradient(90deg, transparent 49%, rgba(52, 199, 89, 0.02) 50%, transparent 51%);
-          background-size: 200px 200px;
-          animation: circuitMove 15s linear infinite;
+          padding: 12px 16px;
+          border: 2px solid #e5e7eb;
+          border-radius: 4px;
+          font-size: 16px;
+          transition: all 0.2s ease;
+          background: white;
         }
         
-        .circuit-lines-2 {
-          position: absolute;
-          top: 0;
-          left: 0;
+        .windows-input:focus {
+          outline: none;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .windows-submit-button {
           width: 100%;
-          height: 100%;
-          background: 
-            linear-gradient(45deg, transparent 49%, rgba(255, 149, 0, 0.015) 50%, transparent 51%),
-            linear-gradient(-45deg, transparent 49%, rgba(88, 86, 214, 0.015) 50%, transparent 51%);
-          background-size: 300px 300px;
-          animation: circuitMove 22s linear infinite reverse;
+          padding: 12px 24px;
+          background: #0078d4;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          font-size: 16px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
         }
         
-        .tech-dots {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: 
-            radial-gradient(circle at 0% 0%, rgba(0, 122, 255, 0.03) 1px, transparent 1px),
-            radial-gradient(circle at 50% 50%, rgba(52, 199, 89, 0.02) 1px, transparent 1px),
-            radial-gradient(circle at 100% 100%, rgba(255, 149, 0, 0.02) 1px, transparent 1px);
-          background-size: 150px 150px, 200px 200px, 250px 250px;
-          animation: techDots 20s linear infinite;
+        .windows-submit-button:hover:not(:disabled) {
+          background: #106ebe;
         }
         
-        .tech-dots-2 {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: 
-            radial-gradient(circle at 25% 75%, rgba(88, 86, 214, 0.02) 1px, transparent 1px),
-            radial-gradient(circle at 75% 25%, rgba(255, 59, 48, 0.015) 1px, transparent 1px);
-          background-size: 180px 180px, 220px 220px;
-          animation: techDots 25s linear infinite reverse;
+        .windows-submit-button:disabled {
+          background: #9ca3af;
+          cursor: not-allowed;
         }
         
-        /* Keyframe animations */
-        @keyframes gridPulse {
-          0%, 100% { 
-            opacity: 0.4;
-            transform: translate(0, 0) scale(1);
-          }
-          50% { 
-            opacity: 0.8;
-            transform: translate(-40px, -40px) scale(1.05);
-          }
+        .windows-auth-option {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 12px 8px;
+          background: rgba(59, 130, 246, 0.1);
+          border: 1px solid rgba(59, 130, 246, 0.2);
+          border-radius: 4px;
+          color: #3b82f6;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          gap: 4px;
         }
         
-        @keyframes particleFloat {
-          0%, 100% { 
-            transform: translate(0, 0) rotate(0deg);
-            opacity: 0.8;
-          }
-          25% { 
-            transform: translate(-40px, -50px) rotate(90deg);
-            opacity: 1;
-          }
-          50% { 
-            transform: translate(-80px, 0px) rotate(180deg);
-            opacity: 0.6;
-          }
-          75% { 
-            transform: translate(-40px, 50px) rotate(270deg);
-            opacity: 1;
-          }
+        .windows-auth-option:hover {
+          background: rgba(59, 130, 246, 0.2);
+          border-color: rgba(59, 130, 246, 0.3);
         }
         
-        @keyframes energyWave {
-          0% { 
-            transform: translateX(100%);
-            opacity: 0;
-          }
-          50% { 
-            opacity: 1;
-          }
-          100% { 
-            transform: translateX(-100%);
-            opacity: 0;
-          }
+        .windows-auth-option.active {
+          background: #3b82f6;
+          color: white;
+          border-color: #3b82f6;
         }
         
-        @keyframes dataFlow {
-          0% { 
-            transform: translateX(-100%);
-            opacity: 0;
-          }
-          50% { 
-            opacity: 1;
-          }
-          100% { 
-            transform: translateX(100%);
-            opacity: 0;
-          }
+        .windows-modal {
+          background: white;
+          border-radius: 8px;
+          padding: 32px;
+          max-width: 400px;
+          width: 90%;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
         
-        @keyframes pulseRing {
-          0% {
-            transform: translate(-50%, -50%) scale(0.3);
-            opacity: 1;
-          }
-          100% {
-            transform: translate(-50%, -50%) scale(2.5);
-            opacity: 0;
-          }
-        }
-        
-        @keyframes circuitMove {
-          0% { 
-            transform: translate(0, 0);
-          }
-          100% { 
-            transform: translate(200px, 200px);
-          }
-        }
-        
-        @keyframes techDots {
-          0% { 
-            transform: translate(0, 0) rotate(0deg);
-          }
-          100% { 
-            transform: translate(150px, 150px) rotate(360deg);
-          }
-        }
-        
-        @keyframes breathingAnimation {
-          0% { 
-            transform: scale(1);
-            opacity: 0.9;
-          }
-          50% { 
-            transform: scale(1.1);
-            opacity: 1;
-          }
-          100% { 
-            transform: scale(1);
-            opacity: 0.9;
-          }
-        }
-        
-        @keyframes breathingBgRandomAnimation {
-          0% { 
-            transform: translate(-50%, -50%) scale(1) rotate(0deg);
-            opacity: 0.3;
-          }
-          25% { 
-            transform: translate(-48%, -52%) scale(1.02) rotate(2deg);
-            opacity: 0.35;
-          }
-          50% { 
-            transform: translate(-52%, -48%) scale(1.05) rotate(-1deg);
-            opacity: 0.4;
-          }
-          75% { 
-            transform: translate(-49%, -51%) scale(1.03) rotate(1deg);
-            opacity: 0.35;
-          }
-          100% { 
-            transform: translate(-50%, -50%) scale(1) rotate(0deg);
-            opacity: 0.3;
-          }
+        @keyframes patternMove {
+          0% { transform: translate(0, 0); }
+          100% { transform: translate(100px, 100px); }
         }
       `}</style>
     </div>
