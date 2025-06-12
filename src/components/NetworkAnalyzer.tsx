@@ -113,7 +113,7 @@ export function NetworkAnalyzer({ networkMetrics }: NetworkAnalyzerProps) {
             
             {/* Gradient definition */}
             <defs>
-              <linearGradient id={`gradient-${label.replace(/\s+/g, '-')}`} x1="0%" y1="0%" x2="0%" y2="100%">
+              <linearGradient id={`gradient-${label.replace(/\s+/g, '-')}`} x1="0%\" y1="0%\" x2="0%\" y2="100%">
                 <stop offset="0%" stopColor={color} stopOpacity="0.8"/>
                 <stop offset="100%" stopColor={color} stopOpacity="0"/>
               </linearGradient>
