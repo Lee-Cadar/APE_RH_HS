@@ -103,12 +103,12 @@ export function PCInfoPage() {
   };
 
   const InfoSection = ({ title, icon: Icon, children, color }: any) => (
-    <div className="modern-panel p-8 shadow-lg">
-      <div className="flex items-center space-x-4 mb-8">
-        <div className="p-4 rounded-2xl" style={{ backgroundColor: `${color}20` }}>
-          <Icon className="w-8 h-8" style={{ color }} />
+    <div className="modern-panel p-6 shadow-lg">
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="p-3 rounded-xl" style={{ backgroundColor: `${color}20` }}>
+          <Icon className="w-6 h-6" style={{ color }} />
         </div>
-        <h3 className="text-2xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>
+        <h3 className="text-xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>
           {title}
         </h3>
       </div>
@@ -117,13 +117,13 @@ export function PCInfoPage() {
   );
 
   const InfoRow = ({ label, value, highlight = false }: any) => (
-    <div className="flex justify-between items-center py-3 border-b border-white/5">
-      <span className="text-base modern-font" style={{ color: '#8e8e93' }}>{label}</span>
-      <span className={`text-base modern-font ${highlight ? 'font-bold' : ''}`} 
+    <div className="flex justify-between items-center py-2 border-b border-white/5">
+      <span className="text-sm modern-font" style={{ color: '#8e8e93' }}>{label}</span>
+      <span className={`text-sm modern-font ${highlight ? 'font-bold' : ''}`} 
             style={{ 
               color: highlight ? '#007aff' : '#ffffff',
               fontFamily: highlight ? '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' : 'inherit',
-              fontSize: highlight ? '22px' : '16px'
+              fontSize: highlight ? '22px' : '14px'
             }}>
         {value}
       </span>
@@ -175,130 +175,137 @@ export function PCInfoPage() {
         </div>
       </div>
 
-      {/* System Information Grid */}
-      <div className="relative grid grid-cols-3 gap-8 h-[calc(100%-180px)] overflow-y-auto">
-        {/* System Overview */}
-        <InfoSection title="System" icon={Cpu} color="#007aff">
-          <div className="space-y-2">
-            <InfoRow label="Computer Name" value={systemInfo.system.computerName} highlight />
-            <InfoRow label="Operating System" value={systemInfo.system.operatingSystem} />
-            <InfoRow label="Processor" value={systemInfo.system.processor} />
-            <InfoRow label="Memory" value={systemInfo.system.memory} highlight />
-            <InfoRow label="BIOS" value={systemInfo.system.bios} />
-            <InfoRow label="DirectX Version" value={systemInfo.system.directXVersion} />
-          </div>
-        </InfoSection>
-
-        {/* Display Information */}
-        <InfoSection title="Display" icon={Monitor} color="#5856d6">
-          <div className="space-y-2">
-            <InfoRow label="Graphics Card" value={systemInfo.display.deviceName} highlight />
-            <InfoRow label="VRAM" value={systemInfo.display.approxTotalMemory + " MB"} highlight />
-            <InfoRow label="Resolution" value={systemInfo.display.currentDisplayMode} />
-            <InfoRow label="Monitor" value={systemInfo.display.monitor} />
-            <InfoRow label="Driver Version" value={systemInfo.display.driverVersion} />
-            <InfoRow label="Driver Date" value={systemInfo.display.driverDate} />
-          </div>
-        </InfoSection>
-
-        {/* Storage Information */}
-        <InfoSection title="Storage" icon={HardDrive} color="#34c759">
-          {systemInfo.storage.drives.map((drive, index) => (
-            <div key={index} className="mb-6 last:mb-0">
-              <div className="modern-display p-4 mb-4">
-                <div className="font-bold text-base modern-font mb-2" style={{ color: '#ffffff' }}>
-                  {drive.name}
-                </div>
-                <div className="space-y-2">
-                  <InfoRow label="Type" value={drive.type} />
-                  <InfoRow label="Capacity" value={drive.capacity} highlight />
-                  <InfoRow label="Free Space" value={drive.freeSpace} />
-                  <InfoRow label="Health" value={drive.health} />
-                </div>
-              </div>
+      {/* System Information Grid - 3 columns */}
+      <div className="relative grid grid-cols-3 gap-6 h-[calc(100%-180px)] overflow-y-auto">
+        {/* Column 1 */}
+        <div className="space-y-6">
+          {/* System Overview */}
+          <InfoSection title="System" icon={Cpu} color="#007aff">
+            <div className="space-y-2">
+              <InfoRow label="Computer Name" value={systemInfo.system.computerName} highlight />
+              <InfoRow label="Operating System" value="Windows 11 Pro 64-bit" />
+              <InfoRow label="Processor" value="AMD Ryzen 9 7950X" />
+              <InfoRow label="Memory" value={systemInfo.system.memory} highlight />
+              <InfoRow label="DirectX Version" value={systemInfo.system.directXVersion} />
             </div>
-          ))}
-        </InfoSection>
+          </InfoSection>
 
-        {/* Motherboard Information */}
-        <InfoSection title="Motherboard" icon={Activity} color="#ff9500">
-          <div className="space-y-2">
-            <InfoRow label="Manufacturer" value={systemInfo.motherboard.manufacturer} />
-            <InfoRow label="Model" value={systemInfo.motherboard.model} highlight />
-            <InfoRow label="Chipset" value={systemInfo.motherboard.chipset} />
-            <InfoRow label="BIOS Version" value={systemInfo.motherboard.biosVersion} />
-            <InfoRow label="BIOS Date" value={systemInfo.motherboard.biosDate} />
-          </div>
-        </InfoSection>
-
-        {/* Audio Information */}
-        <InfoSection title="Audio" icon={Speaker} color="#ff3b30">
-          <div className="space-y-2">
-            <InfoRow label="Audio Device" value={systemInfo.sound.description} highlight />
-            <InfoRow label="Playback" value={systemInfo.sound.defaultSoundPlayback} />
-            <InfoRow label="Recording" value={systemInfo.sound.defaultSoundCapture} />
-            <InfoRow label="Driver" value={systemInfo.sound.driverName} />
-            <InfoRow label="Version" value={systemInfo.sound.driverVersion} />
-          </div>
-        </InfoSection>
-
-        {/* Network Information */}
-        <InfoSection title="Network" icon={Wifi} color="#34c759">
-          {systemInfo.network.adapters.map((adapter, index) => (
-            <div key={index} className="mb-4 last:mb-0">
-              <div className="modern-display p-4">
-                <div className="font-bold text-base modern-font mb-2" style={{ color: '#ffffff' }}>
-                  {adapter.name}
-                </div>
-                <div className="space-y-2">
-                  <InfoRow label="Type" value={adapter.type} />
-                  <InfoRow label="Status" value={adapter.status} highlight />
-                  <InfoRow label="Speed" value={adapter.speed} />
-                </div>
-              </div>
+          {/* Motherboard */}
+          <InfoSection title="Motherboard" icon={Activity} color="#ff9500">
+            <div className="space-y-2">
+              <InfoRow label="Manufacturer" value={systemInfo.motherboard.manufacturer} />
+              <InfoRow label="Model" value="ROG STRIX X670E-E" highlight />
+              <InfoRow label="Chipset" value={systemInfo.motherboard.chipset} />
+              <InfoRow label="BIOS Version" value={systemInfo.motherboard.biosVersion} />
+              <InfoRow label="BIOS Date" value={systemInfo.motherboard.biosDate} />
             </div>
-          ))}
-        </InfoSection>
+          </InfoSection>
 
-        {/* Cooling System */}
-        <InfoSection title="Cooling" icon={Thermometer} color="#007aff">
-          <div className="space-y-2">
-            <InfoRow label="CPU Cooler" value={systemInfo.cooling.cpu} highlight />
-            <InfoRow label="Case" value={systemInfo.cooling.case} />
-            <div className="pt-4">
-              <div className="text-base modern-font font-bold mb-3" style={{ color: '#ffffff' }}>Fans</div>
-              {systemInfo.cooling.fans.map((fan, index) => (
-                <div key={index} className="text-sm modern-font py-1" style={{ color: '#8e8e93' }}>
-                  • {fan}
-                </div>
-              ))}
+          {/* Power Supply */}
+          <InfoSection title="Power Supply" icon={Zap} color="#ff9500">
+            <div className="space-y-2">
+              <InfoRow label="Model" value="Corsair RM1000x" highlight />
+              <InfoRow label="Wattage" value="1000W" highlight />
+              <InfoRow label="Efficiency" value={systemInfo.power.efficiency} />
+              <InfoRow label="Type" value={systemInfo.power.modular} />
             </div>
-          </div>
-        </InfoSection>
+          </InfoSection>
+        </div>
 
-        {/* Power Supply */}
-        <InfoSection title="Power Supply" icon={Zap} color="#ff9500">
-          <div className="space-y-2">
-            <InfoRow label="Model" value={systemInfo.power.psu} highlight />
-            <InfoRow label="Efficiency" value={systemInfo.power.efficiency} />
-            <InfoRow label="Type" value={systemInfo.power.modular} />
-            <InfoRow label="Rails" value={systemInfo.power.rails} />
-          </div>
-        </InfoSection>
+        {/* Column 2 */}
+        <div className="space-y-6">
+          {/* Display/GPU */}
+          <InfoSection title="Graphics" icon={Monitor} color="#5856d6">
+            <div className="space-y-2">
+              <InfoRow label="Graphics Card" value="RTX 4090" highlight />
+              <InfoRow label="VRAM" value="24 GB" highlight />
+              <InfoRow label="Resolution" value="3840 x 2160" />
+              <InfoRow label="Refresh Rate" value="144Hz" />
+              <InfoRow label="Monitor" value="Samsung Odyssey G9" />
+              <InfoRow label="Driver Version" value="31.0.15.3623" />
+            </div>
+          </InfoSection>
 
-        {/* Input Devices */}
-        <InfoSection title="Input Devices" icon={Gamepad2} color="#5856d6">
-          <div className="space-y-3">
-            {systemInfo.input.devices.map((device, index) => (
-              <div key={index} className="modern-display p-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#34c759' }}></div>
-                  <span className="text-base modern-font" style={{ color: '#ffffff' }}>{device}</span>
+          {/* Storage */}
+          <InfoSection title="Storage" icon={HardDrive} color="#34c759">
+            {systemInfo.storage.drives.map((drive, index) => (
+              <div key={index} className="mb-4 last:mb-0">
+                <div className="modern-display p-4 mb-3">
+                  <div className="font-bold text-sm modern-font mb-2" style={{ color: '#ffffff' }}>
+                    {drive.name}
+                  </div>
+                  <div className="space-y-1">
+                    <InfoRow label="Type" value={drive.type} />
+                    <InfoRow label="Capacity" value={drive.capacity} highlight />
+                    <InfoRow label="Free Space" value={drive.freeSpace} />
+                    <InfoRow label="Health" value={drive.health} />
+                  </div>
                 </div>
               </div>
             ))}
-          </div>
-        </InfoSection>
+          </InfoSection>
+
+          {/* Audio */}
+          <InfoSection title="Audio" icon={Speaker} color="#ff3b30">
+            <div className="space-y-2">
+              <InfoRow label="Audio Device" value="Realtek HD Audio" highlight />
+              <InfoRow label="Playback" value="Speakers (Realtek)" />
+              <InfoRow label="Recording" value="Microphone (Realtek)" />
+              <InfoRow label="Driver Version" value="6.0.9381.1" />
+            </div>
+          </InfoSection>
+        </div>
+
+        {/* Column 3 */}
+        <div className="space-y-6">
+          {/* Network */}
+          <InfoSection title="Network" icon={Wifi} color="#34c759">
+            {systemInfo.network.adapters.map((adapter, index) => (
+              <div key={index} className="mb-4 last:mb-0">
+                <div className="modern-display p-4">
+                  <div className="font-bold text-sm modern-font mb-2" style={{ color: '#ffffff' }}>
+                    {adapter.name.split(' ').slice(0, 3).join(' ')}
+                  </div>
+                  <div className="space-y-1">
+                    <InfoRow label="Type" value={adapter.type} />
+                    <InfoRow label="Status" value={adapter.status} highlight />
+                    <InfoRow label="Speed" value={adapter.speed} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </InfoSection>
+
+          {/* Cooling System */}
+          <InfoSection title="Cooling" icon={Thermometer} color="#007aff">
+            <div className="space-y-2">
+              <InfoRow label="CPU Cooler" value="NZXT Kraken Z73" highlight />
+              <InfoRow label="Case" value="Corsair iCUE 5000X" />
+              <div className="pt-3">
+                <div className="text-sm modern-font font-bold mb-2" style={{ color: '#ffffff' }}>Fans</div>
+                {systemInfo.cooling.fans.map((fan, index) => (
+                  <div key={index} className="text-xs modern-font py-1" style={{ color: '#8e8e93' }}>
+                    • {fan}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </InfoSection>
+
+          {/* Input Devices */}
+          <InfoSection title="Input Devices" icon={Gamepad2} color="#5856d6">
+            <div className="space-y-2">
+              {systemInfo.input.devices.map((device, index) => (
+                <div key={index} className="modern-display p-3">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#34c759' }}></div>
+                    <span className="text-sm modern-font" style={{ color: '#ffffff' }}>{device}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </InfoSection>
+        </div>
       </div>
 
       {/* Global Modern Styles */}

@@ -58,8 +58,8 @@ export function NetworkAnalyzer({ networkMetrics }: NetworkAnalyzerProps) {
     if (data.length < 2) return null;
 
     const maxValue = getMaxValue(data);
-    const width = 100;
-    const height = 60;
+    const width = 400; // 4x wider than before (was 100)
+    const height = 80; // Slightly taller for better visibility
     
     const points = data.map((value, index) => {
       const x = (index / (data.length - 1)) * width;
@@ -70,8 +70,8 @@ export function NetworkAnalyzer({ networkMetrics }: NetworkAnalyzerProps) {
     return (
       <div className="modern-display p-6">
         <div className="flex items-center justify-between mb-4">
-          <span className="text-sm modern-font font-bold" style={{ color: '#ffffff' }}>{label}</span>
-          <span className="text-xs modern-font" style={{ color: color }}>
+          <span className="text-lg modern-font font-bold" style={{ color: '#ffffff' }}>{label}</span>
+          <span className="text-sm modern-font" style={{ color: color }}>
             {label.includes('Download') ? formatBytes(data[data.length - 1] || 0) :
              label.includes('Upload') ? formatBytes(data[data.length - 1] || 0) :
              label.includes('Latency') ? `${(data[data.length - 1] || 0).toFixed(1)}ms` :
@@ -79,7 +79,7 @@ export function NetworkAnalyzer({ networkMetrics }: NetworkAnalyzerProps) {
           </span>
         </div>
         <div className="relative">
-          <svg width="100%" height="60" viewBox={`0 0 ${width} ${height}`} className="w-full">
+          <svg width="100%" height="80" viewBox={`0 0 ${width} ${height}`} className="w-full">
             {/* Grid lines */}
             {[0, 25, 50, 75, 100].map(percent => (
               <line
@@ -98,10 +98,10 @@ export function NetworkAnalyzer({ networkMetrics }: NetworkAnalyzerProps) {
               points={points}
               fill="none"
               stroke={color}
-              strokeWidth="2"
+              strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
-              style={{ filter: `drop-shadow(0 0 4px ${color})` }}
+              style={{ filter: `drop-shadow(0 0 6px ${color})` }}
             />
             
             {/* Fill area */}
@@ -113,7 +113,7 @@ export function NetworkAnalyzer({ networkMetrics }: NetworkAnalyzerProps) {
             
             {/* Gradient definition */}
             <defs>
-              <linearGradient id={`gradient-${label.replace(/\s+/g, '-')}`} x1="0%\" y1="0%\" x2="0%\" y2="100%">
+              <linearGradient id={`gradient-${label.replace(/\s+/g, '-')}`} x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor={color} stopOpacity="0.8"/>
                 <stop offset="100%" stopColor={color} stopOpacity="0"/>
               </linearGradient>
@@ -189,19 +189,19 @@ export function NetworkAnalyzer({ networkMetrics }: NetworkAnalyzerProps) {
         </div>
       </div>
 
-      {/* Real-time Graphs */}
-      <div className="relative grid grid-cols-2 gap-8 h-[calc(100%-180px)]">
+      {/* Real-time Graphs - 2x2 Grid */}
+      <div className="relative grid grid-cols-2 gap-8 h-[calc(100%-280px)]">
         {/* Download Speed Graph */}
-        <div className="space-y-6">
-          {renderGraph(downloadData, '#007aff', 'Download Speed')}
-          {renderGraph(latencyData, '#ff9500', 'Latency')}
-        </div>
+        {renderGraph(downloadData, '#007aff', 'Download Speed')}
 
         {/* Upload Speed Graph */}
-        <div className="space-y-6">
-          {renderGraph(uploadData, '#34c759', 'Upload Speed')}
-          {renderGraph(signalData, '#5856d6', 'Signal Strength')}
-        </div>
+        {renderGraph(uploadData, '#34c759', 'Upload Speed')}
+
+        {/* Latency Graph */}
+        {renderGraph(latencyData, '#ff9500', 'Latency')}
+
+        {/* Signal Strength Graph */}
+        {renderGraph(signalData, '#5856d6', 'Signal Strength')}
       </div>
 
       {/* Current Stats Bar */}
