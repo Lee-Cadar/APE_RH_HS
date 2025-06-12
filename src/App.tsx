@@ -8,6 +8,7 @@ import { ConfigPanel } from './components/ConfigPanel';
 import { SystemLogs } from './components/SystemLogs';
 import { LocationMap } from './components/LocationMap';
 import { AIOptimalButton } from './components/AIOptimalButton';
+import { SecurityModal } from './components/SecurityModal';
 import { useAPESimulation } from './hooks/useAPESimulation';
 import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap, Globe, User } from 'lucide-react';
 
@@ -17,6 +18,8 @@ function App() {
   const [currentView, setCurrentView] = useState<ViewType>('control');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isMapOpen, setIsMapOpen] = useState(false);
+  const [isSecurityOpen, setIsSecurityOpen] = useState(false);
+  const [isSystemUnlocked, setIsSystemUnlocked] = useState(false);
   const [aiMode, setAiMode] = useState('optimal');
   const [locationInfo, setLocationInfo] = useState({
     coordinates: "53.5074°N, 2.3372°W",
@@ -95,6 +98,12 @@ function App() {
     addLog('INFO', 'LocationService', `Location updated: ${newLocation.city}`);
   };
 
+  const handleSecuritySuccess = () => {
+    setIsSystemUnlocked(true);
+    setIsSecurityOpen(false);
+    addLog('INFO', 'SecuritySystem', 'User authentication successful - System unlocked');
+  };
+
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', {
       weekday: 'short',
@@ -112,6 +121,11 @@ function App() {
       second: '2-digit'
     });
   };
+
+  // Show security modal if system is not unlocked
+  if (!isSystemUnlocked) {
+    return <SecurityModal onSuccess={handleSecuritySuccess} />;
+  }
 
   return (
     <div 
@@ -133,16 +147,16 @@ function App() {
         <div className="data-streams"></div>
       </div>
 
-      {/* Logo Background - Right Side */}
-      <div className="absolute top-0 right-0 w-1/2 h-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute -right-1/4 top-1/2 transform -translate-y-1/2">
+      {/* Logo Background - Right Side - Full Visibility */}
+      <div className="absolute top-0 right-0 w-full h-full overflow-visible pointer-events-none z-0">
+        <div className="absolute -right-1/6 top-1/2 transform -translate-y-1/2">
           <img 
             src="/Triangle_logo_black_nobg_no_letters copy.png" 
             alt="APE Logo Background" 
             className="object-contain opacity-30 breathing-logo-bg"
             style={{ 
-              width: '600px', 
-              height: '600px',
+              width: '700px', 
+              height: '700px',
               filter: 'brightness(0.3) sepia(1) hue-rotate(200deg) saturate(2)'
             }}
           />
@@ -230,11 +244,14 @@ function App() {
             </div>
 
             {/* Profile Button */}
-            <button className="modern-button p-3 transition-all duration-300 hover:scale-105"
-                    style={{ 
-                      backgroundColor: 'rgba(88, 86, 214, 0.1)',
-                      borderColor: 'rgba(88, 86, 214, 0.3)',
-                    }}>
+            <button 
+              onClick={() => setIsSecurityOpen(true)}
+              className="modern-button p-3 transition-all duration-300 hover:scale-105"
+              style={{ 
+                backgroundColor: 'rgba(88, 86, 214, 0.1)',
+                borderColor: 'rgba(88, 86, 214, 0.3)',
+              }}
+            >
               <User className="w-5 h-5" style={{ color: '#5856d6' }} />
             </button>
           </div>
@@ -356,6 +373,13 @@ function App() {
         onClose={() => setIsMapOpen(false)}
         locationInfo={locationInfo}
         onLocationChange={handleLocationChange}
+      />
+
+      {/* Security Modal */}
+      <SecurityModal 
+        isOpen={isSecurityOpen}
+        onClose={() => setIsSecurityOpen(false)}
+        onSuccess={handleSecuritySuccess}
       />
 
       {/* Critical Alert Overlay */}

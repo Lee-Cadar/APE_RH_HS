@@ -71,7 +71,7 @@ export function ControlCenter({
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB/s`;
   };
 
-  // Modern Unified Panel Component with Technology Font
+  // Modern Unified Panel Component with Normal Font for Descriptions, Retro Font for Values
   const ModernPanel = ({ 
     title, 
     icon: Icon, 
@@ -109,7 +109,7 @@ export function ControlCenter({
         <div className="grid grid-cols-2 gap-4 h-24">
           {metrics.map((metric, index) => (
             <div key={index} className="text-center flex flex-col justify-center">
-              <div className="text-xl font-medium tech-font mb-1" 
+              <div className="text-xl font-medium mb-1" 
                    style={{ 
                      color: metric.isDangerous ? '#ff3b30' : '#007aff',
                      fontFamily: 'Technology, "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
@@ -162,7 +162,7 @@ export function ControlCenter({
           />
         </div>
 
-        {/* Top Center - CPU Retro Gauge */}
+        {/* Top Center - CPU Retro Gauge (Bigger) */}
         <div className="w-full flex items-center justify-center">
           <RetroGauge
             value={systemMetrics.cpuUsage}
@@ -170,11 +170,11 @@ export function ControlCenter({
             label="CPU UTILIZATION"
             unit="%"
             color={systemMetrics.cpuUsage > 85 ? '#ff3b30' : '#007aff'}
-            size={140}
+            size={180}
           />
         </div>
 
-        {/* Top Right - GPU Retro Gauge */}
+        {/* Top Right - GPU Retro Gauge (Bigger) */}
         <div className="w-full flex items-center justify-center">
           <RetroGauge
             value={gpuMetrics.usage}
@@ -182,7 +182,7 @@ export function ControlCenter({
             label="GPU UTILIZATION"
             unit="%"
             color={gpuMetrics.usage > 90 ? '#ff3b30' : '#5856d6'}
-            size={140}
+            size={180}
           />
         </div>
         
@@ -237,11 +237,12 @@ export function ControlCenter({
             <div className="text-lg tech-font font-bold mb-2" style={{ color: '#ffffff' }}>
               AI MODE
             </div>
-            <div className="text-2xl tech-font font-bold mb-3" 
+            <div className="text-2xl font-bold mb-3" 
                  style={{ 
                    color: aiMode === 'optimal' ? '#34c759' : 
                           aiMode === 'gaming' ? '#ff3b30' : 
-                          aiMode === 'cinema' ? '#5856d6' : '#ff9500'
+                          aiMode === 'cinema' ? '#5856d6' : '#ff9500',
+                   fontFamily: 'Technology, "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
                  }}>
               {aiMode.toUpperCase()}
             </div>

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PerformanceState, APEConfig } from '../types/ape';
-import { Cpu, Monitor, Thermometer, Activity, Zap, HardDrive, Shield, ArrowLeft, Mail } from 'lucide-react';
+import { RetroGauge } from './RetroGauge';
+import { Cpu, Monitor, Thermometer, Activity, Zap, HardDrive, Shield, ArrowLeft, Mail, Settings, Gamepad2, Film } from 'lucide-react';
 
 interface ProcessingDetailsProps {
   temperature: number;
@@ -22,6 +23,8 @@ export function ProcessingDetails({
   onSendReport
 }: ProcessingDetailsProps) {
   
+  const [currentMode, setCurrentMode] = useState('optimal');
+
   const getPerformanceColor = () => {
     switch (performanceState) {
       case 'performance': return '#34c759';
@@ -36,6 +39,13 @@ export function ProcessingDetails({
     if (temp < 80) return '#ff9500';
     return '#ff3b30';
   };
+
+  const performanceModes = [
+    { id: 'optimal', name: 'OPTIMAL', icon: Zap, color: '#34c759' },
+    { id: 'gaming', name: 'GAMING', icon: Gamepad2, color: '#ff3b30' },
+    { id: 'cinema', name: 'CINEMA', icon: Film, color: '#5856d6' },
+    { id: 'creative', name: 'CREATIVE', icon: Settings, color: '#ff9500' }
+  ];
 
   return (
     <div className="h-full space-y-6 relative">
@@ -72,16 +82,38 @@ export function ProcessingDetails({
               <Shield className="w-8 h-8" style={{ color: '#007aff' }} />
             </div>
             <div>
-              <h2 className="text-xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>
+              <h2 className="text-xl font-medium tech-font tracking-tight" style={{ color: '#ffffff' }}>
                 Processing Units
               </h2>
-              <p className="modern-font text-sm" style={{ color: '#8e8e93' }}>CPU and GPU performance monitoring</p>
+              <p className="tech-font text-sm" style={{ color: '#8e8e93' }}>CPU and GPU performance monitoring</p>
             </div>
           </div>
+          
+          {/* Performance Mode Selector */}
           <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 modern-display px-4 py-2">
+              {performanceModes.map((mode) => {
+                const Icon = mode.icon;
+                return (
+                  <button
+                    key={mode.id}
+                    onClick={() => setCurrentMode(mode.id)}
+                    className="p-2 rounded-lg transition-all duration-300"
+                    style={{
+                      backgroundColor: currentMode === mode.id ? `${mode.color}20` : 'transparent',
+                      borderColor: currentMode === mode.id ? mode.color : 'transparent',
+                      borderWidth: '1px'
+                    }}
+                  >
+                    <Icon className="w-5 h-5" style={{ color: currentMode === mode.id ? mode.color : '#8e8e93' }} />
+                  </button>
+                );
+              })}
+            </div>
+            
             <button
               onClick={() => onSendReport('processing')}
-              className="modern-button px-6 py-3 transition-all duration-300 flex items-center space-x-2 modern-font text-sm font-semibold"
+              className="modern-button px-6 py-3 transition-all duration-300 flex items-center space-x-2 tech-font text-sm font-semibold"
               style={{ 
                 backgroundColor: 'rgba(52, 199, 89, 0.1)',
                 borderColor: 'rgba(52, 199, 89, 0.3)',
@@ -91,7 +123,8 @@ export function ProcessingDetails({
               <Mail className="w-4 h-4" />
               <span>Send Report</span>
             </button>
-            <div className="modern-display px-4 py-2 modern-font text-sm font-semibold"
+            
+            <div className="modern-display px-4 py-2 tech-font text-sm font-semibold"
                  style={{ 
                    backgroundColor: `${getPerformanceColor()}20`,
                    borderColor: `${getPerformanceColor()}50`,
@@ -103,17 +136,17 @@ export function ProcessingDetails({
         </div>
       </div>
 
-      <div className="relative grid grid-cols-2 gap-8 h-[calc(100%-140px)]">
+      <div className="relative grid grid-cols-4 gap-8 h-[calc(100%-140px)]">
         {/* CPU Details */}
         <div className="modern-panel p-8 shadow-lg">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-medium modern-font tracking-tight flex items-center" style={{ color: '#ffffff' }}>
+            <h3 className="text-xl font-medium tech-font tracking-tight flex items-center" style={{ color: '#ffffff' }}>
               <div className="p-3 rounded-2xl mr-4" style={{ backgroundColor: 'rgba(0, 122, 255, 0.2)' }}>
                 <Cpu className="w-8 h-8" style={{ color: '#007aff' }} />
               </div>
               CPU Core
             </h3>
-            <div className="modern-display px-4 py-2 modern-font text-sm font-semibold"
+            <div className="modern-display px-4 py-2 tech-font text-sm font-semibold"
                  style={{ 
                    backgroundColor: `${getPerformanceColor()}20`,
                    borderColor: `${getPerformanceColor()}50`,
@@ -123,68 +156,68 @@ export function ProcessingDetails({
             </div>
           </div>
 
-          {/* Unified CPU Metrics */}
+          {/* CPU Metrics */}
           <div className="space-y-8">
             <div className="grid grid-cols-2 gap-8">
               <div className="text-center">
-                <div className="text-5xl font-bold modern-font mb-3" 
+                <div className="text-5xl font-bold mb-3" 
                      style={{ 
                        color: '#007aff',
-                       fontFamily: '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
+                       fontFamily: 'Technology, "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
                      }}>
                   {systemMetrics.cpuUsage.toFixed(1)}%
                 </div>
-                <div className="text-base modern-font" style={{ color: '#8e8e93' }}>Utilization</div>
+                <div className="text-base tech-font" style={{ color: '#8e8e93' }}>Utilization</div>
               </div>
               <div className="text-center">
-                <div className="text-5xl font-bold modern-font mb-3" 
+                <div className="text-5xl font-bold mb-3" 
                      style={{ 
                        color: getTemperatureColor(temperature),
-                       fontFamily: '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
+                       fontFamily: 'Technology, "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
                      }}>
                   {temperature.toFixed(1)}°C
                 </div>
-                <div className="text-base modern-font" style={{ color: '#8e8e93' }}>Temperature</div>
+                <div className="text-base tech-font" style={{ color: '#8e8e93' }}>Temperature</div>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-8">
               <div className="text-center">
-                <div className="text-4xl font-bold modern-font mb-3" 
+                <div className="text-4xl font-bold mb-3" 
                      style={{ 
                        color: '#ff9500',
-                       fontFamily: '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
+                       fontFamily: 'Technology, "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
                      }}>
                   1800
                 </div>
-                <div className="text-base modern-font" style={{ color: '#8e8e93' }}>MHz</div>
+                <div className="text-base tech-font" style={{ color: '#8e8e93' }}>MHz</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold modern-font mb-3" 
+                <div className="text-4xl font-bold mb-3" 
                      style={{ 
                        color: '#34c759',
-                       fontFamily: '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
+                       fontFamily: 'Technology, "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
                      }}>
                   {systemMetrics.loadAverage}
                 </div>
-                <div className="text-base modern-font" style={{ color: '#8e8e93' }}>Load Average</div>
+                <div className="text-base tech-font" style={{ color: '#8e8e93' }}>Load Average</div>
               </div>
             </div>
           </div>
 
           {/* Performance Thresholds */}
           <div className="mt-8 modern-display p-6">
-            <h4 className="text-lg font-bold modern-font mb-6" style={{ color: '#ffffff' }}>Thermal Thresholds</h4>
+            <h4 className="text-lg font-bold tech-font mb-6" style={{ color: '#ffffff' }}>Thermal Thresholds</h4>
             <div className="space-y-4">
-              <div className="flex justify-between text-base modern-font">
+              <div className="flex justify-between text-base tech-font">
                 <span style={{ color: '#34c759' }}>Optimal</span>
                 <span style={{ color: '#ffffff' }}>{'< '}{config.temperature_thresholds.normal}°C</span>
               </div>
-              <div className="flex justify-between text-base modern-font">
+              <div className="flex justify-between text-base tech-font">
                 <span style={{ color: '#ff9500' }}>Warning</span>
                 <span style={{ color: '#ffffff' }}>{config.temperature_thresholds.normal}-{config.temperature_thresholds.warning}°C</span>
               </div>
-              <div className="flex justify-between text-base modern-font">
+              <div className="flex justify-between text-base tech-font">
                 <span style={{ color: '#ff3b30' }}>Critical</span>
                 <span style={{ color: '#ffffff' }}>{'> '}{config.temperature_thresholds.warning}°C</span>
               </div>
@@ -192,10 +225,34 @@ export function ProcessingDetails({
           </div>
         </div>
 
+        {/* CPU Retro Gauge */}
+        <div className="w-full flex items-center justify-center">
+          <RetroGauge
+            value={systemMetrics.cpuUsage}
+            max={100}
+            label="CPU UTILIZATION"
+            unit="%"
+            color={systemMetrics.cpuUsage > 85 ? '#ff3b30' : '#007aff'}
+            size={200}
+          />
+        </div>
+
+        {/* GPU Retro Gauge */}
+        <div className="w-full flex items-center justify-center">
+          <RetroGauge
+            value={gpuMetrics.usage}
+            max={100}
+            label="GPU UTILIZATION"
+            unit="%"
+            color={gpuMetrics.usage > 90 ? '#ff3b30' : '#5856d6'}
+            size={200}
+          />
+        </div>
+
         {/* GPU Details */}
         <div className="modern-panel p-8 shadow-lg">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-medium modern-font tracking-tight flex items-center" style={{ color: '#ffffff' }}>
+            <h3 className="text-xl font-medium tech-font tracking-tight flex items-center" style={{ color: '#ffffff' }}>
               <div className="p-3 rounded-2xl mr-4" style={{ backgroundColor: 'rgba(88, 86, 214, 0.2)' }}>
                 <Monitor className="w-8 h-8" style={{ color: '#5856d6' }} />
               </div>
@@ -207,55 +264,55 @@ export function ProcessingDetails({
                      backgroundColor: '#34c759',
                      boxShadow: '0 0 8px #34c759'
                    }}></div>
-              <span className="text-sm modern-font" style={{ color: '#34c759' }}>Online</span>
+              <span className="text-sm tech-font" style={{ color: '#34c759' }}>Online</span>
             </div>
           </div>
 
-          {/* Unified GPU Metrics */}
+          {/* GPU Metrics */}
           <div className="space-y-8">
             <div className="grid grid-cols-2 gap-8">
               <div className="text-center">
-                <div className="text-5xl font-bold modern-font mb-3" 
+                <div className="text-5xl font-bold mb-3" 
                      style={{ 
                        color: '#5856d6',
-                       fontFamily: '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
+                       fontFamily: 'Technology, "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
                      }}>
                   {gpuMetrics.usage.toFixed(1)}%
                 </div>
-                <div className="text-base modern-font" style={{ color: '#8e8e93' }}>Utilization</div>
+                <div className="text-base tech-font" style={{ color: '#8e8e93' }}>Utilization</div>
               </div>
               <div className="text-center">
-                <div className="text-5xl font-bold modern-font mb-3" 
+                <div className="text-5xl font-bold mb-3" 
                      style={{ 
                        color: getTemperatureColor(gpuMetrics.temperature),
-                       fontFamily: '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
+                       fontFamily: 'Technology, "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
                      }}>
                   {gpuMetrics.temperature.toFixed(1)}°C
                 </div>
-                <div className="text-base modern-font" style={{ color: '#8e8e93' }}>Temperature</div>
+                <div className="text-base tech-font" style={{ color: '#8e8e93' }}>Temperature</div>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-8">
               <div className="text-center">
-                <div className="text-4xl font-bold modern-font mb-3" 
+                <div className="text-4xl font-bold mb-3" 
                      style={{ 
                        color: '#007aff',
-                       fontFamily: '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
+                       fontFamily: 'Technology, "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
                      }}>
                   {gpuMetrics.clockSpeed.toFixed(0)}
                 </div>
-                <div className="text-base modern-font" style={{ color: '#8e8e93' }}>MHz</div>
+                <div className="text-base tech-font" style={{ color: '#8e8e93' }}>MHz</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold modern-font mb-3" 
+                <div className="text-4xl font-bold mb-3" 
                      style={{ 
                        color: '#ff3b30',
-                       fontFamily: '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
+                       fontFamily: 'Technology, "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
                      }}>
                   {gpuMetrics.powerDraw.toFixed(1)}W
                 </div>
-                <div className="text-base modern-font" style={{ color: '#8e8e93' }}>Power</div>
+                <div className="text-base tech-font" style={{ color: '#8e8e93' }}>Power</div>
               </div>
             </div>
           </div>
@@ -265,21 +322,21 @@ export function ProcessingDetails({
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
                 <HardDrive className="w-5 h-5" style={{ color: '#5856d6' }} />
-                <span className="text-base modern-font" style={{ color: '#ffffff' }}>VRAM</span>
+                <span className="text-base tech-font" style={{ color: '#ffffff' }}>VRAM</span>
               </div>
-              <span className="text-base modern-font" style={{ color: '#8e8e93' }}>
+              <span className="text-base tech-font" style={{ color: '#8e8e93' }}>
                 {(gpuMetrics.memoryUsed/1024).toFixed(1)}GB / {(gpuMetrics.memoryTotal/1024).toFixed(1)}GB
               </span>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold modern-font mb-3" 
+              <div className="text-4xl font-bold mb-3" 
                    style={{ 
                      color: '#5856d6',
-                     fontFamily: '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
+                     fontFamily: 'Technology, "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
                    }}>
                 {((gpuMetrics.memoryUsed/gpuMetrics.memoryTotal)*100).toFixed(1)}%
               </div>
-              <div className="text-base modern-font" style={{ color: '#8e8e93' }}>Memory Usage</div>
+              <div className="text-base tech-font" style={{ color: '#8e8e93' }}>Memory Usage</div>
             </div>
           </div>
         </div>
