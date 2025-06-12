@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { IntroPage } from './components/IntroPage';
 import { SteamDeckInterface } from './components/SteamDeckInterface';
 import { VPNPage } from './components/VPNPage';
@@ -15,11 +15,11 @@ import { AIOptimalButton } from './components/AIOptimalButton';
 import { SecurityModal } from './components/SecurityModal';
 import { NetworkAnalyzer } from './components/NetworkAnalyzer';
 import { PCInfoPage } from './components/PCInfoPage';
-import { SettingsModal } from './components/SettingsModal';
+import { SettingsPage } from './components/SettingsPage';
 import { useAPESimulation } from './hooks/useAPESimulation';
 import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap, Globe, User, Monitor, Info, Power, RotateCcw, Moon } from 'lucide-react';
 
-type ViewType = 'control' | 'processing' | 'network' | 'thermal' | 'system' | 'config' | 'logs' | 'network-analyzer' | 'pc-info' | 'vpn' | 'exit';
+type ViewType = 'control' | 'processing' | 'network' | 'thermal' | 'system' | 'config' | 'logs' | 'network-analyzer' | 'pc-info' | 'vpn' | 'exit' | 'settings';
 type ScreenMode = 'intro' | 'main' | 'steamdeck' | 'exit';
 type FontSize = 'small' | 'medium' | 'large';
 
@@ -41,7 +41,6 @@ function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [isSecurityOpen, setIsSecurityOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showPowerConfirm, setShowPowerConfirm] = useState<string | null>(null);
   const [aiMode, setAiMode] = useState('optimal');
   const [isScanning, setIsScanning] = useState(false);
@@ -193,7 +192,8 @@ function App() {
     { id: 'config', label: 'CONFIG', icon: Settings },
     { id: 'logs', label: 'LOGS', icon: Thermometer },
     { id: 'network-analyzer', label: 'NETWORK', icon: Monitor },
-    { id: 'pc-info', label: 'PC INFO', icon: Info }
+    { id: 'pc-info', label: 'PC INFO', icon: Info },
+    { id: 'settings', label: 'SETTINGS', icon: Settings }
   ];
 
   const handleMetricClick = (metricType: string) => {
@@ -324,10 +324,10 @@ function App() {
       
       {/* Scanner progress text */}
       <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 text-center">
-        <div className="text-2xl font-bold tech-font mb-2" style={{ color: '#34c759' }}>
+        <div className="font-bold tech-font mb-2" style={{ color: '#34c759', fontSize: fontSizes.h1 }}>
           SYSTEM SCAN IN PROGRESS
         </div>
-        <div className="text-lg tech-font" style={{ color: '#8e8e93' }}>
+        <div className="tech-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
           {scanProgress.toFixed(0)}% Complete
         </div>
       </div>
@@ -577,18 +577,6 @@ function App() {
                   />
                 </div>
 
-                {/* Settings Button */}
-                <button 
-                  onClick={() => setIsSettingsOpen(true)}
-                  className="modern-button p-2 transition-all duration-300 hover:scale-105"
-                  style={{ 
-                    backgroundColor: 'rgba(255, 149, 0, 0.1)',
-                    borderColor: 'rgba(255, 149, 0, 0.3)',
-                  }}
-                >
-                  <Settings className="w-4 h-4" style={{ color: '#ff9500' }} />
-                </button>
-
                 {/* Profile Button */}
                 <button 
                   onClick={() => setIsSecurityOpen(true)}
@@ -604,8 +592,8 @@ function App() {
             </div>
           </header>
 
-          {/* Navigation for Control, Config, Logs, Network Analyzer, PC Info */}
-          {(currentView === 'control' || currentView === 'config' || currentView === 'logs' || currentView === 'network-analyzer' || currentView === 'pc-info') && (
+          {/* Navigation for Control, Config, Logs, Network Analyzer, PC Info, Settings */}
+          {(currentView === 'control' || currentView === 'config' || currentView === 'logs' || currentView === 'network-analyzer' || currentView === 'pc-info' || currentView === 'settings') && (
             <nav className="relative modern-nav border-b z-20" 
                  style={{ 
                    height: '60px',
@@ -643,7 +631,7 @@ function App() {
           )}
 
           {/* Main Content */}
-          <main className="relative overflow-y-auto z-10" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' || currentView === 'network-analyzer' || currentView === 'pc-info' ? 'calc(100% - 140px)' : 'calc(100% - 80px)' }}>
+          <main className="relative overflow-y-auto z-10" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' || currentView === 'network-analyzer' || currentView === 'pc-info' || currentView === 'settings' ? 'calc(100% - 140px)' : 'calc(100% - 80px)' }}>
             <div className="p-4">
               {currentView === 'control' && (
                 <ControlCenter
@@ -737,6 +725,15 @@ function App() {
                   fontSizes={fontSizes}
                 />
               )}
+
+              {currentView === 'settings' && (
+                <SettingsPage 
+                  settings={appSettings}
+                  onSettingsChange={setAppSettings}
+                  fontSizes={fontSizes}
+                  onBack={handleBackToControl}
+                />
+              )}
             </div>
           </main>
 
@@ -754,15 +751,6 @@ function App() {
             isOpen={isSecurityOpen}
             onClose={() => setIsSecurityOpen(false)}
             onSuccess={handleSecuritySuccess}
-            fontSizes={fontSizes}
-          />
-
-          {/* Settings Modal */}
-          <SettingsModal 
-            isOpen={isSettingsOpen}
-            onClose={() => setIsSettingsOpen(false)}
-            settings={appSettings}
-            onSettingsChange={setAppSettings}
             fontSizes={fontSizes}
           />
 
