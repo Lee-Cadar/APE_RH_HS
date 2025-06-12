@@ -11,10 +11,9 @@ import {
   Camera01Icon, 
   Fingerprint01Icon, 
   Lock01Icon, 
-  ArrowLeft01Icon,
-  Eye01Icon,
-  EyeClosedIcon
+  ArrowLeft01Icon
 } from '@hugeicons/react';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface IntroPageProps {
   onAuthenticated: () => void;
@@ -245,7 +244,7 @@ export function IntroPage({ onAuthenticated, fontSizes, currentTime }: IntroPage
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
-                    {showPassword ? <EyeClosedIcon className="w-5 h-5" /> : <Eye01Icon className="w-5 h-5" />}
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
                 
