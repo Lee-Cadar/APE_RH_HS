@@ -513,7 +513,7 @@ function App() {
                         backgroundColor: currentView === tab.id ? 'rgba(0, 122, 255, 0.1)' : 'transparent',
                         color: currentView === tab.id ? '#007aff' : '#f5f5f7',
                         borderBottom: currentView === tab.id ? '3px solid #007aff' : '3px solid transparent',
-                        fontSize: fontSizes.h3
+                        fontSize: '20px'
                       }}
                     >
                       <Icon className="w-3 h-3" />
@@ -862,8 +862,8 @@ function App() {
               position: absolute;
               top: 50%;
               right: 25%;
-              width: 240px;
-              height: 240px;
+              width: 500px;
+              height: 500px;
               transform: translate(50%, -50%);
             }
             
@@ -873,8 +873,8 @@ function App() {
               position: absolute;
               top: 50%;
               left: 50%;
-              width: 96px;
-              height: 96px;
+              width: 200px;
+              height: 200px;
               border: 2px solid rgba(0, 122, 255, 0.1);
               border-radius: 50%;
               transform: translate(-50%, -50%);
@@ -890,8 +890,8 @@ function App() {
               position: absolute;
               top: 30%;
               left: 20%;
-              width: 160px;
-              height: 160px;
+              width: 300px;
+              height: 300px;
             }
             
             .pulse-rings-2::before,
@@ -900,8 +900,8 @@ function App() {
               position: absolute;
               top: 50%;
               left: 50%;
-              width: 80px;
-              height: 80px;
+              width: 150px;
+              height: 150px;
               border: 1px solid rgba(255, 149, 0, 0.08);
               border-radius: 50%;
               transform: translate(-50%, -50%);
@@ -917,8 +917,8 @@ function App() {
               position: absolute;
               top: 70%;
               right: 60%;
-              width: 200px;
-              height: 200px;
+              width: 400px;
+              height: 400px;
             }
             
             .pulse-rings-3::before {
@@ -926,8 +926,8 @@ function App() {
               position: absolute;
               top: 50%;
               left: 50%;
-              width: 64px;
-              height: 64px;
+              width: 100px;
+              height: 100px;
               border: 1px solid rgba(255, 59, 48, 0.06);
               border-radius: 50%;
               transform: translate(-50%, -50%);
