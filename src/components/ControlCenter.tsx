@@ -68,7 +68,7 @@ export function ControlCenter({
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB/s`;
   };
 
-  // Modern Unified Panel Component with Rule of 3-6-9
+  // Modern Unified Panel Component with Perfect Symmetry
   const ModernPanel = ({ 
     title, 
     icon: Icon, 
@@ -85,7 +85,8 @@ export function ControlCenter({
     return (
       <button
         onClick={onClick}
-        className="modern-metrics-panel h-full transition-all duration-500 transform hover:scale-105 active:scale-95 group p-6"
+        className="modern-metrics-panel transition-all duration-500 transform hover:scale-105 active:scale-95 group p-6"
+        style={{ height: '200px' }} // Fixed height for perfect symmetry
       >
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
@@ -103,11 +104,11 @@ export function ControlCenter({
                }}></div>
         </div>
         
-        {/* Rule of 3-6-9: 2x2 grid for 4 metrics */}
-        <div className="grid grid-cols-2 gap-4">
+        {/* Perfect 2x2 grid for 4 metrics */}
+        <div className="grid grid-cols-2 gap-4 h-24">
           {metrics.map((metric, index) => (
-            <div key={index} className="text-center">
-              <div className="text-2xl font-medium modern-font mb-2" 
+            <div key={index} className="text-center flex flex-col justify-center">
+              <div className="text-xl font-medium modern-font mb-1" 
                    style={{ 
                      color: metric.subColor || color,
                      fontFamily: '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
@@ -115,7 +116,7 @@ export function ControlCenter({
                 {metric.value}{metric.unit || ''}
               </div>
               <div className="text-xs modern-font opacity-70" 
-                   style={{ color: '#ffffff', fontSize: '11px' }}>
+                   style={{ color: '#ffffff', fontSize: '10px' }}>
                 {metric.label}
               </div>
             </div>
@@ -124,10 +125,10 @@ export function ControlCenter({
         
         {/* Status indicator */}
         <div className="mt-4 flex justify-center">
-          <div className="w-6 h-6 animate-pulse rounded-full" 
+          <div className="w-4 h-4 animate-pulse rounded-full" 
                style={{ 
                  backgroundColor: color,
-                 boxShadow: `0 0 15px ${color}50`
+                 boxShadow: `0 0 12px ${color}50`
                }}></div>
         </div>
       </button>
@@ -142,8 +143,8 @@ export function ControlCenter({
       </div>
 
       {/* Header with Generate Report Button */}
-      <div className="modern-panel-header p-4 shadow-lg mb-6 relative z-10">
-        <div className="flex items-center justify-between">
+      <div className="modern-panel-header p-4 shadow-lg mb-6 relative z-10" style={{ height: '80px' }}>
+        <div className="flex items-center justify-between h-full">
           <div className="flex-1">
             <h2 className="text-xl font-medium tracking-tight modern-font" style={{ color: '#ffffff' }}>
               Command Center
@@ -179,82 +180,76 @@ export function ControlCenter({
         </div>
       </div>
 
-      {/* Main Content Grid: Left 40% - Processing & Network | Right 40% - Thermal & System */}
-      <div className="relative h-[calc(100%-140px)] z-10 flex space-x-6" 
-           style={{ minHeight: '350px' }}>
+      {/* Perfect 2x2 Grid Layout for Symmetry */}
+      <div className="relative z-10 grid grid-cols-2 gap-6" 
+           style={{ height: 'calc(100% - 140px)' }}>
         
-        {/* Left Side - 40% - Processing & Network (stacked vertically) */}
-        <div className="w-[40%] flex flex-col space-y-6">
-          {/* Processing Units Panel - TOP */}
-          <div className="flex-1">
-            <ModernPanel
-              title="Processing"
-              icon={Cpu}
-              color="#007aff"
-              onClick={() => onMetricClick('cpu')}
-              metrics={[
-                { label: 'CPU Usage', value: systemMetrics.cpuUsage.toFixed(1), unit: '%' },
-                { label: 'CPU Temp', value: temperature.toFixed(1), unit: '°C', subColor: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30' },
-                { label: 'GPU Usage', value: gpuMetrics.usage.toFixed(1), unit: '%', subColor: '#5856d6' },
-                { label: 'GPU Temp', value: gpuMetrics.temperature.toFixed(1), unit: '°C', subColor: gpuMetrics.temperature < 60 ? '#34c759' : gpuMetrics.temperature < 80 ? '#ff9500' : '#ff3b30' }
-              ]}
-            />
-          </div>
-          
-          {/* Network Command Panel - BOTTOM */}
-          <div className="flex-1">
-            <ModernPanel
-              title="Network"
-              icon={Wifi}
-              color="#34c759"
-              onClick={() => onMetricClick('network')}
-              metrics={[
-                { label: 'Signal', value: networkMetrics.signalStrength.toFixed(1), unit: '%', subColor: networkMetrics.signalStrength > 80 ? '#34c759' : networkMetrics.signalStrength > 50 ? '#ff9500' : '#ff3b30' },
-                { label: 'Latency', value: networkMetrics.latency.toFixed(1), unit: 'ms', subColor: networkMetrics.latency < 50 ? '#34c759' : networkMetrics.latency < 100 ? '#ff9500' : '#ff3b30' },
-                { label: 'Download', value: formatBytes(networkMetrics.downloadSpeed).split(' ')[0], unit: formatBytes(networkMetrics.downloadSpeed).split(' ')[1], subColor: '#007aff' },
-                { label: 'Upload', value: formatBytes(networkMetrics.uploadSpeed).split(' ')[0], unit: formatBytes(networkMetrics.uploadSpeed).split(' ')[1], subColor: '#5856d6' }
-              ]}
-            />
-          </div>
+        {/* Top Left - Processing */}
+        <div className="w-full">
+          <ModernPanel
+            title="Processing"
+            icon={Cpu}
+            color="#007aff"
+            onClick={() => onMetricClick('cpu')}
+            metrics={[
+              { label: 'CPU Usage', value: systemMetrics.cpuUsage.toFixed(1), unit: '%' },
+              { label: 'CPU Temp', value: temperature.toFixed(1), unit: '°C', subColor: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30' },
+              { label: 'GPU Usage', value: gpuMetrics.usage.toFixed(1), unit: '%', subColor: '#5856d6' },
+              { label: 'GPU Temp', value: gpuMetrics.temperature.toFixed(1), unit: '°C', subColor: gpuMetrics.temperature < 60 ? '#34c759' : gpuMetrics.temperature < 80 ? '#ff9500' : '#ff3b30' }
+            ]}
+          />
+        </div>
+        
+        {/* Top Right - Network */}
+        <div className="w-full">
+          <ModernPanel
+            title="Network"
+            icon={Wifi}
+            color="#34c759"
+            onClick={() => onMetricClick('network')}
+            metrics={[
+              { label: 'Signal', value: networkMetrics.signalStrength.toFixed(1), unit: '%', subColor: networkMetrics.signalStrength > 80 ? '#34c759' : networkMetrics.signalStrength > 50 ? '#ff9500' : '#ff3b30' },
+              { label: 'Latency', value: networkMetrics.latency.toFixed(1), unit: 'ms', subColor: networkMetrics.latency < 50 ? '#34c759' : networkMetrics.latency < 100 ? '#ff9500' : '#ff3b30' },
+              { label: 'Download', value: formatBytes(networkMetrics.downloadSpeed).split(' ')[0], unit: formatBytes(networkMetrics.downloadSpeed).split(' ')[1], subColor: '#007aff' },
+              { label: 'Upload', value: formatBytes(networkMetrics.uploadSpeed).split(' ')[0], unit: formatBytes(networkMetrics.uploadSpeed).split(' ')[1], subColor: '#5856d6' }
+            ]}
+          />
         </div>
 
-        {/* Right Side - 40% - Thermal & System (stacked vertically) */}
-        <div className="w-[40%] flex flex-col space-y-6">
-          {/* Thermal Control Panel - TOP */}
-          <div className="flex-1">
-            <ModernPanel
-              title="Thermal"
-              icon={Thermometer}
-              color="#ff9500"
-              onClick={() => onMetricClick('temperature')}
-              metrics={[
-                { label: 'Core Temp', value: temperature.toFixed(1), unit: '°C', subColor: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30' },
-                { label: 'Fan Speed', value: fanSpeed.toFixed(1), unit: '%', subColor: '#007aff' },
-                { label: 'Status', value: ledColor === 'green' ? 'Optimal' : ledColor === 'yellow' ? 'Warning' : 'Critical', subColor: ledColor === 'green' ? '#34c759' : ledColor === 'yellow' ? '#ff9500' : '#ff3b30' },
-                { label: 'Mode', value: performanceState === 'performance' ? 'Performance' : performanceState === 'balanced' ? 'Balanced' : 'Power Save', subColor: performanceState === 'performance' ? '#34c759' : performanceState === 'balanced' ? '#ff9500' : '#ff3b30' }
-              ]}
-            />
-          </div>
+        {/* Bottom Left - Thermal */}
+        <div className="w-full">
+          <ModernPanel
+            title="Thermal"
+            icon={Thermometer}
+            color="#ff9500"
+            onClick={() => onMetricClick('temperature')}
+            metrics={[
+              { label: 'Core Temp', value: temperature.toFixed(1), unit: '°C', subColor: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30' },
+              { label: 'Fan Speed', value: fanSpeed.toFixed(1), unit: '%', subColor: '#007aff' },
+              { label: 'Status', value: ledColor === 'green' ? 'Optimal' : ledColor === 'yellow' ? 'Warning' : 'Critical', subColor: ledColor === 'green' ? '#34c759' : ledColor === 'yellow' ? '#ff9500' : '#ff3b30' },
+              { label: 'Mode', value: performanceState === 'performance' ? 'Performance' : performanceState === 'balanced' ? 'Balanced' : 'Power Save', subColor: performanceState === 'performance' ? '#34c759' : performanceState === 'balanced' ? '#ff9500' : '#ff3b30' }
+            ]}
+          />
+        </div>
 
-          {/* System Core Panel - BOTTOM */}
-          <div className="flex-1">
-            <ModernPanel
-              title="System"
-              icon={HardDrive}
-              color="#5856d6"
-              onClick={() => onMetricClick('memory')}
-              metrics={[
-                { label: 'Memory', value: systemMetrics.memoryUsage.toFixed(1), unit: '%', subColor: systemMetrics.memoryUsage < 70 ? '#34c759' : systemMetrics.memoryUsage < 85 ? '#ff9500' : '#ff3b30' },
-                { label: 'Processes', value: systemMetrics.processes, subColor: '#007aff' },
-                { label: 'Uptime', value: systemMetrics.uptime, subColor: '#34c759' },
-                { label: 'Load Avg', value: systemMetrics.loadAverage, subColor: parseFloat(systemMetrics.loadAverage) < 1.0 ? '#34c759' : parseFloat(systemMetrics.loadAverage) < 2.0 ? '#ff9500' : '#ff3b30' }
-              ]}
-            />
-          </div>
+        {/* Bottom Right - System */}
+        <div className="w-full">
+          <ModernPanel
+            title="System"
+            icon={HardDrive}
+            color="#5856d6"
+            onClick={() => onMetricClick('memory')}
+            metrics={[
+              { label: 'Memory', value: systemMetrics.memoryUsage.toFixed(1), unit: '%', subColor: systemMetrics.memoryUsage < 70 ? '#34c759' : systemMetrics.memoryUsage < 85 ? '#ff9500' : '#ff3b30' },
+              { label: 'Processes', value: systemMetrics.processes, subColor: '#007aff' },
+              { label: 'Uptime', value: systemMetrics.uptime, subColor: '#34c759' },
+              { label: 'Load Avg', value: systemMetrics.loadAverage, subColor: parseFloat(systemMetrics.loadAverage) < 1.0 ? '#34c759' : parseFloat(systemMetrics.loadAverage) < 2.0 ? '#ff9500' : '#ff3b30' }
+            ]}
+          />
         </div>
       </div>
 
-      {/* Enhanced Modern CSS animations with lighter fonts */}
+      {/* Enhanced Modern CSS animations with perfect symmetry */}
       <style jsx>{`
         .modern-panel-header {
           background: rgba(255, 255, 255, 0.05);
@@ -273,7 +268,7 @@ export function ControlCenter({
             0 8px 32px rgba(0, 0, 0, 0.1),
             inset 0 1px 0 rgba(255, 255, 255, 0.1);
           transition: all 0.5s ease;
-          min-height: 160px;
+          width: 100%;
         }
         
         .modern-metrics-panel:hover {
