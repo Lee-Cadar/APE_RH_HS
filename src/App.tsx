@@ -233,14 +233,27 @@ function App() {
         color: '#ffffff'
       }}
     >
-      {/* Subtle Grid Background */}
-      <div className="absolute inset-0 modern-grid opacity-10"></div>
-      
-      {/* Ambient Glow */}
-      <div className="absolute inset-0 ambient-glow opacity-20"></div>
+      {/* Watermark Logo Background - Right Side */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="logo-watermark-container">
+          <img 
+            src="/Triangle_logo_black_nobg.png" 
+            alt="APE Logo Watermark" 
+            className="logo-watermark"
+          />
+        </div>
+      </div>
+
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="animated-grid"></div>
+        <div className="floating-particles"></div>
+        <div className="energy-waves"></div>
+        <div className="pulse-rings"></div>
+      </div>
 
       {/* Top Header with Date, GPS, Location */}
-      <header className="relative modern-header h-16 border-b" 
+      <header className="relative modern-header h-16 border-b z-20" 
               style={{ 
                 borderColor: 'rgba(255, 255, 255, 0.1)',
                 borderWidth: '1px',
@@ -298,25 +311,9 @@ function App() {
         </div>
       </header>
 
-      {/* Centered Logo with Breathing Animation */}
-      <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="relative">
-          <img 
-            src="/Triangle_logo_black_nobg.png" 
-            alt="APE Logo" 
-            className="object-contain breathing-logo"
-            style={{ 
-              width: '80px', 
-              height: '80px',
-              filter: 'brightness(0) saturate(100%) invert(100%)',
-            }}
-          />
-        </div>
-      </div>
-
       {/* Navigation for Control, Config, Logs */}
       {(currentView === 'control' || currentView === 'config' || currentView === 'logs') && (
-        <nav className="relative modern-nav h-12 border-b" 
+        <nav className="relative modern-nav h-12 border-b z-20" 
              style={{ 
                borderColor: 'rgba(255, 255, 255, 0.1)',
                borderWidth: '1px',
@@ -348,7 +345,7 @@ function App() {
       )}
 
       {/* Main Content - Now Scrollable */}
-      <main className="relative overflow-y-auto" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' ? 'calc(620px - 112px)' : 'calc(620px - 64px)' }}>
+      <main className="relative overflow-y-auto z-10" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' ? 'calc(620px - 112px)' : 'calc(620px - 64px)' }}>
         <div className="p-6">
           {currentView === 'control' && (
             <ControlCenter
@@ -437,7 +434,7 @@ function App() {
         </div>
       )}
 
-      {/* Global Modern Styles */}
+      {/* Global Modern Styles with Exciting Animations */}
       <style jsx>{`
         .modern-dashboard {
           position: relative;
@@ -450,20 +447,101 @@ function App() {
           letter-spacing: -0.01em;
         }
         
-        .modern-grid {
+        /* Logo Watermark Background */
+        .logo-watermark-container {
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          overflow: hidden;
+        }
+        
+        .logo-watermark {
+          width: 800px;
+          height: 800px;
+          opacity: 0.3;
+          filter: brightness(0) saturate(100%) invert(100%);
+          transform: translateX(50%);
+          animation: logoFloat 8s ease-in-out infinite, logoGlow 4s ease-in-out infinite alternate;
+          object-fit: contain;
+        }
+        
+        /* Animated Grid Background */
+        .animated-grid {
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
           background-image: 
-            linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-          background-size: 40px 40px;
-          animation: gridFloat 30s linear infinite;
+            linear-gradient(rgba(0, 122, 255, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 122, 255, 0.1) 1px, transparent 1px);
+          background-size: 60px 60px;
+          animation: gridPulse 6s linear infinite;
         }
         
-        .ambient-glow {
-          background: radial-gradient(circle at 30% 30%, rgba(0, 122, 255, 0.1) 0%, transparent 50%),
-                      radial-gradient(circle at 70% 70%, rgba(52, 199, 89, 0.05) 0%, transparent 50%);
-          animation: ambientPulse 8s ease-in-out infinite;
+        /* Floating Particles */
+        .floating-particles {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            radial-gradient(circle at 20% 30%, rgba(0, 122, 255, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(52, 199, 89, 0.03) 0%, transparent 50%),
+            radial-gradient(circle at 40% 80%, rgba(255, 149, 0, 0.02) 0%, transparent 50%),
+            radial-gradient(circle at 70% 20%, rgba(88, 86, 214, 0.04) 0%, transparent 50%);
+          animation: particleFloat 12s ease-in-out infinite;
         }
         
+        /* Energy Waves */
+        .energy-waves {
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 50%;
+          height: 100%;
+          background: 
+            linear-gradient(45deg, transparent 40%, rgba(0, 122, 255, 0.02) 50%, transparent 60%),
+            linear-gradient(-45deg, transparent 40%, rgba(52, 199, 89, 0.02) 50%, transparent 60%);
+          animation: energyWave 10s linear infinite;
+        }
+        
+        /* Pulse Rings */
+        .pulse-rings {
+          position: absolute;
+          top: 50%;
+          right: 20%;
+          width: 300px;
+          height: 300px;
+          transform: translate(50%, -50%);
+        }
+        
+        .pulse-rings::before,
+        .pulse-rings::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 100px;
+          height: 100px;
+          border: 2px solid rgba(0, 122, 255, 0.1);
+          border-radius: 50%;
+          transform: translate(-50%, -50%);
+          animation: pulseRing 4s ease-out infinite;
+        }
+        
+        .pulse-rings::after {
+          animation-delay: 2s;
+          border-color: rgba(52, 199, 89, 0.1);
+        }
+        
+        /* Header and Navigation Styles */
         .modern-header {
           border-radius: 0;
         }
@@ -493,32 +571,85 @@ function App() {
           border: 1px solid rgba(255, 59, 48, 0.3);
         }
         
-        .breathing-logo {
-          animation: breathingAnimation 3s ease-in-out infinite;
-        }
-        
-        @keyframes gridFloat {
-          0% { transform: translate(0, 0); }
-          100% { transform: translate(40px, 40px); }
-        }
-        
-        @keyframes ambientPulse {
-          0%, 100% { opacity: 0.2; }
-          50% { opacity: 0.4; }
-        }
-        
-        @keyframes breathingAnimation {
-          0% { 
-            transform: scale(1);
-            opacity: 0.8;
+        /* Keyframe Animations */
+        @keyframes logoFloat {
+          0%, 100% { 
+            transform: translateX(50%) translateY(0px) scale(1);
+          }
+          25% { 
+            transform: translateX(50%) translateY(-10px) scale(1.02);
           }
           50% { 
-            transform: scale(1.1);
+            transform: translateX(50%) translateY(0px) scale(1.05);
+          }
+          75% { 
+            transform: translateX(50%) translateY(10px) scale(1.02);
+          }
+        }
+        
+        @keyframes logoGlow {
+          0% { 
+            opacity: 0.3;
+            filter: brightness(0) saturate(100%) invert(100%) drop-shadow(0 0 20px rgba(255, 255, 255, 0.1));
+          }
+          100% { 
+            opacity: 0.4;
+            filter: brightness(0) saturate(100%) invert(100%) drop-shadow(0 0 40px rgba(0, 122, 255, 0.2));
+          }
+        }
+        
+        @keyframes gridPulse {
+          0%, 100% { 
+            opacity: 0.3;
+            transform: translate(0, 0) scale(1);
+          }
+          50% { 
+            opacity: 0.6;
+            transform: translate(-30px, -30px) scale(1.1);
+          }
+        }
+        
+        @keyframes particleFloat {
+          0%, 100% { 
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 0.8;
+          }
+          25% { 
+            transform: translate(-20px, -30px) rotate(90deg);
+            opacity: 1;
+          }
+          50% { 
+            transform: translate(-40px, 0px) rotate(180deg);
+            opacity: 0.6;
+          }
+          75% { 
+            transform: translate(-20px, 30px) rotate(270deg);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes energyWave {
+          0% { 
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          50% { 
             opacity: 1;
           }
           100% { 
-            transform: scale(1);
-            opacity: 0.8;
+            transform: translateX(-100%);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes pulseRing {
+          0% {
+            transform: translate(-50%, -50%) scale(0.5);
+            opacity: 1;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(3);
+            opacity: 0;
           }
         }
       `}</style>
