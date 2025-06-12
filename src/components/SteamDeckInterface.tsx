@@ -92,13 +92,11 @@ export function SteamDeckInterface({ currentTime, settings, onSettingsChange, fo
 
   return (
     <div 
-      className="fixed inset-0 bg-black text-white overflow-hidden select-none"
+      className="w-full h-full bg-black text-white overflow-hidden select-none relative"
       style={{ 
-        width: 'calc(100% - 20px)', 
-        height: 'calc(100vh - 20px)',
         background: 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 30%, #1a1a1a 70%, #0a0a0a 100%)',
         fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        margin: '10px'
+        borderRadius: '20px'
       }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
