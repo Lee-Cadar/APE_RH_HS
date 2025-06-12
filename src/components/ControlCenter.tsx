@@ -75,62 +75,62 @@ export function ControlCenter({
 
   // Get color based on value and thresholds
   const getMetricColor = (value: number, good: number, bad: number) => {
-    if (value <= good) return '#007aff'; // Blue for good
+    if (value <= good) return '#34c759'; // Green for good
     if (value >= bad) return '#ff3b30'; // Red for bad
-    return '#f5f5f7'; // Pale white for normal
+    return '#ff9500'; // Orange for warning
   };
 
-  // Modern Unified Panel Component with Consistent Styling
+  // Modern Unified Panel Component with Clean Design
   const ModernPanel = ({ 
     title, 
     icon: Icon, 
     metrics, 
-    onClick 
+    onClick,
+    color = '#007aff'
   }: {
     title: string;
     icon: any;
-    metrics: Array<{label: string; value: string | number; unit?: string; isDangerous?: boolean}>;
+    metrics: Array<{label: string; value: string | number; unit?: string; color?: string}>;
     onClick: () => void;
+    color?: string;
   }) => {
     return (
       <button
         onClick={onClick}
-        className="modern-metrics-panel transition-all duration-500 transform hover:scale-105 active:scale-95 group p-8"
-        style={{ height: '224px' }} // 20% smaller than 280px
+        className="modern-metrics-panel transition-all duration-300 transform hover:scale-105 active:scale-95 group p-6"
+        style={{ height: '280px' }}
       >
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 rounded-xl" style={{ backgroundColor: 'rgba(0, 122, 255, 0.2)' }}>
-              <Icon className="w-8 h-8" style={{ color: '#007aff' }} />
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-3">
+            <div className="p-3 rounded-xl" style={{ backgroundColor: `${color}20` }}>
+              <Icon className="w-6 h-6" style={{ color }} />
             </div>
-            <h3 className="font-medium modern-font tracking-tight" style={{ color: '#f5f5f7', fontSize: fontSizes.h1 }}>
+            <h3 className="font-medium modern-font tracking-tight" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
               {title}
             </h3>
           </div>
-          <div className="w-3 h-3 animate-pulse rounded-full" 
+          <div className="w-2 h-2 animate-pulse rounded-full" 
                style={{ 
-                 backgroundColor: '#007aff',
-                 boxShadow: '0 0 8px #007aff'
+                 backgroundColor: color,
+                 boxShadow: `0 0 8px ${color}`
                }}></div>
         </div>
         
-        {/* Perfect 2x2 grid for 4 metrics */}
-        <div className="grid grid-cols-2 gap-6 h-32">
+        {/* Metrics Grid - Clean 2x2 layout */}
+        <div className="grid grid-cols-2 gap-6 h-48">
           {metrics.map((metric, index) => (
-            <div key={index} className="text-center flex flex-col justify-center">
-              <div className="font-medium mb-2" 
+            <div key={index} className="flex flex-col justify-center items-center text-center">
+              <div className="font-bold mb-2" 
                    style={{ 
-                     color: metric.isDangerous ? '#ff3b30' : '#007aff',
+                     color: metric.color || color,
                      fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                     fontSize: fontSizes.value,
-                     maxWidth: '100%',
-                     overflow: 'hidden',
-                     textOverflow: 'ellipsis'
+                     fontSize: fontSizes.value
                    }}>
                 {metric.value}{metric.unit || ''}
               </div>
-              <div className="modern-font opacity-70" 
-                   style={{ color: '#f5f5f7', fontSize: fontSizes.h3 }}>
+              <div className="modern-font opacity-80" 
+                   style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
                 {metric.label}
               </div>
             </div>
@@ -138,11 +138,11 @@ export function ControlCenter({
         </div>
         
         {/* Status indicator */}
-        <div className="mt-6 flex justify-center">
-          <div className="w-5 h-5 animate-pulse rounded-full" 
+        <div className="mt-4 flex justify-center">
+          <div className="w-4 h-4 animate-pulse rounded-full" 
                style={{ 
-                 backgroundColor: '#007aff',
-                 boxShadow: '0 0 12px rgba(0, 122, 255, 0.5)'
+                 backgroundColor: color,
+                 boxShadow: `0 0 12px ${color}50`
                }}></div>
         </div>
       </button>
@@ -156,135 +156,244 @@ export function ControlCenter({
         <div className="floating-elements"></div>
       </div>
 
-      {/* Main Grid Layout */}
-      <div className="relative z-10 grid grid-cols-4 gap-8" 
-           style={{ height: 'calc(100% - 100px)' }}>
+      {/* Main Grid Layout - Cleaner spacing */}
+      <div className="relative z-10 space-y-8">
         
-        {/* Top Left - Processing Panel */}
-        <div className="w-full">
+        {/* Top Row - Key Metrics */}
+        <div className="grid grid-cols-4 gap-6">
+          
+          {/* CPU Panel */}
           <ModernPanel
-            title="Processing"
+            title="CPU Core"
             icon={Cpu}
+            color="#007aff"
             onClick={() => onMetricClick('cpu')}
             metrics={[
-              { label: 'CPU Usage', value: systemMetrics.cpuUsage.toFixed(1), unit: '%', isDangerous: systemMetrics.cpuUsage > 85 },
-              { label: 'CPU Temp', value: temperature.toFixed(1), unit: '°C', isDangerous: temperature > 80 },
-              { label: 'GPU Usage', value: gpuMetrics.usage.toFixed(1), unit: '%', isDangerous: gpuMetrics.usage > 90 },
-              { label: 'GPU Temp', value: gpuMetrics.temperature.toFixed(1), unit: '°C', isDangerous: gpuMetrics.temperature > 80 }
+              { 
+                label: 'Usage', 
+                value: systemMetrics.cpuUsage.toFixed(1), 
+                unit: '%', 
+                color: getMetricColor(systemMetrics.cpuUsage, 50, 85) 
+              },
+              { 
+                label: 'Temperature', 
+                value: temperature.toFixed(1), 
+                unit: '°C', 
+                color: getMetricColor(temperature, 60, 80) 
+              },
+              { 
+                label: 'Load Avg', 
+                value: systemMetrics.loadAverage 
+              },
+              { 
+                label: 'Available', 
+                value: (100 - systemMetrics.cpuUsage).toFixed(1), 
+                unit: '%',
+                color: '#34c759'
+              }
             ]}
           />
-        </div>
 
-        {/* Top Center - CPU Retro Gauge - 20% smaller */}
-        <div className="w-full flex items-center justify-center">
-          <RetroGauge
-            value={systemMetrics.cpuUsage}
-            max={100}
-            label="CPU UTILIZATION"
-            unit="%"
-            color={systemMetrics.cpuUsage > 85 ? '#ff3b30' : '#007aff'}
-            size={176} // 20% smaller than 220
-            fontSizes={fontSizes}
+          {/* GPU Panel */}
+          <ModernPanel
+            title="GPU Core"
+            icon={Monitor}
+            color="#5856d6"
+            onClick={() => onMetricClick('gpu')}
+            metrics={[
+              { 
+                label: 'Usage', 
+                value: gpuMetrics.usage.toFixed(1), 
+                unit: '%', 
+                color: getMetricColor(gpuMetrics.usage, 60, 90) 
+              },
+              { 
+                label: 'Temperature', 
+                value: gpuMetrics.temperature.toFixed(1), 
+                unit: '°C', 
+                color: getMetricColor(gpuMetrics.temperature, 60, 80) 
+              },
+              { 
+                label: 'VRAM', 
+                value: ((gpuMetrics.memoryUsed/gpuMetrics.memoryTotal)*100).toFixed(1), 
+                unit: '%' 
+              },
+              { 
+                label: 'Power', 
+                value: gpuMetrics.powerDraw.toFixed(0), 
+                unit: 'W',
+                color: '#ff9500'
+              }
+            ]}
           />
-        </div>
 
-        {/* Top Right - GPU Retro Gauge - 20% smaller */}
-        <div className="w-full flex items-center justify-center">
-          <RetroGauge
-            value={gpuMetrics.usage}
-            max={100}
-            label="GPU UTILIZATION"
-            unit="%"
-            color={gpuMetrics.usage > 90 ? '#ff3b30' : '#5856d6'}
-            size={176} // 20% smaller than 220
-            fontSizes={fontSizes}
+          {/* Memory Panel */}
+          <ModernPanel
+            title="Memory"
+            icon={HardDrive}
+            color="#34c759"
+            onClick={() => onMetricClick('memory')}
+            metrics={[
+              { 
+                label: 'Usage', 
+                value: systemMetrics.memoryUsage.toFixed(1), 
+                unit: '%', 
+                color: getMetricColor(systemMetrics.memoryUsage, 70, 90) 
+              },
+              { 
+                label: 'Available', 
+                value: (100 - systemMetrics.memoryUsage).toFixed(1), 
+                unit: '%',
+                color: '#34c759'
+              },
+              { 
+                label: 'Processes', 
+                value: systemMetrics.processes 
+              },
+              { 
+                label: 'Uptime', 
+                value: systemMetrics.uptime 
+              }
+            ]}
           />
-        </div>
-        
-        {/* Top Far Right - Network Panel */}
-        <div className="w-full">
+
+          {/* Network Panel */}
           <ModernPanel
             title="Network"
             icon={Wifi}
+            color="#ff9500"
             onClick={() => onMetricClick('network')}
             metrics={[
-              { label: 'Signal', value: networkMetrics.signalStrength.toFixed(1), unit: '%', isDangerous: networkMetrics.signalStrength < 30 },
-              { label: 'Latency', value: networkMetrics.latency.toFixed(1), unit: 'ms', isDangerous: networkMetrics.latency > 150 },
-              { label: 'Download', value: formatBytes(networkMetrics.downloadSpeed).split(' ')[0], unit: formatBytes(networkMetrics.downloadSpeed).split(' ')[1] },
-              { label: 'Upload', value: formatBytes(networkMetrics.uploadSpeed).split(' ')[0], unit: formatBytes(networkMetrics.uploadSpeed).split(' ')[1] }
+              { 
+                label: 'Signal', 
+                value: networkMetrics.signalStrength.toFixed(1), 
+                unit: '%', 
+                color: getMetricColor(100 - networkMetrics.signalStrength, 20, 50) 
+              },
+              { 
+                label: 'Latency', 
+                value: networkMetrics.latency.toFixed(1), 
+                unit: 'ms', 
+                color: getMetricColor(networkMetrics.latency, 50, 150) 
+              },
+              { 
+                label: 'Download', 
+                value: formatBytes(networkMetrics.downloadSpeed).split(' ')[0], 
+                unit: formatBytes(networkMetrics.downloadSpeed).split(' ')[1] 
+              },
+              { 
+                label: 'Upload', 
+                value: formatBytes(networkMetrics.uploadSpeed).split(' ')[0], 
+                unit: formatBytes(networkMetrics.uploadSpeed).split(' ')[1] 
+              }
             ]}
           />
         </div>
 
-        {/* Bottom Left - Thermal Panel */}
-        <div className="w-full">
-          <ModernPanel
-            title="Thermal"
-            icon={Thermometer}
-            onClick={() => onMetricClick('temperature')}
-            metrics={[
-              { label: 'Core Temp', value: temperature.toFixed(1), unit: '°C', isDangerous: temperature > 80 },
-              { label: 'Fan Speed', value: fanSpeed.toFixed(1), unit: '%' },
-              { label: 'Status', value: ledColor === 'green' ? 'Optimal' : ledColor === 'yellow' ? 'Warning' : 'Critical', isDangerous: ledColor === 'red' },
-              { label: 'Mode', value: aiMode.charAt(0).toUpperCase() + aiMode.slice(1) }
-            ]}
-          />
-        </div>
+        {/* Bottom Row - Gauges and Status */}
+        <div className="grid grid-cols-3 gap-8">
+          
+          {/* CPU Gauge */}
+          <div className="flex items-center justify-center">
+            <RetroGauge
+              value={systemMetrics.cpuUsage}
+              max={100}
+              label="CPU UTILIZATION"
+              unit="%"
+              color={getMetricColor(systemMetrics.cpuUsage, 50, 85)}
+              size={200}
+              fontSizes={fontSizes}
+            />
+          </div>
 
-        {/* Bottom Center & Right - System Panel (spans 2 columns) */}
-        <div className="w-full col-span-2">
-          <ModernPanel
-            title="System"
-            icon={HardDrive}
-            onClick={() => onMetricClick('memory')}
-            metrics={[
-              { label: 'Memory', value: systemMetrics.memoryUsage.toFixed(1), unit: '%', isDangerous: systemMetrics.memoryUsage > 90 },
-              { label: 'Processes', value: systemMetrics.processes, isDangerous: systemMetrics.processes > 250 },
-              { label: 'Uptime', value: systemMetrics.uptime },
-              { label: 'Load Avg', value: systemMetrics.loadAverage, isDangerous: parseFloat(systemMetrics.loadAverage) > 2.0 }
-            ]}
-          />
-        </div>
+          {/* GPU Gauge */}
+          <div className="flex items-center justify-center">
+            <RetroGauge
+              value={gpuMetrics.usage}
+              max={100}
+              label="GPU UTILIZATION"
+              unit="%"
+              color={getMetricColor(gpuMetrics.usage, 60, 90)}
+              size={200}
+              fontSizes={fontSizes}
+            />
+          </div>
+          
+          {/* System Status Panel */}
+          <div className="modern-display p-6 flex flex-col justify-center">
+            <div className="text-center mb-6">
+              <h3 className="font-medium modern-font mb-4" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
+                System Status
+              </h3>
+              
+              {/* AI Mode Display */}
+              <div className="mb-4">
+                <div className="font-bold mb-2" 
+                     style={{ 
+                       color: aiMode === 'optimal' ? '#34c759' : 
+                              aiMode === 'gaming' ? '#ff3b30' : 
+                              aiMode === 'cinema' ? '#5856d6' : '#ff9500',
+                       fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                       fontSize: fontSizes.value
+                     }}>
+                  {aiMode.toUpperCase()}
+                </div>
+                <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
+                  AI Mode Active
+                </div>
+              </div>
 
-        {/* Bottom Far Right - AI Mode Status */}
-        <div className="w-full flex items-center justify-center">
-          <div className="modern-display p-8 text-center w-full h-full flex flex-col justify-center">
-            <div className="modern-font font-bold mb-3" style={{ color: '#f5f5f7', fontSize: fontSizes.h1 }}>
-              AI MODE
-            </div>
-            <div className="font-bold mb-4" 
-                 style={{ 
-                   color: aiMode === 'optimal' ? '#34c759' : 
-                          aiMode === 'gaming' ? '#ff3b30' : 
-                          aiMode === 'cinema' ? '#5856d6' : '#ff9500',
-                   fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                   fontSize: fontSizes.value
-                 }}>
-              {aiMode.toUpperCase()}
-            </div>
-            <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
-              ACTIVE OPTIMIZATION
+              {/* Thermal Status */}
+              <div className="mb-4">
+                <div className="font-bold mb-2" 
+                     style={{ 
+                       color: getMetricColor(temperature, 60, 80),
+                       fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                       fontSize: fontSizes.value
+                     }}>
+                  {temperature < 60 ? 'OPTIMAL' : temperature < 80 ? 'WARM' : 'HOT'}
+                </div>
+                <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
+                  Thermal State
+                </div>
+              </div>
+
+              {/* Performance State */}
+              <div>
+                <div className="font-bold mb-2" 
+                     style={{ 
+                       color: performanceState === 'performance' ? '#34c759' : 
+                              performanceState === 'balanced' ? '#ff9500' : '#ff3b30',
+                       fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                       fontSize: fontSizes.value
+                     }}>
+                  {performanceState.toUpperCase()}
+                </div>
+                <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
+                  Performance Mode
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Generate Report Button - Bottom Center */}
-      <div className="relative z-10 mt-8 flex justify-center">
-        <button
-          onClick={() => onSendReport('all')}
-          className="modern-button px-10 py-4 transition-all duration-300 flex items-center space-x-4 modern-font font-medium hover:scale-105"
-          style={{ 
-            backgroundColor: 'rgba(0, 122, 255, 0.1)',
-            color: '#007aff',
-            borderColor: 'rgba(0, 122, 255, 0.3)',
-            boxShadow: '0 0 20px rgba(0, 122, 255, 0.2)',
-            fontSize: fontSizes.h2
-          }}
-        >
-          <Mail className="w-6 h-6" />
-          <span>GENERATE COMPREHENSIVE REPORT</span>
-        </button>
+        {/* Generate Report Button */}
+        <div className="flex justify-center">
+          <button
+            onClick={() => onSendReport('all')}
+            className="modern-button px-8 py-4 transition-all duration-300 flex items-center space-x-3 modern-font font-medium hover:scale-105"
+            style={{ 
+              backgroundColor: 'rgba(0, 122, 255, 0.1)',
+              color: '#007aff',
+              borderColor: 'rgba(0, 122, 255, 0.3)',
+              boxShadow: '0 0 20px rgba(0, 122, 255, 0.2)',
+              fontSize: fontSizes.h2
+            }}
+          >
+            <Mail className="w-5 h-5" />
+            <span>GENERATE COMPREHENSIVE REPORT</span>
+          </button>
+        </div>
       </div>
 
       {/* Enhanced Modern CSS animations */}
@@ -297,7 +406,7 @@ export function ControlCenter({
           box-shadow: 
             0 8px 32px rgba(0, 0, 0, 0.1),
             inset 0 1px 0 rgba(255, 255, 255, 0.1);
-          transition: all 0.5s ease;
+          transition: all 0.3s ease;
           width: 100%;
         }
         
@@ -327,7 +436,7 @@ export function ControlCenter({
         .modern-display {
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
+          border-radius: 16px;
           backdrop-filter: blur(20px);
         }
         

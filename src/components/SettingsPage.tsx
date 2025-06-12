@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Monitor, Type, Gamepad2, Save, RotateCcw, ArrowLeft, Activity, Globe, Shield, Music, Film, Camera, User } from 'lucide-react';
+import { Settings, Monitor, Type, Save, RotateCcw, ArrowLeft, Activity } from 'lucide-react';
 
 interface SettingsPageProps {
   settings: any;
@@ -11,25 +11,6 @@ interface SettingsPageProps {
 export function SettingsPage({ settings, onSettingsChange, fontSizes, onBack }: SettingsPageProps) {
   const [localSettings, setLocalSettings] = useState(settings);
   const [hasChanges, setHasChanges] = useState(false);
-
-  // Available programs for shortcuts
-  const availablePrograms = [
-    { name: 'Steam', icon: Gamepad2, color: '#007aff' },
-    { name: 'Discord', icon: User, color: '#5865f2' },
-    { name: 'Chrome', icon: Globe, color: '#4285f4' },
-    { name: 'Spotify', icon: Music, color: '#1db954' },
-    { name: 'OBS', icon: Camera, color: '#302e31' },
-    { name: 'VS Code', icon: Monitor, color: '#007acc' },
-    { name: 'Netflix', icon: Film, color: '#e50914' },
-    { name: 'Settings', icon: Settings, color: '#5856d6' },
-    { name: 'Activity', icon: Activity, color: '#ff3b30' },
-    { name: 'Shield', icon: Shield, color: '#34c759' },
-    { name: 'YouTube', icon: Film, color: '#ff0000' },
-    { name: 'Twitch', icon: Camera, color: '#9146ff' },
-    { name: 'Firefox', icon: Globe, color: '#ff7139' },
-    { name: 'Telegram', icon: User, color: '#0088cc' },
-    { name: 'WhatsApp', icon: User, color: '#25d366' }
-  ];
 
   const handleSave = () => {
     onSettingsChange(localSettings);
@@ -48,17 +29,6 @@ export function SettingsPage({ settings, onSettingsChange, fontSizes, onBack }: 
       [key]: value
     }));
     setHasChanges(true);
-  };
-
-  const updateShortcut = (index: number, program: any) => {
-    const newShortcuts = [...localSettings.steamDeckShortcuts];
-    newShortcuts[index] = {
-      id: index,
-      name: program.name,
-      icon: program.icon,
-      color: program.color
-    };
-    updateSetting('steamDeckShortcuts', newShortcuts);
   };
 
   return (
@@ -106,7 +76,7 @@ export function SettingsPage({ settings, onSettingsChange, fontSizes, onBack }: 
               <h2 className="font-medium modern-font tracking-tight" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
                 System Settings
               </h2>
-              <p className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>Configure display, accessibility, and interface preferences</p>
+              <p className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>Configure display and accessibility preferences</p>
             </div>
           </div>
           
@@ -142,85 +112,68 @@ export function SettingsPage({ settings, onSettingsChange, fontSizes, onBack }: 
       </div>
 
       {/* Main Content */}
-      <div className="relative grid grid-cols-2 gap-10 h-[calc(100%-180px)] p-8">
-        {/* Left Column - Display & Font Settings */}
-        <div className="space-y-6">
-          {/* Display Configuration */}
-          <div className="modern-panel p-8 shadow-lg">
-            <div className="flex items-center space-x-3 mb-8">
-              <div className="p-3 rounded-xl" style={{ backgroundColor: 'rgba(0, 122, 255, 0.2)' }}>
-                <Monitor className="w-6 h-6" style={{ color: '#007aff' }} />
-              </div>
-              <h3 className="font-bold tech-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
-                Display Configuration
-              </h3>
-            </div>
-            
-            <div className="space-y-6">
-              <div>
-                <label className="block font-medium mb-4 tech-font" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
-                  Primary Screen
-                </label>
-                <div className="space-y-3">
-                  {[
-                    { value: 'left', label: 'Left (Steam Deck Interface)' },
-                    { value: 'right', label: 'Right (Command Center)' }
-                  ].map((option) => (
-                    <label key={option.value} className="flex items-center space-x-3 modern-display p-4 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="primaryScreen"
-                        value={option.value}
-                        checked={localSettings.primaryScreen === option.value}
-                        onChange={(e) => updateSetting('primaryScreen', e.target.value)}
-                        className="w-4 h-4"
-                      />
-                      <span className="tech-font" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
-                        {option.label}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
+      <div className="relative flex justify-center items-center h-[calc(100%-180px)] p-8">
+        <div className="w-full max-w-2xl space-y-8">
+          
           {/* Font Size Settings */}
           <div className="modern-panel p-8 shadow-lg">
-            <div className="flex items-center space-x-3 mb-8">
-              <div className="p-3 rounded-xl" style={{ backgroundColor: 'rgba(52, 199, 89, 0.2)' }}>
-                <Type className="w-6 h-6" style={{ color: '#34c759' }} />
+            <div className="flex items-center space-x-4 mb-8">
+              <div className="p-4 rounded-xl" style={{ backgroundColor: 'rgba(52, 199, 89, 0.2)' }}>
+                <Type className="w-8 h-8" style={{ color: '#34c759' }} />
               </div>
-              <h3 className="font-bold tech-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
-                Accessibility
-              </h3>
+              <div>
+                <h3 className="font-bold tech-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
+                  Accessibility Settings
+                </h3>
+                <p className="tech-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
+                  Adjust font sizes for better readability
+                </p>
+              </div>
             </div>
 
             <div>
-              <label className="block font-medium mb-4 tech-font" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
-                Font Size (Accessibility)
+              <label className="block font-medium mb-6 tech-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
+                Font Size
               </label>
               <div className="space-y-4">
                 {[
-                  { value: 'small', label: 'Small (Standard)', desc: 'h1:21px, h2:13px, h3:9px, icons:19px' },
-                  { value: 'medium', label: 'Medium (Balanced)', desc: 'h1:26px, h2:16px, h3:11px, icons:24px' },
-                  { value: 'large', label: 'Large (Accessibility)', desc: 'h1:31px, h2:20px, h3:14px, icons:29px' }
+                  { value: 'small', label: 'Small (Standard)', desc: 'Compact interface with smaller text' },
+                  { value: 'medium', label: 'Medium (Recommended)', desc: 'Balanced readability and space usage' },
+                  { value: 'large', label: 'Large (Accessibility)', desc: 'Enhanced readability for better accessibility' }
                 ].map((option) => (
-                  <label key={option.value} className="modern-display p-4 flex items-start space-x-3 cursor-pointer">
+                  <label key={option.value} className="modern-display p-6 flex items-start space-x-4 cursor-pointer transition-all duration-300 hover:bg-white/10">
                     <input
                       type="radio"
                       name="fontSize"
                       value={option.value}
                       checked={localSettings.fontSize === option.value}
                       onChange={(e) => updateSetting('fontSize', e.target.value)}
-                      className="w-4 h-4 mt-1"
+                      className="w-5 h-5 mt-1"
+                      style={{ accentColor: '#007aff' }}
                     />
-                    <div>
-                      <span className="tech-font font-bold" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
-                        {option.label}
-                      </span>
-                      <div className="tech-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="tech-font font-bold" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
+                          {option.label}
+                        </span>
+                        {localSettings.fontSize === option.value && (
+                          <div className="px-3 py-1 rounded-full" style={{ backgroundColor: 'rgba(0, 122, 255, 0.2)', color: '#007aff' }}>
+                            <span className="tech-font font-bold" style={{ fontSize: fontSizes.h3 }}>ACTIVE</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="tech-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
                         {option.desc}
+                      </div>
+                      
+                      {/* Preview Text */}
+                      <div className="mt-4 p-4 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
+                        <div className="tech-font" style={{ color: '#ffffff', fontSize: option.value === 'small' ? '21px' : option.value === 'medium' ? '26px' : '31px' }}>
+                          Sample Text Preview
+                        </div>
+                        <div className="tech-font" style={{ color: '#8e8e93', fontSize: option.value === 'small' ? '13px' : option.value === 'medium' ? '16px' : '20px' }}>
+                          This is how text will appear with this setting
+                        </div>
                       </div>
                     </div>
                   </label>
@@ -228,133 +181,57 @@ export function SettingsPage({ settings, onSettingsChange, fontSizes, onBack }: 
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Right Column - Steam Deck Settings */}
-        <div className="space-y-6">
-          {/* Steam Deck Interface */}
+          {/* System Information */}
           <div className="modern-panel p-8 shadow-lg">
-            <div className="flex items-center space-x-3 mb-8">
-              <div className="p-3 rounded-xl" style={{ backgroundColor: 'rgba(88, 86, 214, 0.2)' }}>
-                <Gamepad2 className="w-6 h-6" style={{ color: '#5856d6' }} />
+            <div className="flex items-center space-x-4 mb-8">
+              <div className="p-4 rounded-xl" style={{ backgroundColor: 'rgba(0, 122, 255, 0.2)' }}>
+                <Monitor className="w-8 h-8" style={{ color: '#007aff' }} />
               </div>
-              <h3 className="font-bold tech-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
-                Steam Deck Interface
-              </h3>
-            </div>
-            
-            <div className="space-y-6">
               <div>
-                <label className="block font-medium mb-4 tech-font" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
-                  Shortcut Grid (2x5 Layout - 10 Icons)
-                </label>
-                <div className="tech-font mb-4" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
-                  Configure the 10 application shortcuts on the left screen
-                </div>
-                
-                <div className="grid grid-cols-5 gap-3 p-4 modern-display mb-6">
-                  {localSettings.steamDeckShortcuts.slice(0, 10).map((shortcut: any, index: number) => (
-                    <div
-                      key={index}
-                      className="aspect-square rounded-lg flex flex-col items-center justify-center p-2 modern-button cursor-pointer"
-                      style={{ 
-                        backgroundColor: `${shortcut.color}20`,
-                        borderColor: `${shortcut.color}50`
-                      }}
-                      onClick={() => {
-                        // Show program selector for this slot
-                        const selectedProgram = availablePrograms[Math.floor(Math.random() * availablePrograms.length)];
-                        updateShortcut(index, selectedProgram);
-                      }}
-                    >
-                      <shortcut.icon className="w-6 h-6 mb-1" style={{ color: shortcut.color }} />
-                      <span className="tech-font text-center" style={{ color: '#ffffff', fontSize: fontSizes.h3 }}>
-                        {shortcut.name.length > 6 ? shortcut.name.slice(0, 4) + '..' : shortcut.name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Program Selection */}
-                <div>
-                  <label className="block font-medium mb-4 tech-font" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
-                    Available Programs
-                  </label>
-                  <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto modern-display p-4">
-                    {availablePrograms.map((program, index) => (
-                      <button
-                        key={index}
-                        onClick={() => {
-                          // Find first empty slot or replace last one
-                          const targetIndex = localSettings.steamDeckShortcuts.findIndex((s: any, i: number) => 
-                            i < 10 && s.name === `App ${i + 1}`
-                          );
-                          const indexToUpdate = targetIndex !== -1 ? targetIndex : 9;
-                          updateShortcut(indexToUpdate, program);
-                        }}
-                        className="flex items-center space-x-2 p-2 modern-button text-left"
-                        style={{ 
-                          backgroundColor: `${program.color}10`,
-                          borderColor: `${program.color}30`
-                        }}
-                      >
-                        <program.icon className="w-4 h-4" style={{ color: program.color }} />
-                        <span className="tech-font" style={{ color: '#ffffff', fontSize: fontSizes.h3 }}>
-                          {program.name}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                <h3 className="font-bold tech-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
+                  System Information
+                </h3>
+                <p className="tech-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
+                  Current system configuration
+                </p>
               </div>
-            </div>
-          </div>
-
-          {/* Gesture Controls Info */}
-          <div className="modern-panel p-8 shadow-lg">
-            <div className="flex items-center space-x-3 mb-8">
-              <div className="p-3 rounded-xl" style={{ backgroundColor: 'rgba(255, 149, 0, 0.2)' }}>
-                <Activity className="w-6 h-6" style={{ color: '#ff9500' }} />
-              </div>
-              <h3 className="font-bold tech-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
-                Gesture Controls
-              </h3>
             </div>
             
-            <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-6">
               <div className="modern-display p-6">
                 <div className="font-medium tech-font mb-2" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
-                  RGB Control Overlay
+                  Application Version
                 </div>
-                <div className="tech-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
-                  Swipe bottom-to-top on left screen
-                </div>
-                <div className="tech-font mt-2" style={{ color: '#34c759', fontSize: fontSizes.h3 }}>
-                  5 customizable RGB lighting zones
+                <div className="tech-font" style={{ color: '#007aff', fontSize: fontSizes.h1 }}>
+                  APE System v2.1.0
                 </div>
               </div>
               
               <div className="modern-display p-6">
                 <div className="font-medium tech-font mb-2" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
-                  Audio Control Overlay
+                  Interface Mode
                 </div>
-                <div className="tech-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
-                  Swipe right-to-left on left screen
-                </div>
-                <div className="tech-font mt-2" style={{ color: '#34c759', fontSize: fontSizes.h3 }}>
-                  Volume, treble, bass, and mid-range sliders
+                <div className="tech-font" style={{ color: '#34c759', fontSize: fontSizes.h1 }}>
+                  Single Screen
                 </div>
               </div>
-
+              
               <div className="modern-display p-6">
                 <div className="font-medium tech-font mb-2" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
-                  Screen Modes
+                  Theme
                 </div>
-                <div className="tech-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
-                  Steam Deck • Camera Feed • System Controls
+                <div className="tech-font" style={{ color: '#ff9500', fontSize: fontSizes.h1 }}>
+                  Dark Mode
                 </div>
-                <div className="tech-font mt-1" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
-                  Switch modes using top-right buttons
+              </div>
+              
+              <div className="modern-display p-6">
+                <div className="font-medium tech-font mb-2" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
+                  Performance
+                </div>
+                <div className="tech-font" style={{ color: '#5856d6', fontSize: fontSizes.h1 }}>
+                  Optimized
                 </div>
               </div>
             </div>
