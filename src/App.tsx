@@ -19,7 +19,7 @@ import { NetworkAnalyzer } from './components/NetworkAnalyzer';
 import { PCInfoPage } from './components/PCInfoPage';
 import { SettingsPage } from './components/SettingsPage';
 import { useAPESimulation } from './hooks/useAPESimulation';
-import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap, Globe, User, Monitor, Info, Power, RotateCcw, Moon, Gamepad2, Music, Film, Camera } from 'lucide-react';
+import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap, Globe, User, Monitor, Info, Power, RotateCcw, Moon, Gamepad2, Music, Film, Camera, X } from 'lucide-react';
 
 type ViewType = 'control' | 'processing' | 'network' | 'thermal' | 'system' | 'config' | 'logs' | 'network-analyzer' | 'pc-info' | 'vpn' | 'exit' | 'settings';
 type ScreenMode = 'intro' | 'main' | 'steamdeck' | 'exit';
@@ -162,6 +162,7 @@ function App() {
     { id: 'config', label: 'CONFIG', icon: Settings },
     { id: 'logs', label: 'LOGS', icon: Thermometer },
     { id: 'network-analyzer', label: 'NETWORK', icon: Monitor },
+    { id: 'vpn', label: 'VPN', icon: Globe },
     { id: 'pc-info', label: 'PC INFO', icon: Info }
   ];
 
@@ -353,7 +354,7 @@ function App() {
             height: '100%',
             background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 30%, #2a2a2a 70%, #1a1a1a 100%)',
             fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-            color: '#ffffff',
+            color: '#f5f5f7',
             borderRadius: '20px'
           }}
         >
@@ -409,7 +410,7 @@ function App() {
                 <div className="flex items-center space-x-2">
                   <Calendar className="w-4 h-4" style={{ color: '#007aff' }} />
                   <div>
-                    <div className="font-medium modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h3 }}>
+                    <div className="font-medium modern-font" style={{ color: '#f5f5f7', fontSize: fontSizes.h3 }}>
                       {formatDate(currentTime)}
                     </div>
                     <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
@@ -428,7 +429,7 @@ function App() {
                 >
                   <MapPin className="w-4 h-4" style={{ color: '#34c759' }} />
                   <div>
-                    <div className="font-medium modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h3 }}>
+                    <div className="font-medium modern-font" style={{ color: '#f5f5f7', fontSize: fontSizes.h3 }}>
                       {locationInfo.postcode}
                     </div>
                     <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
@@ -438,62 +439,33 @@ function App() {
                 </button>
               </div>
               
-              {/* Right Side - Status, Power Buttons, AI Mode, Profile */}
+              {/* Center - Logo */}
+              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <img 
+                  src="/Triangle_logo_black_nobg_no_letters copy.png" 
+                  alt="APE Logo" 
+                  className="object-contain breathing-logo"
+                  style={{ 
+                    width: '30px', 
+                    height: '30px',
+                  }}
+                />
+              </div>
+              
+              {/* Right Side - Profile, Settings, Power Buttons, AI Mode */}
               <div className="flex items-center space-x-3">
-                <div className="modern-display px-3 py-2 font-medium modern-font" 
-                style={{ 
-                  backgroundColor: temperature < 60 ? 'rgba(52, 199, 89, 0.1)' : temperature < 80 ? 'rgba(255, 149, 0, 0.1)' : 'rgba(255, 59, 48, 0.1)',
-                  borderColor: temperature < 60 ? 'rgba(52, 199, 89, 0.3)' : temperature < 80 ? 'rgba(255, 149, 0, 0.3)' : 'rgba(255, 59, 48, 0.3)',
-                  color: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30',
-                  fontSize: fontSizes.h3
-                }}>
-                  {temperature < 60 ? 'OPTIMAL' : temperature < 80 ? 'WARNING' : 'CRITICAL'}
-                </div>
+                {/* Profile Button with X */}
+                <button 
+                  onClick={() => setIsSecurityOpen(true)}
+                  className="modern-button p-2 transition-all duration-300 hover:scale-105"
+                  style={{ 
+                    backgroundColor: 'rgba(88, 86, 214, 0.1)',
+                    borderColor: 'rgba(88, 86, 214, 0.3)',
+                  }}
+                >
+                  <X className="w-3 h-3" style={{ color: '#5856d6' }} />
+                </button>
 
-                {/* Power Button Module */}
-                <div className="flex items-center space-x-1">
-                  <button
-                    onClick={() => setShowPowerConfirm('reset')}
-                    className="modern-button p-2 transition-all duration-300 hover:scale-105"
-                    style={{ 
-                      backgroundColor: 'rgba(255, 59, 48, 0.1)',
-                      borderColor: 'rgba(255, 59, 48, 0.3)',
-                    }}
-                    title="System Reset"
-                  >
-                    <RotateCcw className="w-3 h-3" style={{ color: '#ff3b30' }} />
-                  </button>
-
-                  <button
-                    onClick={() => setShowPowerConfirm('shutdown')}
-                    className="modern-button p-2 transition-all duration-300 hover:scale-105"
-                    style={{ 
-                      backgroundColor: 'rgba(255, 149, 0, 0.1)',
-                      borderColor: 'rgba(255, 149, 0, 0.3)',
-                    }}
-                    title="System Shutdown"
-                  >
-                    <Power className="w-3 h-3" style={{ color: '#ff9500' }} />
-                  </button>
-
-                  <button
-                    onClick={() => setShowPowerConfirm('sleep')}
-                    className="modern-button p-2 transition-all duration-300 hover:scale-105"
-                    style={{ 
-                      backgroundColor: 'rgba(88, 86, 214, 0.1)',
-                      borderColor: 'rgba(88, 86, 214, 0.3)',
-                    }}
-                    title="System Sleep"
-                  >
-                    <Moon className="w-3 h-3" style={{ color: '#5856d6' }} />
-                  </button>
-                </div>
-
-                {/* AI Mode Button */}
-                <div style={{ zIndex: 2000 }}>
-                  <AIOptimalButton currentMode={aiMode} onModeChange={setAiMode} fontSizes={fontSizes} />
-                </div>
-                
                 {/* Settings Button */}
                 <button 
                   onClick={() => setCurrentView('settings')}
@@ -506,35 +478,54 @@ function App() {
                   <Settings className="w-3 h-3" style={{ color: '#ff9500' }} />
                 </button>
 
-                {/* Logo */}
-                <div className="relative">
-                  <img 
-                    src="/Triangle_logo_black_nobg_no_letters copy.png" 
-                    alt="APE Logo" 
-                    className="object-contain breathing-logo"
-                    style={{ 
-                      width: '30px', 
-                      height: '30px',
-                    }}
-                  />
-                </div>
-
-                {/* Profile Button */}
-                <button 
-                  onClick={() => setIsSecurityOpen(true)}
+                {/* Sleep Button */}
+                <button
+                  onClick={() => setShowPowerConfirm('sleep')}
                   className="modern-button p-2 transition-all duration-300 hover:scale-105"
                   style={{ 
                     backgroundColor: 'rgba(88, 86, 214, 0.1)',
                     borderColor: 'rgba(88, 86, 214, 0.3)',
                   }}
+                  title="System Sleep"
                 >
-                  <User className="w-3 h-3" style={{ color: '#5856d6' }} />
+                  <Moon className="w-3 h-3" style={{ color: '#5856d6' }} />
                 </button>
+
+                {/* Reset Button */}
+                <button
+                  onClick={() => setShowPowerConfirm('reset')}
+                  className="modern-button p-2 transition-all duration-300 hover:scale-105"
+                  style={{ 
+                    backgroundColor: 'rgba(255, 59, 48, 0.1)',
+                    borderColor: 'rgba(255, 59, 48, 0.3)',
+                  }}
+                  title="System Reset"
+                >
+                  <RotateCcw className="w-3 h-3" style={{ color: '#ff3b30' }} />
+                </button>
+
+                {/* Shutdown Button */}
+                <button
+                  onClick={() => setShowPowerConfirm('shutdown')}
+                  className="modern-button p-2 transition-all duration-300 hover:scale-105"
+                  style={{ 
+                    backgroundColor: 'rgba(255, 149, 0, 0.1)',
+                    borderColor: 'rgba(255, 149, 0, 0.3)',
+                  }}
+                  title="System Shutdown"
+                >
+                  <Power className="w-3 h-3" style={{ color: '#ff9500' }} />
+                </button>
+
+                {/* AI Mode Button */}
+                <div style={{ zIndex: 2000 }}>
+                  <AIOptimalButton currentMode={aiMode} onModeChange={setAiMode} fontSizes={fontSizes} />
+                </div>
               </div>
             </div>
           </header>
 
-          {/* Navigation for Control, Config, Logs, Network Analyzer, PC Info */}
+          {/* Navigation for Control, Config, Logs, Network Analyzer, VPN, PC Info */}
           {(currentView === 'control' || currentView === 'config' || currentView === 'logs' || currentView === 'network-analyzer' || currentView === 'pc-info') && (
             <nav className="relative modern-nav border-b z-20" 
                  style={{ 
@@ -558,7 +549,7 @@ function App() {
                       }`}
                       style={{ 
                         backgroundColor: currentView === tab.id ? 'rgba(0, 122, 255, 0.1)' : 'transparent',
-                        color: currentView === tab.id ? '#007aff' : '#8e8e93',
+                        color: currentView === tab.id ? '#007aff' : '#f5f5f7',
                         borderBottom: currentView === tab.id ? '3px solid #007aff' : '3px solid transparent',
                         fontSize: fontSizes.h3
                       }}
@@ -588,6 +579,7 @@ function App() {
                   onSendReport={handleSendReport}
                   locationInfo={locationInfo}
                   aiMode={aiMode}
+                  fontSizes={fontSizes}
                 />
               )}
 
@@ -611,6 +603,7 @@ function App() {
                   networkMetrics={networkMetrics} 
                   onBack={handleBackToControl}
                   onSendReport={handleSendReport}
+                  fontSizes={fontSizes}
                 />
               )}
 
@@ -625,6 +618,7 @@ function App() {
                   onSendReport={handleSendReport}
                   aiMode={aiMode}
                   onModeChange={setAiMode}
+                  fontSizes={fontSizes}
                 />
               )}
 
@@ -633,6 +627,7 @@ function App() {
                   systemMetrics={systemMetrics} 
                   onBack={handleBackToControl}
                   onSendReport={handleSendReport}
+                  fontSizes={fontSizes}
                 />
               )}
 
@@ -640,19 +635,20 @@ function App() {
                 <ConfigPanel 
                   config={config}
                   onConfigUpdate={updateConfig}
+                  fontSizes={fontSizes}
                 />
               )}
 
               {currentView === 'logs' && (
-                <SystemLogs logs={logs} />
+                <SystemLogs logs={logs} fontSizes={fontSizes} />
               )}
 
               {currentView === 'network-analyzer' && (
-                <NetworkAnalyzer networkMetrics={networkMetrics} />
+                <NetworkAnalyzer networkMetrics={networkMetrics} fontSizes={fontSizes} />
               )}
 
               {currentView === 'pc-info' && (
-                <PCInfoPage />
+                <PCInfoPage fontSizes={fontSizes} />
               )}
             </div>
           </main>
@@ -688,7 +684,7 @@ function App() {
                     {showPowerConfirm === 'sleep' && <Moon className="w-8 h-8" style={{ color: '#5856d6' }} />}
                   </div>
                   
-                  <h3 className="font-bold tech-font mb-3" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
+                  <h3 className="font-bold tech-font mb-3" style={{ color: '#f5f5f7', fontSize: fontSizes.h1 }}>
                     Confirm {showPowerConfirm.charAt(0).toUpperCase() + showPowerConfirm.slice(1)}
                   </h3>
                   
@@ -899,13 +895,13 @@ function App() {
               animation: dataFlow 25s linear infinite;
             }
             
-            /* Multiple Pulse Rings */
+            /* Multiple Pulse Rings - 20% smaller */}
             .pulse-rings {
               position: absolute;
               top: 50%;
               right: 25%;
-              width: 300px;
-              height: 300px;
+              width: 240px;
+              height: 240px;
               transform: translate(50%, -50%);
             }
             
@@ -915,8 +911,8 @@ function App() {
               position: absolute;
               top: 50%;
               left: 50%;
-              width: 120px;
-              height: 120px;
+              width: 96px;
+              height: 96px;
               border: 2px solid rgba(0, 122, 255, 0.1);
               border-radius: 50%;
               transform: translate(-50%, -50%);
@@ -932,8 +928,8 @@ function App() {
               position: absolute;
               top: 30%;
               left: 20%;
-              width: 200px;
-              height: 200px;
+              width: 160px;
+              height: 160px;
             }
             
             .pulse-rings-2::before,
@@ -942,8 +938,8 @@ function App() {
               position: absolute;
               top: 50%;
               left: 50%;
-              width: 100px;
-              height: 100px;
+              width: 80px;
+              height: 80px;
               border: 1px solid rgba(255, 149, 0, 0.08);
               border-radius: 50%;
               transform: translate(-50%, -50%);
@@ -959,8 +955,8 @@ function App() {
               position: absolute;
               top: 70%;
               right: 60%;
-              width: 250px;
-              height: 250px;
+              width: 200px;
+              height: 200px;
             }
             
             .pulse-rings-3::before {
@@ -968,8 +964,8 @@ function App() {
               position: absolute;
               top: 50%;
               left: 50%;
-              width: 80px;
-              height: 80px;
+              width: 64px;
+              height: 64px;
               border: 1px solid rgba(255, 59, 48, 0.06);
               border-radius: 50%;
               transform: translate(-50%, -50%);
