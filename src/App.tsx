@@ -19,7 +19,28 @@ import { NetworkAnalyzer } from './components/NetworkAnalyzer';
 import { PCInfoPage } from './components/PCInfoPage';
 import { SettingsPage } from './components/SettingsPage';
 import { useAPESimulation } from './hooks/useAPESimulation';
-import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap, Globe, User, Monitor, Info, Power, RotateCcw, Moon, Gamepad2, Music, Film, Camera, X } from 'lucide-react';
+import { 
+  Settings01Icon, 
+  Activity01Icon, 
+  Thermometer01Icon, 
+  Shield01Icon, 
+  ArrowLeft01Icon, 
+  Location01Icon, 
+  Calendar01Icon, 
+  Flash01Icon, 
+  Globe01Icon, 
+  User01Icon, 
+  Monitor01Icon, 
+  InformationCircleIcon, 
+  PowerIcon, 
+  Rotate01Icon, 
+  Moon01Icon, 
+  GameController01Icon, 
+  MusicNote01Icon, 
+  VideoReplayIcon, 
+  Camera01Icon, 
+  Cancel01Icon 
+} from '@hugeicons/react';
 
 type ViewType = 'control' | 'processing' | 'network' | 'thermal' | 'system' | 'config' | 'logs' | 'network-analyzer' | 'pc-info' | 'vpn' | 'exit' | 'settings';
 type ScreenMode = 'intro' | 'main' | 'steamdeck' | 'exit';
@@ -45,7 +66,7 @@ function App() {
     steamDeckShortcuts: Array(10).fill(null).map((_, i) => ({
       id: i,
       name: i < 6 ? ['Steam', 'Discord', 'Chrome', 'Spotify', 'OBS', 'VS Code'][i] : `App ${i + 1}`,
-      icon: [Gamepad2, Music, Globe, Music, Camera, Monitor, Film, Settings, Activity, Shield][i % 10],
+      icon: [GameController01Icon, MusicNote01Icon, Globe01Icon, MusicNote01Icon, Camera01Icon, Monitor01Icon, VideoReplayIcon, Settings01Icon, Activity01Icon, Shield01Icon][i % 10],
       color: ['#007aff', '#5865f2', '#4285f4', '#1db954', '#302e31', '#007acc', '#ff9500', '#5856d6', '#ff3b30', '#34c759'][i % 10]
     }))
   });
@@ -158,12 +179,12 @@ function App() {
   };
 
   const navigationTabs = [
-    { id: 'control', label: 'CONTROL', icon: Shield },
-    { id: 'config', label: 'CONFIG', icon: Settings },
-    { id: 'logs', label: 'LOGS', icon: Thermometer },
-    { id: 'network-analyzer', label: 'NETWORK', icon: Monitor },
-    { id: 'vpn', label: 'VPN', icon: Globe },
-    { id: 'pc-info', label: 'PC INFO', icon: Info }
+    { id: 'control', label: 'CONTROL', icon: Shield01Icon },
+    { id: 'config', label: 'CONFIG', icon: Settings01Icon },
+    { id: 'logs', label: 'LOGS', icon: Thermometer01Icon },
+    { id: 'network-analyzer', label: 'NETWORK', icon: Monitor01Icon },
+    { id: 'vpn', label: 'VPN', icon: Globe01Icon },
+    { id: 'pc-info', label: 'PC INFO', icon: InformationCircleIcon }
   ];
 
   const handleMetricClick = (metricType: string) => {
@@ -408,7 +429,7 @@ function App() {
             <div className="flex items-center justify-between h-full px-4">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
-                  <Calendar className="w-4 h-4" style={{ color: '#007aff' }} />
+                  <Calendar01Icon className="w-4 h-4" style={{ color: '#007aff' }} />
                   <div>
                     <div className="font-medium modern-font" style={{ color: '#f5f5f7', fontSize: fontSizes.h3 }}>
                       {formatDate(currentTime)}
@@ -427,7 +448,7 @@ function App() {
                     borderColor: 'rgba(52, 199, 89, 0.3)',
                   }}
                 >
-                  <MapPin className="w-4 h-4" style={{ color: '#34c759' }} />
+                  <Location01Icon className="w-4 h-4" style={{ color: '#34c759' }} />
                   <div>
                     <div className="font-medium modern-font" style={{ color: '#f5f5f7', fontSize: fontSizes.h3 }}>
                       {locationInfo.postcode}
@@ -463,7 +484,7 @@ function App() {
                     borderColor: 'rgba(88, 86, 214, 0.3)',
                   }}
                 >
-                  <X className="w-3 h-3" style={{ color: '#5856d6' }} />
+                  <Cancel01Icon className="w-3 h-3" style={{ color: '#5856d6' }} />
                 </button>
 
                 {/* Settings Button */}
@@ -475,7 +496,7 @@ function App() {
                     borderColor: 'rgba(255, 149, 0, 0.3)',
                   }}
                 >
-                  <Settings className="w-3 h-3" style={{ color: '#ff9500' }} />
+                  <Settings01Icon className="w-3 h-3" style={{ color: '#ff9500' }} />
                 </button>
 
                 {/* Sleep Button */}
@@ -488,7 +509,7 @@ function App() {
                   }}
                   title="System Sleep"
                 >
-                  <Moon className="w-3 h-3" style={{ color: '#5856d6' }} />
+                  <Moon01Icon className="w-3 h-3" style={{ color: '#5856d6' }} />
                 </button>
 
                 {/* Reset Button */}
@@ -501,7 +522,7 @@ function App() {
                   }}
                   title="System Reset"
                 >
-                  <RotateCcw className="w-3 h-3" style={{ color: '#ff3b30' }} />
+                  <Rotate01Icon className="w-3 h-3" style={{ color: '#ff3b30' }} />
                 </button>
 
                 {/* Shutdown Button */}
@@ -514,7 +535,7 @@ function App() {
                   }}
                   title="System Shutdown"
                 >
-                  <Power className="w-3 h-3" style={{ color: '#ff9500' }} />
+                  <PowerIcon className="w-3 h-3" style={{ color: '#ff9500' }} />
                 </button>
 
                 {/* AI Mode Button */}
@@ -679,9 +700,9 @@ function App() {
                                          showPowerConfirm === 'shutdown' ? 'rgba(255, 149, 0, 0.2)' :
                                          'rgba(88, 86, 214, 0.2)'
                        }}>
-                    {showPowerConfirm === 'reset' && <RotateCcw className="w-8 h-8" style={{ color: '#ff3b30' }} />}
-                    {showPowerConfirm === 'shutdown' && <Power className="w-8 h-8" style={{ color: '#ff9500' }} />}
-                    {showPowerConfirm === 'sleep' && <Moon className="w-8 h-8" style={{ color: '#5856d6' }} />}
+                    {showPowerConfirm === 'reset' && <Rotate01Icon className="w-8 h-8" style={{ color: '#ff3b30' }} />}
+                    {showPowerConfirm === 'shutdown' && <PowerIcon className="w-8 h-8" style={{ color: '#ff9500' }} />}
+                    {showPowerConfirm === 'sleep' && <Moon01Icon className="w-8 h-8" style={{ color: '#5856d6' }} />}
                   </div>
                   
                   <h3 className="font-bold tech-font mb-3" style={{ color: '#f5f5f7', fontSize: fontSizes.h1 }}>
@@ -895,7 +916,7 @@ function App() {
               animation: dataFlow 25s linear infinite;
             }
             
-            /* Multiple Pulse Rings - 20% smaller */}
+            /* Multiple Pulse Rings - 20% smaller */
             .pulse-rings {
               position: absolute;
               top: 50%;
