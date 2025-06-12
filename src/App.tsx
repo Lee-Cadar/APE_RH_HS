@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IntroPage } from './components/IntroPage';
 import { SteamDeckInterface } from './components/SteamDeckInterface';
+import { CameraFeed } from './components/CameraFeed';
+import { SystemControls } from './components/SystemControls';
 import { VPNPage } from './components/VPNPage';
 import { ExitPage } from './components/ExitPage';
 import { ControlCenter } from './components/ControlCenter';
@@ -16,50 +18,44 @@ import { SecurityModal } from './components/SecurityModal';
 import { NetworkAnalyzer } from './components/NetworkAnalyzer';
 import { PCInfoPage } from './components/PCInfoPage';
 import { SettingsPage } from './components/SettingsPage';
-import { CameraFeed } from './components/CameraFeed';
 import { useAPESimulation } from './hooks/useAPESimulation';
-import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap, Globe, User, Monitor, Info, Power, RotateCcw, Moon, Camera } from 'lucide-react';
+import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap, Globe, User, Monitor, Info, Power, RotateCcw, Moon, Gamepad2, Music, Film, Camera } from 'lucide-react';
 
 type ViewType = 'control' | 'processing' | 'network' | 'thermal' | 'system' | 'config' | 'logs' | 'network-analyzer' | 'pc-info' | 'vpn' | 'exit' | 'settings';
 type ScreenMode = 'intro' | 'main' | 'steamdeck' | 'exit';
-type FontSize = 'small' | 'medium' | 'large';
 type LeftScreenMode = 'steamdeck' | 'camera' | 'controls';
-
-interface AppSettings {
-  primaryScreen: 'left' | 'right';
-  fontSize: FontSize;
-  leftScreenMode: LeftScreenMode;
-  steamDeckShortcuts: Array<{
-    id: number;
-    name: string;
-    icon: any;
-    color: string;
-  }>;
-}
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentView, setCurrentView] = useState<ViewType>('control');
   const [screenMode, setScreenMode] = useState<ScreenMode>('intro');
+  const [leftScreenMode, setLeftScreenMode] = useState<LeftScreenMode>('steamdeck');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [isSecurityOpen, setIsSecurityOpen] = useState(false);
   const [showPowerConfirm, setShowPowerConfirm] = useState<string | null>(null);
   const [aiMode, setAiMode] = useState('optimal');
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanProgress, setScanProgress] = useState(0);
+  const [showScanner, setShowScanner] = useState(false);
+  const [scannerProgress, setScannerProgress] = useState(0);
   
-  const [appSettings, setAppSettings] = useState<AppSettings>({
+  // Settings state
+  const [settings, setSettings] = useState({
+    fontSize: 'medium',
     primaryScreen: 'right',
-    fontSize: 'small',
-    leftScreenMode: 'steamdeck',
-    steamDeckShortcuts: Array(20).fill(null).map((_, i) => ({
+    steamDeckShortcuts: Array(12).fill(null).map((_, i) => ({
       id: i,
-      name: `App ${i + 1}`,
-      icon: i % 5 === 0 ? Activity : i % 5 === 1 ? Monitor : i % 5 === 2 ? Globe : i % 5 === 3 ? Shield : Settings,
-      color: ['#007aff', '#34c759', '#ff9500', '#5856d6', '#ff3b30'][i % 5]
+      name: i < 6 ? ['Steam', 'Discord', 'Chrome', 'Spotify', 'OBS', 'VS Code'][i] : `App ${i + 1}`,
+      icon: [Gamepad2, Music, Globe, Music, Camera, Monitor, Film, Settings, Activity, Shield, Info, Zap][i % 12],
+      color: ['#007aff', '#5865f2', '#4285f4', '#1db954', '#302e31', '#007acc', '#ff9500', '#5856d6', '#ff3b30', '#34c759', '#8e8e93', '#ff59b3'][i % 12]
     }))
   });
+
+  // Font sizes based on accessibility setting
+  const fontSizes = {
+    small: { h1: '22px', h2: '14px', h3: '10px', iconSize: '20', value: '18px' },
+    medium: { h1: '27px', h2: '17px', h3: '12px', iconSize: '25', value: '22px' },
+    large: { h1: '33px', h2: '21px', h3: '15px', iconSize: '30', value: '28px' }
+  }[settings.fontSize];
 
   const [locationInfo, setLocationInfo] = useState({
     coordinates: "53.5074°N, 2.3372°W",
@@ -89,64 +85,34 @@ function App() {
     sendCategoryReport
   } = useAPESimulation();
 
-  // Font size calculations based on specifications
-  const getFontSizes = () => {
-    switch (appSettings.fontSize) {
-      case 'small':
-        return {
-          h1: '22px',
-          h2: '14px',
-          h3: '10px',
-          value: '10px',
-          iconSize: '20px'
-        };
-      case 'medium':
-        return {
-          h1: '27px',
-          h2: '17px',
-          h3: '12px',
-          value: '12px',
-          iconSize: '25px'
-        };
-      case 'large':
-        return {
-          h1: '33px',
-          h2: '21px',
-          h3: '15px',
-          value: '15px',
-          iconSize: '30px'
-        };
-    }
-  };
-
-  const fontSizes = getFontSizes();
-
   // Play system sounds
   const playSound = (type: 'startup' | 'click' | 'alert' | 'success') => {
     try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
+      const audio = new Audio();
       switch (type) {
         case 'startup':
+          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+          
           oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
           oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.5);
           oscillator.frequency.exponentialRampToValueAtTime(660, audioContext.currentTime + 1);
+          
           gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
           gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+          
           oscillator.start(audioContext.currentTime);
           oscillator.stop(audioContext.currentTime + 1);
           break;
         case 'click':
-          oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-          gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-          oscillator.start(audioContext.currentTime);
-          oscillator.stop(audioContext.currentTime + 0.1);
+          break;
+        case 'alert':
+          break;
+        case 'success':
           break;
       }
     } catch (error) {
@@ -161,18 +127,27 @@ function App() {
     return () => clearInterval(timer);
   }, []);
 
-  // Scanner transition effect
-  const startScannerTransition = async () => {
-    setIsScanning(true);
-    setScanProgress(0);
+  // Play startup sound and show scanner when system unlocks
+  useEffect(() => {
+    if (isAuthenticated) {
+      playSound('startup');
+      startScannerTransition();
+      addLog('INFO', 'SystemAudio', 'All systems active - Audio feedback enabled');
+    }
+  }, [isAuthenticated, addLog]);
+
+  const startScannerTransition = () => {
+    setShowScanner(true);
+    setScannerProgress(0);
     
     // Animate scanner line from top to bottom over 2 seconds
     const scanInterval = setInterval(() => {
-      setScanProgress(prev => {
+      setScannerProgress(prev => {
         if (prev >= 100) {
           clearInterval(scanInterval);
+          // Fade out and transition to main app
           setTimeout(() => {
-            setIsScanning(false);
+            setShowScanner(false);
             setScreenMode('main');
           }, 500);
           return 100;
@@ -182,22 +157,12 @@ function App() {
     }, 40);
   };
 
-  // Play startup sound when system unlocks
-  useEffect(() => {
-    if (isAuthenticated && !isScanning) {
-      playSound('startup');
-      startScannerTransition();
-      addLog('INFO', 'SystemAudio', 'All systems active - Audio feedback enabled');
-    }
-  }, [isAuthenticated, addLog]);
-
   const navigationTabs = [
     { id: 'control', label: 'CONTROL', icon: Shield },
     { id: 'config', label: 'CONFIG', icon: Settings },
     { id: 'logs', label: 'LOGS', icon: Thermometer },
     { id: 'network-analyzer', label: 'NETWORK', icon: Monitor },
-    { id: 'pc-info', label: 'PC INFO', icon: Info },
-    { id: 'settings', label: 'SETTINGS', icon: Settings }
+    { id: 'pc-info', label: 'PC INFO', icon: Info }
   ];
 
   const handleMetricClick = (metricType: string) => {
@@ -284,137 +249,12 @@ function App() {
     });
   };
 
-  const formatTimeWithTimezone = (date: Date) => {
-    const time = date.toLocaleTimeString('en-US', {
-      hour12: true,
-      hour: 'numeric',
-      minute: '2-digit'
-    });
-    const dateStr = date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-    return `${time} ${locationInfo.timezone}, ${dateStr}`;
-  };
-
-  // Scanner overlay for both screens
-  const ScannerOverlay = () => (
-    <div className="fixed inset-0 z-[9999] bg-black">
-      {/* Vertical green scan line */}
-      <div 
-        className="absolute left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent shadow-lg"
-        style={{ 
-          top: `${scanProgress}%`,
-          boxShadow: '0 0 20px #34c759, 0 0 40px #34c759',
-          transition: 'top 0.04s linear'
-        }}
-      />
-      
-      {/* Scan lines effect */}
-      <div className="absolute inset-0 opacity-20">
-        {Array.from({ length: 50 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute left-0 w-full h-px bg-green-400"
-            style={{ 
-              top: `${i * 2}%`,
-              opacity: scanProgress > i * 2 ? 0.3 : 0,
-              transition: 'opacity 0.1s ease'
-            }}
-          />
-        ))}
-      </div>
-      
-      {/* Scanner progress text */}
-      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 text-center">
-        <div className="font-bold tech-font mb-2" style={{ color: '#34c759', fontSize: fontSizes.h1 }}>
-          SYSTEM SCAN IN PROGRESS
-        </div>
-        <div className="tech-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
-          {scanProgress.toFixed(0)}% Complete
-        </div>
-      </div>
-    </div>
-  );
-
-  // Left screen content based on mode
-  const renderLeftScreen = () => {
-    switch (appSettings.leftScreenMode) {
-      case 'camera':
-        return (
-          <CameraFeed 
-            currentTime={currentTime}
-            fontSizes={fontSizes}
-            onModeChange={(mode) => setAppSettings(prev => ({ ...prev, leftScreenMode: mode }))}
-          />
-        );
-      case 'controls':
-        return (
-          <div className="w-full h-full bg-black text-white overflow-hidden select-none relative"
-               style={{ 
-                 background: 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 30%, #1a1a1a 70%, #0a0a0a 100%)',
-                 fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                 borderRadius: '20px'
-               }}>
-            {/* All Controls Interface */}
-            <div className="p-8">
-              <h2 className="font-bold modern-font mb-6" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
-                SYSTEM CONTROLS
-              </h2>
-              
-              {/* RGB, Audio, Brightness controls here */}
-              <div className="space-y-6">
-                <div className="modern-panel p-6">
-                  <h3 className="font-bold modern-font mb-4" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
-                    RGB Lighting
-                  </h3>
-                  {/* RGB controls */}
-                </div>
-                
-                <div className="modern-panel p-6">
-                  <h3 className="font-bold modern-font mb-4" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
-                    Audio Controls
-                  </h3>
-                  {/* Audio controls */}
-                </div>
-                
-                <div className="modern-panel p-6">
-                  <h3 className="font-bold modern-font mb-4" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
-                    Screen Brightness
-                  </h3>
-                  {/* Brightness controls */}
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      default:
-        return (
-          <SteamDeckInterface 
-            currentTime={currentTime} 
-            settings={appSettings}
-            onSettingsChange={setAppSettings}
-            fontSizes={fontSizes}
-          />
-        );
-    }
-  };
-
   // Render based on screen mode and authentication status
   if (screenMode === 'intro' || !isAuthenticated) {
     return (
-      <div className="w-screen h-screen bg-black overflow-hidden flex"
-           style={{ 
-             fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-             position: 'fixed',
-             top: 0,
-             left: 0,
-             right: 0,
-             bottom: 0
-           }}>
-        {/* Left Screen - Exact 1024x600 */}
-        <div style={{ width: '1024px', height: '600px', padding: '10px' }}>
+      <div className="flex" style={{ width: '100vw', height: '100vh', padding: '10px', gap: '10px' }}>
+        {/* Left Screen - Intro Page */}
+        <div style={{ width: '1024px', height: '600px' }}>
           <IntroPage 
             onAuthenticated={() => setIsAuthenticated(true)} 
             fontSizes={fontSizes}
@@ -422,48 +262,29 @@ function App() {
           />
         </div>
         
-        {/* Right Screen - Exact 1024x600 */}
-        <div style={{ width: '1024px', height: '600px', padding: '10px' }}>
+        {/* Right Screen - Intro Page */}
+        <div style={{ width: '1024px', height: '600px' }}>
           <IntroPage 
             onAuthenticated={() => setIsAuthenticated(true)} 
             fontSizes={fontSizes}
             currentTime={currentTime}
           />
         </div>
-
-        {/* Scanner overlay for both screens */}
-        {isScanning && <ScannerOverlay />}
       </div>
     );
   }
 
   if (screenMode === 'exit') {
     return (
-      <div className="w-screen h-screen bg-black overflow-hidden flex"
-           style={{ 
-             fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-             position: 'fixed',
-             top: 0,
-             left: 0,
-             right: 0,
-             bottom: 0
-           }}>
-        {/* Left Screen - Exact 1024x600 */}
-        <div style={{ width: '1024px', height: '600px', padding: '10px' }}>
-          <ExitPage 
-            currentTime={currentTime} 
-            isLeftScreen={true} 
-            fontSizes={fontSizes}
-          />
+      <div className="flex" style={{ width: '100vw', height: '100vh', padding: '10px', gap: '10px' }}>
+        {/* Left Screen - Exit Page */}
+        <div style={{ width: '1024px', height: '600px' }}>
+          <ExitPage currentTime={currentTime} isLeftScreen={true} fontSizes={fontSizes} />
         </div>
         
-        {/* Right Screen - Exact 1024x600 */}
-        <div style={{ width: '1024px', height: '600px', padding: '10px' }}>
-          <ExitPage 
-            currentTime={currentTime} 
-            isLeftScreen={false} 
-            fontSizes={fontSizes}
-          />
+        {/* Right Screen - Exit Page */}
+        <div style={{ width: '1024px', height: '600px' }}>
+          <ExitPage currentTime={currentTime} isLeftScreen={false} fontSizes={fontSizes} />
         </div>
       </div>
     );
@@ -481,26 +302,55 @@ function App() {
     );
   }
 
+  // Settings Page (full screen)
+  if (currentView === 'settings') {
+    return (
+      <div style={{ width: '100vw', height: '100vh', padding: '10px' }}>
+        <SettingsPage 
+          settings={settings}
+          onSettingsChange={setSettings}
+          fontSizes={fontSizes}
+          onBack={() => setCurrentView('control')}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="w-screen h-screen bg-black overflow-hidden flex"
-         style={{ 
-           fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-           position: 'fixed',
-           top: 0,
-           left: 0,
-           right: 0,
-           bottom: 0
-         }}>
-      {/* Left Screen - Exact 1024x600 */}
-      <div style={{ width: '1024px', height: '600px', padding: '10px' }}>
-        {renderLeftScreen()}
+    <div className="flex" style={{ width: '100vw', height: '100vh', padding: '10px', gap: '10px' }}>
+      {/* Left Screen - Multiple Modes */}
+      <div style={{ width: '1024px', height: '600px' }}>
+        {leftScreenMode === 'steamdeck' && (
+          <SteamDeckInterface 
+            currentTime={currentTime} 
+            settings={settings}
+            onSettingsChange={setSettings}
+            fontSizes={fontSizes}
+          />
+        )}
+        {leftScreenMode === 'camera' && (
+          <CameraFeed 
+            currentTime={currentTime}
+            fontSizes={fontSizes}
+            onModeChange={setLeftScreenMode}
+          />
+        )}
+        {leftScreenMode === 'controls' && (
+          <SystemControls 
+            currentTime={currentTime}
+            fontSizes={fontSizes}
+            onModeChange={setLeftScreenMode}
+          />
+        )}
       </div>
       
-      {/* Right Screen - Exact 1024x600 */}
-      <div style={{ width: '1024px', height: '600px', padding: '10px' }}>
+      {/* Right Screen - Main Application */}
+      <div style={{ width: '1024px', height: '600px' }}>
         <div 
-          className="relative overflow-hidden select-none modern-dashboard w-full h-full"
+          className="relative overflow-hidden select-none modern-dashboard"
           style={{ 
+            width: '100%', 
+            height: '100%',
             background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 30%, #2a2a2a 70%, #1a1a1a 100%)',
             fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             color: '#ffffff',
@@ -536,8 +386,8 @@ function App() {
                 alt="APE Logo Background" 
                 className="object-contain opacity-30 breathing-logo-bg-random"
                 style={{ 
-                  width: '630px', 
-                  height: '630px',
+                  width: '420px', 
+                  height: '420px',
                   filter: 'brightness(0.3) sepia(1) hue-rotate(200deg) saturate(2)'
                 }}
               />
@@ -547,7 +397,7 @@ function App() {
           {/* Top Header with Date, GPS, Location */}
           <header className="relative modern-header border-b z-20" 
                   style={{ 
-                    height: '80px',
+                    height: '60px',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
                     borderWidth: '1px',
                     background: 'rgba(255, 255, 255, 0.05)',
@@ -557,10 +407,13 @@ function App() {
             <div className="flex items-center justify-between h-full px-4">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
-                  <Calendar className="w-5 h-5" style={{ color: '#007aff' }} />
+                  <Calendar className="w-4 h-4" style={{ color: '#007aff' }} />
                   <div>
-                    <div className="font-medium modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
-                      {formatTimeWithTimezone(currentTime)}
+                    <div className="font-medium modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h3 }}>
+                      {formatDate(currentTime)}
+                    </div>
+                    <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
+                      {formatTime(currentTime)} {locationInfo.timezone}
                     </div>
                   </div>
                 </div>
@@ -573,9 +426,9 @@ function App() {
                     borderColor: 'rgba(52, 199, 89, 0.3)',
                   }}
                 >
-                  <MapPin className="w-5 h-5" style={{ color: '#34c759' }} />
+                  <MapPin className="w-4 h-4" style={{ color: '#34c759' }} />
                   <div>
-                    <div className="font-medium modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
+                    <div className="font-medium modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h3 }}>
                       {locationInfo.postcode}
                     </div>
                     <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
@@ -585,15 +438,15 @@ function App() {
                 </button>
               </div>
               
-              {/* Right Side - Status, Power Buttons, AI Mode, Settings, Profile */}
+              {/* Right Side - Status, Power Buttons, AI Mode, Profile */}
               <div className="flex items-center space-x-3">
                 <div className="modern-display px-3 py-2 font-medium modern-font" 
-                     style={{ 
-                       backgroundColor: temperature < 60 ? 'rgba(52, 199, 89, 0.1)' : temperature < 80 ? 'rgba(255, 149, 0, 0.1)' : 'rgba(255, 59, 48, 0.1)',
-                       borderColor: temperature < 60 ? 'rgba(52, 199, 89, 0.3)' : temperature < 80 ? 'rgba(255, 149, 0, 0.3)' : 'rgba(255, 59, 48, 0.3)',
-                       color: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30',
-                       fontSize: fontSizes.h2
-                     }}>
+                style={{ 
+                  backgroundColor: temperature < 60 ? 'rgba(52, 199, 89, 0.1)' : temperature < 80 ? 'rgba(255, 149, 0, 0.1)' : 'rgba(255, 59, 48, 0.1)',
+                  borderColor: temperature < 60 ? 'rgba(52, 199, 89, 0.3)' : temperature < 80 ? 'rgba(255, 149, 0, 0.3)' : 'rgba(255, 59, 48, 0.3)',
+                  color: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30',
+                  fontSize: fontSizes.h3
+                }}>
                   {temperature < 60 ? 'OPTIMAL' : temperature < 80 ? 'WARNING' : 'CRITICAL'}
                 </div>
 
@@ -608,7 +461,7 @@ function App() {
                     }}
                     title="System Reset"
                   >
-                    <RotateCcw className="w-4 h-4" style={{ color: '#ff3b30' }} />
+                    <RotateCcw className="w-3 h-3" style={{ color: '#ff3b30' }} />
                   </button>
 
                   <button
@@ -620,7 +473,7 @@ function App() {
                     }}
                     title="System Shutdown"
                   >
-                    <Power className="w-4 h-4" style={{ color: '#ff9500' }} />
+                    <Power className="w-3 h-3" style={{ color: '#ff9500' }} />
                   </button>
 
                   <button
@@ -632,19 +485,27 @@ function App() {
                     }}
                     title="System Sleep"
                   >
-                    <Moon className="w-4 h-4" style={{ color: '#5856d6' }} />
+                    <Moon className="w-3 h-3" style={{ color: '#5856d6' }} />
                   </button>
                 </div>
 
                 {/* AI Mode Button */}
                 <div style={{ zIndex: 2000 }}>
-                  <AIOptimalButton 
-                    currentMode={aiMode} 
-                    onModeChange={setAiMode} 
-                    fontSizes={fontSizes}
-                  />
+                  <AIOptimalButton currentMode={aiMode} onModeChange={setAiMode} fontSizes={fontSizes} />
                 </div>
                 
+                {/* Settings Button */}
+                <button 
+                  onClick={() => setCurrentView('settings')}
+                  className="modern-button p-2 transition-all duration-300 hover:scale-105"
+                  style={{ 
+                    backgroundColor: 'rgba(255, 149, 0, 0.1)',
+                    borderColor: 'rgba(255, 149, 0, 0.3)',
+                  }}
+                >
+                  <Settings className="w-3 h-3" style={{ color: '#ff9500' }} />
+                </button>
+
                 {/* Logo */}
                 <div className="relative">
                   <img 
@@ -652,8 +513,8 @@ function App() {
                     alt="APE Logo" 
                     className="object-contain breathing-logo"
                     style={{ 
-                      width: '40px', 
-                      height: '40px',
+                      width: '30px', 
+                      height: '30px',
                     }}
                   />
                 </div>
@@ -667,17 +528,17 @@ function App() {
                     borderColor: 'rgba(88, 86, 214, 0.3)',
                   }}
                 >
-                  <User className="w-4 h-4" style={{ color: '#5856d6' }} />
+                  <User className="w-3 h-3" style={{ color: '#5856d6' }} />
                 </button>
               </div>
             </div>
           </header>
 
-          {/* Navigation for Control, Config, Logs, Network Analyzer, PC Info, Settings */}
-          {(currentView === 'control' || currentView === 'config' || currentView === 'logs' || currentView === 'network-analyzer' || currentView === 'pc-info' || currentView === 'settings') && (
+          {/* Navigation for Control, Config, Logs, Network Analyzer, PC Info */}
+          {(currentView === 'control' || currentView === 'config' || currentView === 'logs' || currentView === 'network-analyzer' || currentView === 'pc-info') && (
             <nav className="relative modern-nav border-b z-20" 
                  style={{ 
-                   height: '60px',
+                   height: '50px',
                    borderColor: 'rgba(255, 255, 255, 0.1)',
                    borderWidth: '1px',
                    background: 'rgba(255, 255, 255, 0.03)'
@@ -699,10 +560,10 @@ function App() {
                         backgroundColor: currentView === tab.id ? 'rgba(0, 122, 255, 0.1)' : 'transparent',
                         color: currentView === tab.id ? '#007aff' : '#8e8e93',
                         borderBottom: currentView === tab.id ? '3px solid #007aff' : '3px solid transparent',
-                        fontSize: fontSizes.h2
+                        fontSize: fontSizes.h3
                       }}
                     >
-                      <Icon className="w-4 h-4" />
+                      <Icon className="w-3 h-3" />
                       <span className="tracking-wide">{tab.label}</span>
                     </button>
                   );
@@ -712,7 +573,7 @@ function App() {
           )}
 
           {/* Main Content */}
-          <main className="relative overflow-y-auto z-10" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' || currentView === 'network-analyzer' || currentView === 'pc-info' || currentView === 'settings' ? 'calc(100% - 140px)' : 'calc(100% - 80px)' }}>
+          <main className="relative overflow-y-auto z-10" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' || currentView === 'network-analyzer' || currentView === 'pc-info' ? 'calc(600px - 110px)' : 'calc(600px - 60px)' }}>
             <div className="p-4">
               {currentView === 'control' && (
                 <ControlCenter
@@ -727,7 +588,6 @@ function App() {
                   onSendReport={handleSendReport}
                   locationInfo={locationInfo}
                   aiMode={aiMode}
-                  fontSizes={fontSizes}
                 />
               )}
 
@@ -751,7 +611,6 @@ function App() {
                   networkMetrics={networkMetrics} 
                   onBack={handleBackToControl}
                   onSendReport={handleSendReport}
-                  fontSizes={fontSizes}
                 />
               )}
 
@@ -766,7 +625,6 @@ function App() {
                   onSendReport={handleSendReport}
                   aiMode={aiMode}
                   onModeChange={setAiMode}
-                  fontSizes={fontSizes}
                 />
               )}
 
@@ -775,7 +633,6 @@ function App() {
                   systemMetrics={systemMetrics} 
                   onBack={handleBackToControl}
                   onSendReport={handleSendReport}
-                  fontSizes={fontSizes}
                 />
               )}
 
@@ -783,37 +640,19 @@ function App() {
                 <ConfigPanel 
                   config={config}
                   onConfigUpdate={updateConfig}
-                  fontSizes={fontSizes}
                 />
               )}
 
               {currentView === 'logs' && (
-                <SystemLogs 
-                  logs={logs} 
-                  fontSizes={fontSizes}
-                />
+                <SystemLogs logs={logs} />
               )}
 
               {currentView === 'network-analyzer' && (
-                <NetworkAnalyzer 
-                  networkMetrics={networkMetrics} 
-                  fontSizes={fontSizes}
-                />
+                <NetworkAnalyzer networkMetrics={networkMetrics} />
               )}
 
               {currentView === 'pc-info' && (
-                <PCInfoPage 
-                  fontSizes={fontSizes}
-                />
-              )}
-
-              {currentView === 'settings' && (
-                <SettingsPage 
-                  settings={appSettings}
-                  onSettingsChange={setAppSettings}
-                  fontSizes={fontSizes}
-                  onBack={handleBackToControl}
-                />
+                <PCInfoPage />
               )}
             </div>
           </main>
@@ -824,7 +663,6 @@ function App() {
             onClose={() => setIsMapOpen(false)}
             locationInfo={locationInfo}
             onLocationChange={handleLocationChange}
-            fontSizes={fontSizes}
           />
 
           {/* Security Modal */}
@@ -832,37 +670,36 @@ function App() {
             isOpen={isSecurityOpen}
             onClose={() => setIsSecurityOpen(false)}
             onSuccess={handleSecuritySuccess}
-            fontSizes={fontSizes}
           />
 
           {/* Power Confirmation Modal */}
           {showPowerConfirm && (
             <div className="fixed inset-0 z-60 bg-black/80 backdrop-blur-sm flex items-center justify-center">
-              <div className="modern-panel p-8 max-w-md w-full mx-4">
+              <div className="modern-panel p-6 max-w-md w-full mx-4">
                 <div className="text-center">
-                  <div className="p-4 rounded-2xl mx-auto mb-6 w-fit"
+                  <div className="p-3 rounded-2xl mx-auto mb-4 w-fit"
                        style={{ 
                          backgroundColor: showPowerConfirm === 'reset' ? 'rgba(255, 59, 48, 0.2)' :
                                          showPowerConfirm === 'shutdown' ? 'rgba(255, 149, 0, 0.2)' :
                                          'rgba(88, 86, 214, 0.2)'
                        }}>
-                    {showPowerConfirm === 'reset' && <RotateCcw className="w-12 h-12" style={{ color: '#ff3b30' }} />}
-                    {showPowerConfirm === 'shutdown' && <Power className="w-12 h-12" style={{ color: '#ff9500' }} />}
-                    {showPowerConfirm === 'sleep' && <Moon className="w-12 h-12" style={{ color: '#5856d6' }} />}
+                    {showPowerConfirm === 'reset' && <RotateCcw className="w-8 h-8" style={{ color: '#ff3b30' }} />}
+                    {showPowerConfirm === 'shutdown' && <Power className="w-8 h-8" style={{ color: '#ff9500' }} />}
+                    {showPowerConfirm === 'sleep' && <Moon className="w-8 h-8" style={{ color: '#5856d6' }} />}
                   </div>
                   
-                  <h3 className="font-bold tech-font mb-4" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
+                  <h3 className="font-bold tech-font mb-3" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
                     Confirm {showPowerConfirm.charAt(0).toUpperCase() + showPowerConfirm.slice(1)}
                   </h3>
                   
-                  <p className="tech-font mb-8" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
+                  <p className="tech-font mb-6" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
                     Are you sure you want to {showPowerConfirm} the system?
                   </p>
                   
-                  <div className="flex space-x-4">
+                  <div className="flex space-x-3">
                     <button
                       onClick={() => setShowPowerConfirm(null)}
-                      className="flex-1 modern-button px-6 py-3 transition-all duration-300"
+                      className="flex-1 modern-button px-4 py-2 transition-all duration-300"
                       style={{ 
                         backgroundColor: 'rgba(142, 142, 147, 0.1)',
                         borderColor: 'rgba(142, 142, 147, 0.3)',
@@ -873,7 +710,7 @@ function App() {
                     </button>
                     <button
                       onClick={() => handlePowerAction(showPowerConfirm)}
-                      className="flex-1 modern-button px-6 py-3 transition-all duration-300"
+                      className="flex-1 modern-button px-4 py-2 transition-all duration-300"
                       style={{ 
                         backgroundColor: showPowerConfirm === 'reset' ? 'rgba(255, 59, 48, 0.2)' :
                                         showPowerConfirm === 'shutdown' ? 'rgba(255, 149, 0, 0.2)' :
@@ -906,7 +743,7 @@ function App() {
               <div className="flex items-center space-x-3">
                 <div className="w-4 h-4 animate-ping rounded-full" 
                      style={{ backgroundColor: '#ff3b30' }}></div>
-                <span className="font-medium modern-font" style={{ color: '#ff3b30', fontSize: fontSizes.h2 }}>
+                <span className="font-medium modern-font" style={{ color: '#ff3b30', fontSize: fontSizes.h3 }}>
                   CRITICAL TEMPERATURE
                 </span>
               </div>
@@ -1067,8 +904,8 @@ function App() {
               position: absolute;
               top: 50%;
               right: 25%;
-              width: 500px;
-              height: 500px;
+              width: 300px;
+              height: 300px;
               transform: translate(50%, -50%);
             }
             
@@ -1078,8 +915,8 @@ function App() {
               position: absolute;
               top: 50%;
               left: 50%;
-              width: 200px;
-              height: 200px;
+              width: 120px;
+              height: 120px;
               border: 2px solid rgba(0, 122, 255, 0.1);
               border-radius: 50%;
               transform: translate(-50%, -50%);
@@ -1095,8 +932,8 @@ function App() {
               position: absolute;
               top: 30%;
               left: 20%;
-              width: 300px;
-              height: 300px;
+              width: 200px;
+              height: 200px;
             }
             
             .pulse-rings-2::before,
@@ -1105,8 +942,8 @@ function App() {
               position: absolute;
               top: 50%;
               left: 50%;
-              width: 150px;
-              height: 150px;
+              width: 100px;
+              height: 100px;
               border: 1px solid rgba(255, 149, 0, 0.08);
               border-radius: 50%;
               transform: translate(-50%, -50%);
@@ -1122,8 +959,8 @@ function App() {
               position: absolute;
               top: 70%;
               right: 60%;
-              width: 400px;
-              height: 400px;
+              width: 250px;
+              height: 250px;
             }
             
             .pulse-rings-3::before {
@@ -1131,8 +968,8 @@ function App() {
               position: absolute;
               top: 50%;
               left: 50%;
-              width: 100px;
-              height: 100px;
+              width: 80px;
+              height: 80px;
               border: 1px solid rgba(255, 59, 48, 0.06);
               border-radius: 50%;
               transform: translate(-50%, -50%);
@@ -1374,6 +1211,71 @@ function App() {
           `}</style>
         </div>
       </div>
+
+      {/* Scanner Transition Overlay - Covers both screens */}
+      {showScanner && (
+        <div className="fixed inset-0 z-[9999] bg-black flex">
+          {/* Left Screen Scanner */}
+          <div className="w-1/2 relative">
+            <div 
+              className="absolute left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent shadow-lg"
+              style={{ 
+                top: `${scannerProgress}%`,
+                boxShadow: '0 0 20px #34c759, 0 0 40px #34c759',
+                transition: 'top 0.04s linear'
+              }}
+            />
+            <div className="absolute inset-0 opacity-20">
+              {Array.from({ length: 30 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute left-0 w-full h-px bg-green-400"
+                  style={{ 
+                    top: `${i * 3.33}%`,
+                    opacity: scannerProgress > i * 3.33 ? 0.3 : 0,
+                    transition: 'opacity 0.1s ease'
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+          
+          {/* Right Screen Scanner */}
+          <div className="w-1/2 relative">
+            <div 
+              className="absolute left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent shadow-lg"
+              style={{ 
+                top: `${scannerProgress}%`,
+                boxShadow: '0 0 20px #34c759, 0 0 40px #34c759',
+                transition: 'top 0.04s linear'
+              }}
+            />
+            <div className="absolute inset-0 opacity-20">
+              {Array.from({ length: 30 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute left-0 w-full h-px bg-green-400"
+                  style={{ 
+                    top: `${i * 3.33}%`,
+                    opacity: scannerProgress > i * 3.33 ? 0.3 : 0,
+                    transition: 'opacity 0.1s ease'
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+          
+          {/* Scanner progress text */}
+          <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 text-center">
+            <div className="font-bold tech-font mb-2" style={{ color: '#34c759', fontSize: fontSizes.h1 }}>
+              SYSTEM SCAN IN PROGRESS
+            </div>
+            <div className="tech-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
+              {scannerProgress.toFixed(0)}% Complete
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
