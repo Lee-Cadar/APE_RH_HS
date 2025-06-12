@@ -14,6 +14,7 @@ interface ProcessingDetailsProps {
   onSendReport: (category: string) => void;
   aiMode: string;
   onModeChange: (mode: string) => void;
+  fontSizes: any;
 }
 
 export function ProcessingDetails({ 
@@ -25,7 +26,8 @@ export function ProcessingDetails({
   onBack,
   onSendReport,
   aiMode,
-  onModeChange
+  onModeChange,
+  fontSizes
 }: ProcessingDetailsProps) {
   
   const getPerformanceColor = () => {
@@ -87,7 +89,7 @@ export function ProcessingDetails({
           
           <div className="flex items-center space-x-6">
             {/* AI Mode Button */}
-            <AIOptimalButton currentMode={aiMode} onModeChange={onModeChange} />
+            <AIOptimalButton currentMode={aiMode} onModeChange={onModeChange} fontSizes={fontSizes} />
             
             <button
               onClick={() => onSendReport('processing')}
