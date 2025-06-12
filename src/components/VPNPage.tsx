@@ -18,6 +18,10 @@ export function VPNPage({ onBack, locationInfo, onLocationChange, fontSizes }: V
     latency: 28
   });
 
+  // Store original IP for comparison
+  const [originalIP, setOriginalIP] = useState('192.168.1.45');
+  const [currentIP, setCurrentIP] = useState('192.168.1.45');
+
   const vpnServers = [
     { 
       id: 'uk-london', 
@@ -27,7 +31,8 @@ export function VPNPage({ onBack, locationInfo, onLocationChange, fontSizes }: V
       ping: '12ms', 
       load: 23,
       coords: { lat: 51.5074, lng: -0.1278 },
-      premium: false
+      premium: false,
+      ip: '185.243.112.45'
     },
     { 
       id: 'us-newyork', 
@@ -37,7 +42,8 @@ export function VPNPage({ onBack, locationInfo, onLocationChange, fontSizes }: V
       ping: '85ms', 
       load: 67,
       coords: { lat: 40.7128, lng: -74.0060 },
-      premium: false
+      premium: false,
+      ip: '104.238.167.89'
     },
     { 
       id: 'de-frankfurt', 
@@ -47,7 +53,8 @@ export function VPNPage({ onBack, locationInfo, onLocationChange, fontSizes }: V
       ping: '28ms', 
       load: 34,
       coords: { lat: 50.1109, lng: 8.6821 },
-      premium: false
+      premium: false,
+      ip: '89.187.142.33'
     },
     { 
       id: 'jp-tokyo', 
@@ -57,7 +64,8 @@ export function VPNPage({ onBack, locationInfo, onLocationChange, fontSizes }: V
       ping: '156ms', 
       load: 45,
       coords: { lat: 35.6762, lng: 139.6503 },
-      premium: true
+      premium: true,
+      ip: '103.79.141.67'
     },
     { 
       id: 'au-sydney', 
@@ -67,7 +75,8 @@ export function VPNPage({ onBack, locationInfo, onLocationChange, fontSizes }: V
       ping: '198ms', 
       load: 78,
       coords: { lat: -33.8688, lng: 151.2093 },
-      premium: true
+      premium: true,
+      ip: '45.121.209.156'
     },
     { 
       id: 'sg-singapore', 
@@ -77,7 +86,8 @@ export function VPNPage({ onBack, locationInfo, onLocationChange, fontSizes }: V
       ping: '142ms', 
       load: 56,
       coords: { lat: 1.3521, lng: 103.8198 },
-      premium: true
+      premium: true,
+      ip: '128.199.248.91'
     },
     { 
       id: 'ca-toronto', 
@@ -87,7 +97,8 @@ export function VPNPage({ onBack, locationInfo, onLocationChange, fontSizes }: V
       ping: '92ms', 
       load: 41,
       coords: { lat: 43.6532, lng: -79.3832 },
-      premium: false
+      premium: false,
+      ip: '142.93.130.78'
     },
     { 
       id: 'nl-amsterdam', 
@@ -97,7 +108,8 @@ export function VPNPage({ onBack, locationInfo, onLocationChange, fontSizes }: V
       ping: '35ms', 
       load: 29,
       coords: { lat: 52.3676, lng: 4.9041 },
-      premium: false
+      premium: false,
+      ip: '178.62.225.134'
     }
   ];
 
@@ -111,7 +123,7 @@ export function VPNPage({ onBack, locationInfo, onLocationChange, fontSizes }: V
     // Simulate VPN connection process
     await new Promise(resolve => setTimeout(resolve, 3000));
     
-    // Update location info
+    // Update location info and IP
     const newLocationInfo = {
       coordinates: `${server.coords.lat.toFixed(4)}°${server.coords.lat >= 0 ? 'N' : 'S'}, ${Math.abs(server.coords.lng).toFixed(4)}°${server.coords.lng >= 0 ? 'E' : 'W'}`,
       address: "VPN Protected Location",
@@ -126,6 +138,7 @@ export function VPNPage({ onBack, locationInfo, onLocationChange, fontSizes }: V
     };
     
     onLocationChange(newLocationInfo);
+    setCurrentIP(server.ip);
     setConnectionStatus('connected');
     setIsConnecting(false);
     
@@ -140,6 +153,8 @@ export function VPNPage({ onBack, locationInfo, onLocationChange, fontSizes }: V
   const handleDisconnect = () => {
     setConnectionStatus('disconnected');
     setSelectedVPN(null);
+    setCurrentIP(originalIP);
+    
     // Reset to original location
     const originalLocation = {
       coordinates: "53.5074°N, 2.3372°W",
@@ -173,9 +188,10 @@ export function VPNPage({ onBack, locationInfo, onLocationChange, fontSizes }: V
   return (
     <div className="fixed inset-0 z-[1000] bg-black overflow-hidden"
          style={{ 
-           width: 'calc(100% - 20px)', 
-           height: 'calc(100vh - 20px)',
-           margin: '10px'
+           width: '100vw', 
+           height: '100vh',
+           margin: '0',
+           padding: '10px'
          }}>
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
@@ -251,7 +267,7 @@ export function VPNPage({ onBack, locationInfo, onLocationChange, fontSizes }: V
       </div>
 
       {/* Main Content */}
-      <div className="relative flex h-[calc(100%-100px)]">
+      <div className="relative flex h-[calc(100%-120px)]">
         {/* Left Side - Server List */}
         <div className="w-1/2 p-8 overflow-y-auto">
           <div className="modern-panel p-6 shadow-lg h-full">
@@ -279,6 +295,9 @@ export function VPNPage({ onBack, locationInfo, onLocationChange, fontSizes }: V
                       </div>
                       <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
                         {server.name}
+                      </div>
+                      <div className="modern-font" style={{ color: '#007aff', fontSize: fontSizes.h3 }}>
+                        IP: {server.ip}
                       </div>
                     </div>
                     {server.premium && (
@@ -329,6 +348,58 @@ export function VPNPage({ onBack, locationInfo, onLocationChange, fontSizes }: V
 
         {/* Right Side - Status and Metrics */}
         <div className="w-1/2 p-8 space-y-6">
+          {/* IP Address Display */}
+          <div className="modern-panel p-6 shadow-lg">
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="p-3 rounded-xl" style={{ backgroundColor: 'rgba(0, 122, 255, 0.2)' }}>
+                <Globe className="w-6 h-6" style={{ color: '#007aff' }} />
+              </div>
+              <h3 className="font-medium modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
+                IP Address Status
+              </h3>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-6">
+              <div className="text-center">
+                <div className="font-bold modern-font mb-2" 
+                     style={{ 
+                       color: '#8e8e93',
+                       fontSize: fontSizes.h2
+                     }}>
+                  Original IP
+                </div>
+                <div className="font-bold modern-font mb-2" 
+                     style={{ 
+                       color: '#ff3b30',
+                       fontSize: fontSizes.h1
+                     }}>
+                  {originalIP}
+                </div>
+                <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>Your Real IP</div>
+              </div>
+              
+              <div className="text-center">
+                <div className="font-bold modern-font mb-2" 
+                     style={{ 
+                       color: connectionStatus === 'connected' ? '#34c759' : '#8e8e93',
+                       fontSize: fontSizes.h2
+                     }}>
+                  Current IP
+                </div>
+                <div className="font-bold modern-font mb-2" 
+                     style={{ 
+                       color: connectionStatus === 'connected' ? '#34c759' : '#007aff',
+                       fontSize: fontSizes.h1
+                     }}>
+                  {currentIP}
+                </div>
+                <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
+                  {connectionStatus === 'connected' ? 'VPN Protected' : 'Exposed'}
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Connection Status */}
           <div className="modern-panel p-6 shadow-lg">
             <div className="flex items-center space-x-4 mb-6">

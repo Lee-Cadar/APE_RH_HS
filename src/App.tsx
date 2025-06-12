@@ -337,9 +337,9 @@ function App() {
   // Render based on screen mode and authentication status
   if (screenMode === 'intro' || !isAuthenticated) {
     return (
-      <div className="flex" style={{ fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+      <div className="flex h-screen w-screen overflow-hidden" style={{ fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
         {/* Left Screen - Steam Deck Interface (Intro) */}
-        <div className="w-1/2" style={{ padding: '10px' }}>
+        <div className="w-1/2 h-full" style={{ padding: '10px' }}>
           <SteamDeckInterface 
             currentTime={currentTime} 
             settings={appSettings}
@@ -349,7 +349,7 @@ function App() {
         </div>
         
         {/* Right Screen - Intro Page */}
-        <div className="w-1/2" style={{ padding: '10px' }}>
+        <div className="w-1/2 h-full" style={{ padding: '10px' }}>
           <IntroPage 
             onAuthenticated={() => setIsAuthenticated(true)} 
             fontSizes={fontSizes}
@@ -364,9 +364,9 @@ function App() {
 
   if (screenMode === 'exit') {
     return (
-      <div className="flex" style={{ fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+      <div className="flex h-screen w-screen overflow-hidden" style={{ fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
         {/* Left Screen - Exit Page */}
-        <div className="w-1/2" style={{ padding: '10px' }}>
+        <div className="w-1/2 h-full" style={{ padding: '10px' }}>
           <ExitPage 
             currentTime={currentTime} 
             isLeftScreen={true} 
@@ -375,7 +375,7 @@ function App() {
         </div>
         
         {/* Right Screen - Exit Page */}
-        <div className="w-1/2" style={{ padding: '10px' }}>
+        <div className="w-1/2 h-full" style={{ padding: '10px' }}>
           <ExitPage 
             currentTime={currentTime} 
             isLeftScreen={false} 
@@ -399,9 +399,9 @@ function App() {
   }
 
   return (
-    <div className="flex" style={{ fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+    <div className="flex h-screen w-screen overflow-hidden" style={{ fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
       {/* Left Screen - Steam Deck Interface */}
-      <div className="w-1/2" style={{ padding: '10px' }}>
+      <div className="w-1/2 h-full" style={{ padding: '10px' }}>
         <SteamDeckInterface 
           currentTime={currentTime} 
           settings={appSettings}
@@ -411,16 +411,13 @@ function App() {
       </div>
       
       {/* Right Screen - Main Application */}
-      <div className="w-1/2" style={{ padding: '10px' }}>
+      <div className="w-1/2 h-full" style={{ padding: '10px' }}>
         <div 
-          className="relative overflow-hidden select-none modern-dashboard"
+          className="relative overflow-hidden select-none modern-dashboard w-full h-full"
           style={{ 
-            width: 'calc(100% - 20px)', 
-            height: 'calc(100vh - 20px)',
             background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 30%, #2a2a2a 70%, #1a1a1a 100%)',
             fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-            color: '#ffffff',
-            margin: '10px'
+            color: '#ffffff'
           }}
         >
           {/* Enhanced Animated Background Elements */}
