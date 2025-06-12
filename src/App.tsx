@@ -6,6 +6,8 @@ import { ThermalDetails } from './components/ThermalDetails';
 import { SystemDetails } from './components/SystemDetails';
 import { ConfigPanel } from './components/ConfigPanel';
 import { SystemLogs } from './components/SystemLogs';
+import { LocationMap } from './components/LocationMap';
+import { AIOptimalButton } from './components/AIOptimalButton';
 import { useAPESimulation } from './hooks/useAPESimulation';
 import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap, Globe } from 'lucide-react';
 
@@ -14,6 +16,8 @@ type ViewType = 'control' | 'processing' | 'network' | 'thermal' | 'system' | 'c
 function App() {
   const [currentView, setCurrentView] = useState<ViewType>('control');
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [isMapOpen, setIsMapOpen] = useState(false);
+  const [aiMode, setAiMode] = useState('optimal');
   const [locationInfo, setLocationInfo] = useState({
     coordinates: "53.5074°N, 2.3372°W",
     address: "32 Hereford Drive",
@@ -41,124 +45,6 @@ function App() {
     addLog,
     sendCategoryReport
   } = useAPESimulation();
-
-  // Get real GPS location data
-  useEffect(() => {
-    const getLocationData = async () => {
-      try {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            async (position) => {
-              const { latitude, longitude } = position.coords;
-              
-              try {
-                const locationData = await simulateLocationLookup(latitude, longitude);
-                setLocationInfo(locationData);
-                addLog('INFO', 'GPSSystem', `Location acquired: ${locationData.address}`);
-              } catch (error) {
-                console.log('Geocoding failed, using default location');
-              }
-            },
-            (error) => {
-              console.log('Geolocation failed, using default location');
-              getIPLocation();
-            },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
-          );
-        } else {
-          getIPLocation();
-        }
-      } catch (error) {
-        console.log('Location services unavailable, using default');
-      }
-    };
-
-    const getIPLocation = async () => {
-      try {
-        const ipLocationData = {
-          coordinates: "53.5074°N, 2.3372°W",
-          address: "32 Hereford Drive",
-          city: "Swinton, M27 5PT",
-          district: "Greater Manchester",
-          country: "United Kingdom",
-          timezone: "GMT",
-          elevation: "45m",
-          isp: "BT Business",
-          postcode: "M27 5PT",
-          what3words: "///hiking.stream.closed"
-        };
-        setLocationInfo(ipLocationData);
-        addLog('INFO', 'IPLocation', `IP-based location: ${ipLocationData.city}`);
-      } catch (error) {
-        console.log('IP location failed, using default');
-      }
-    };
-
-    getLocationData();
-  }, [addLog]);
-
-  const simulateLocationLookup = async (lat: number, lng: number) => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const locations = [
-      {
-        lat: 53.5074, lng: -2.3372,
-        coordinates: `${lat.toFixed(4)}°N, ${Math.abs(lng).toFixed(4)}°W`,
-        address: "32 Hereford Drive",
-        city: "Swinton, M27 5PT",
-        district: "Greater Manchester",
-        country: "United Kingdom",
-        timezone: "GMT",
-        elevation: "45m",
-        isp: "BT Business",
-        postcode: "M27 5PT",
-        what3words: "///hiking.stream.closed"
-      },
-      {
-        lat: 40.7128, lng: -74.0060,
-        coordinates: `${lat.toFixed(4)}°N, ${Math.abs(lng).toFixed(4)}°W`,
-        address: "32 Hereford Drive",
-        city: "Swinton, M27 5PT",
-        district: "Greater Manchester",
-        country: "United Kingdom",
-        timezone: "GMT",
-        elevation: "45m",
-        isp: "BT Business",
-        postcode: "M27 5PT",
-        what3words: "///hiking.stream.closed"
-      },
-      {
-        lat: 37.7749, lng: -122.4194,
-        coordinates: `${lat.toFixed(4)}°N, ${Math.abs(lng).toFixed(4)}°W`,
-        address: "32 Hereford Drive",
-        city: "Swinton, M27 5PT",
-        district: "Greater Manchester",
-        country: "United Kingdom",
-        timezone: "GMT",
-        elevation: "45m",
-        isp: "BT Business",
-        postcode: "M27 5PT",
-        what3words: "///hiking.stream.closed"
-      }
-    ];
-
-    const closest = locations.find(loc => 
-      Math.abs(loc.lat - lat) < 1 && Math.abs(loc.lng - lng) < 1
-    ) || {
-      coordinates: `${lat.toFixed(4)}°${lat >= 0 ? 'N' : 'S'}, ${Math.abs(lng).toFixed(4)}°${lng >= 0 ? 'E' : 'W'}`,
-      address: "32 Hereford Drive",
-      city: "Swinton, M27 5PT",
-      district: "Greater Manchester",
-      country: "United Kingdom",
-      timezone: "GMT",
-      elevation: "45m",
-      isp: "BT Business",
-      postcode: "M27 5PT",
-      what3words: "///hiking.stream.closed"
-    };
-
-    return closest;
-  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -204,6 +90,11 @@ function App() {
     sendCategoryReport(category);
   };
 
+  const handleLocationChange = (newLocation: any) => {
+    setLocationInfo(newLocation);
+    addLog('INFO', 'LocationService', `Location updated: ${newLocation.city}`);
+  };
+
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', {
       weekday: 'short',
@@ -229,7 +120,7 @@ function App() {
         width: '1044px', 
         height: '620px',
         background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 30%, #2a2a2a 70%, #1a1a1a 100%)',
-        fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontFamily: 'Technology, "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         color: '#ffffff'
       }}
     >
@@ -239,9 +130,26 @@ function App() {
         <div className="floating-particles"></div>
         <div className="energy-waves"></div>
         <div className="pulse-rings"></div>
+        <div className="data-streams"></div>
       </div>
 
-      {/* Top Header with Date, GPS, Location - Consistent Height */}
+      {/* Logo Background - Right Side */}
+      <div className="absolute top-0 right-0 w-1/2 h-full overflow-hidden pointer-events-none z-0">
+        <div className="absolute -right-1/4 top-1/2 transform -translate-y-1/2">
+          <img 
+            src="/Triangle_logo_black_nobg_no_letters copy.png" 
+            alt="APE Logo Background" 
+            className="object-contain opacity-30 breathing-logo-bg"
+            style={{ 
+              width: '600px', 
+              height: '600px',
+              filter: 'brightness(0.3) sepia(1) hue-rotate(200deg) saturate(2)'
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Top Header with Date, GPS, Location */}
       <header className="relative modern-header border-b z-20" 
               style={{ 
                 height: '64px',
@@ -256,67 +164,74 @@ function App() {
             <div className="flex items-center space-x-3">
               <Calendar className="w-5 h-5" style={{ color: '#007aff' }} />
               <div>
-                <div className="text-sm font-medium modern-font" style={{ color: '#ffffff' }}>
+                <div className="text-sm font-medium tech-font" style={{ color: '#ffffff' }}>
                   {formatDate(currentTime)}
                 </div>
-                <div className="text-xs modern-font" style={{ color: '#8e8e93' }}>
+                <div className="text-xs tech-font" style={{ color: '#8e8e93' }}>
                   {formatTime(currentTime)} {locationInfo.timezone}
                 </div>
               </div>
             </div>
             
-            <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setIsMapOpen(true)}
+              className="flex items-center space-x-3 modern-button px-4 py-2 transition-all duration-300 hover:scale-105"
+              style={{ 
+                backgroundColor: 'rgba(52, 199, 89, 0.1)',
+                borderColor: 'rgba(52, 199, 89, 0.3)',
+              }}
+            >
               <MapPin className="w-5 h-5" style={{ color: '#34c759' }} />
               <div>
-                <div className="text-sm font-medium modern-font" style={{ color: '#ffffff' }}>
+                <div className="text-sm font-medium tech-font" style={{ color: '#ffffff' }}>
                   {locationInfo.postcode}
                 </div>
-                <div className="text-xs modern-font" style={{ color: '#8e8e93' }}>
+                <div className="text-xs tech-font" style={{ color: '#8e8e93' }}>
                   {locationInfo.city.split(',')[0]}
                 </div>
               </div>
-            </div>
+            </button>
 
             <div className="flex items-center space-x-3">
               <Globe className="w-5 h-5" style={{ color: '#ff9500' }} />
               <div>
-                <div className="text-sm font-medium modern-font" style={{ color: '#ffffff' }}>
+                <div className="text-sm font-medium tech-font" style={{ color: '#ffffff' }}>
                   {locationInfo.what3words}
                 </div>
-                <div className="text-xs modern-font" style={{ color: '#8e8e93' }}>
+                <div className="text-xs tech-font" style={{ color: '#8e8e93' }}>
                   {locationInfo.coordinates}
                 </div>
               </div>
             </div>
           </div>
           
-          <div className="modern-display px-4 py-2 font-medium text-sm modern-font" 
-          style={{ 
-            backgroundColor: temperature < 60 ? 'rgba(52, 199, 89, 0.1)' : temperature < 80 ? 'rgba(255, 149, 0, 0.1)' : 'rgba(255, 59, 48, 0.1)',
-            borderColor: temperature < 60 ? 'rgba(52, 199, 89, 0.3)' : temperature < 80 ? 'rgba(255, 149, 0, 0.3)' : 'rgba(255, 59, 48, 0.3)',
-            color: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30'
-          }}>
-            {temperature < 60 ? 'OPTIMAL' : temperature < 80 ? 'WARNING' : 'CRITICAL'}
+          {/* Logo - Top Right Corner */}
+          <div className="flex items-center space-x-4">
+            <div className="modern-display px-4 py-2 font-medium text-sm tech-font" 
+            style={{ 
+              backgroundColor: temperature < 60 ? 'rgba(52, 199, 89, 0.1)' : temperature < 80 ? 'rgba(255, 149, 0, 0.1)' : 'rgba(255, 59, 48, 0.1)',
+              borderColor: temperature < 60 ? 'rgba(52, 199, 89, 0.3)' : temperature < 80 ? 'rgba(255, 149, 0, 0.3)' : 'rgba(255, 59, 48, 0.3)',
+              color: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30'
+            }}>
+              {temperature < 60 ? 'OPTIMAL' : temperature < 80 ? 'WARNING' : 'CRITICAL'}
+            </div>
+            
+            <div className="relative">
+              <img 
+                src="/Triangle_logo_black_nobg_no_letters copy.png" 
+                alt="APE Logo" 
+                className="object-contain breathing-logo"
+                style={{ 
+                  width: '50px', 
+                  height: '50px',
+                }}
+              />
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Centered Logo with Breathing Animation - Original Format */}
-      <div className="absolute top-16 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="relative">
-          <img 
-            src="/Triangle_logo_black_nobg_no_letters copy.png" 
-            alt="APE Logo" 
-            className="object-contain breathing-logo"
-            style={{ 
-              width: '80px', 
-              height: '80px',
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Navigation for Control, Config, Logs - Consistent Height */}
+      {/* Navigation for Control, Config, Logs */}
       {(currentView === 'control' || currentView === 'config' || currentView === 'logs') && (
         <nav className="relative modern-nav border-b z-20" 
              style={{ 
@@ -332,7 +247,7 @@ function App() {
                 <button
                   key={tab.id}
                   onClick={() => setCurrentView(tab.id as ViewType)}
-                  className={`flex-1 flex items-center justify-center space-x-3 font-medium text-sm transition-all duration-300 transform active:scale-95 modern-font modern-tab ${
+                  className={`flex-1 flex items-center justify-center space-x-3 font-medium text-sm transition-all duration-300 transform active:scale-95 tech-font modern-tab ${
                     currentView === tab.id ? 'active' : ''
                   }`}
                   style={{ 
@@ -350,7 +265,10 @@ function App() {
         </nav>
       )}
 
-      {/* Main Content - Scrollable with Consistent Height */}
+      {/* AI Optimal Button - Center Screen */}
+      <AIOptimalButton currentMode={aiMode} onModeChange={setAiMode} />
+
+      {/* Main Content */}
       <main className="relative overflow-y-auto z-10" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' ? 'calc(620px - 112px)' : 'calc(620px - 64px)' }}>
         <div className="p-6">
           {currentView === 'control' && (
@@ -365,6 +283,7 @@ function App() {
               onMetricClick={handleMetricClick}
               onSendReport={handleSendReport}
               locationInfo={locationInfo}
+              aiMode={aiMode}
             />
           )}
 
@@ -421,6 +340,14 @@ function App() {
         </div>
       </main>
 
+      {/* Location Map Modal */}
+      <LocationMap 
+        isOpen={isMapOpen}
+        onClose={() => setIsMapOpen(false)}
+        locationInfo={locationInfo}
+        onLocationChange={handleLocationChange}
+      />
+
       {/* Critical Alert Overlay */}
       {temperature > 85 && (
         <div className="fixed top-6 right-6 modern-alert p-4 shadow-2xl animate-pulse z-50 rounded-2xl"
@@ -433,24 +360,24 @@ function App() {
           <div className="flex items-center space-x-3">
             <div className="w-4 h-4 animate-ping rounded-full" 
                  style={{ backgroundColor: '#ff3b30' }}></div>
-            <span className="font-medium text-sm modern-font" style={{ color: '#ff3b30' }}>
+            <span className="font-medium text-sm tech-font" style={{ color: '#ff3b30' }}>
               CRITICAL TEMPERATURE
             </span>
           </div>
         </div>
       )}
 
-      {/* Global Modern Styles with Exciting Animations */}
+      {/* Enhanced Styles with Exciting Animations */}
       <style jsx>{`
         .modern-dashboard {
           position: relative;
           overflow: hidden;
         }
         
-        .modern-font {
-          font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        .tech-font {
+          font-family: 'Technology', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           font-weight: 400;
-          letter-spacing: -0.01em;
+          letter-spacing: 0.02em;
         }
         
         /* Animated Grid Background */
@@ -461,10 +388,10 @@ function App() {
           width: 200%;
           height: 200%;
           background-image: 
-            linear-gradient(rgba(0, 122, 255, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 122, 255, 0.1) 1px, transparent 1px);
+            linear-gradient(rgba(0, 122, 255, 0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 122, 255, 0.08) 1px, transparent 1px);
           background-size: 60px 60px;
-          animation: gridPulse 6s linear infinite;
+          animation: gridPulse 8s linear infinite;
         }
         
         /* Floating Particles */
@@ -475,11 +402,11 @@ function App() {
           width: 100%;
           height: 100%;
           background: 
-            radial-gradient(circle at 20% 30%, rgba(0, 122, 255, 0.05) 0%, transparent 50%),
-            radial-gradient(circle at 80% 70%, rgba(52, 199, 89, 0.03) 0%, transparent 50%),
-            radial-gradient(circle at 40% 80%, rgba(255, 149, 0, 0.02) 0%, transparent 50%),
-            radial-gradient(circle at 70% 20%, rgba(88, 86, 214, 0.04) 0%, transparent 50%);
-          animation: particleFloat 12s ease-in-out infinite;
+            radial-gradient(circle at 20% 30%, rgba(0, 122, 255, 0.06) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(52, 199, 89, 0.04) 0%, transparent 50%),
+            radial-gradient(circle at 40% 80%, rgba(255, 149, 0, 0.03) 0%, transparent 50%),
+            radial-gradient(circle at 70% 20%, rgba(88, 86, 214, 0.05) 0%, transparent 50%);
+          animation: particleFloat 15s ease-in-out infinite;
         }
         
         /* Energy Waves */
@@ -487,21 +414,33 @@ function App() {
           position: absolute;
           top: 0;
           right: 0;
-          width: 50%;
+          width: 60%;
           height: 100%;
           background: 
-            linear-gradient(45deg, transparent 40%, rgba(0, 122, 255, 0.02) 50%, transparent 60%),
-            linear-gradient(-45deg, transparent 40%, rgba(52, 199, 89, 0.02) 50%, transparent 60%);
-          animation: energyWave 10s linear infinite;
+            linear-gradient(45deg, transparent 40%, rgba(0, 122, 255, 0.03) 50%, transparent 60%),
+            linear-gradient(-45deg, transparent 40%, rgba(52, 199, 89, 0.03) 50%, transparent 60%);
+          animation: energyWave 12s linear infinite;
+        }
+        
+        /* Data Streams */
+        .data-streams {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            linear-gradient(90deg, transparent 0%, rgba(0, 122, 255, 0.02) 25%, transparent 50%, rgba(52, 199, 89, 0.02) 75%, transparent 100%);
+          animation: dataFlow 20s linear infinite;
         }
         
         /* Pulse Rings */
         .pulse-rings {
           position: absolute;
           top: 50%;
-          right: 20%;
-          width: 300px;
-          height: 300px;
+          right: 25%;
+          width: 400px;
+          height: 400px;
           transform: translate(50%, -50%);
         }
         
@@ -511,16 +450,16 @@ function App() {
           position: absolute;
           top: 50%;
           left: 50%;
-          width: 100px;
-          height: 100px;
+          width: 150px;
+          height: 150px;
           border: 2px solid rgba(0, 122, 255, 0.1);
           border-radius: 50%;
           transform: translate(-50%, -50%);
-          animation: pulseRing 4s ease-out infinite;
+          animation: pulseRing 6s ease-out infinite;
         }
         
         .pulse-rings::after {
-          animation-delay: 2s;
+          animation-delay: 3s;
           border-color: rgba(52, 199, 89, 0.1);
         }
         
@@ -534,6 +473,20 @@ function App() {
           border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 12px;
           backdrop-filter: blur(20px);
+        }
+        
+        .modern-button {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          backdrop-filter: blur(20px);
+          transition: all 0.3s ease;
+        }
+        
+        .modern-button:hover {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.2);
+          transform: translateY(-1px);
         }
         
         .modern-nav {
@@ -555,18 +508,22 @@ function App() {
         }
         
         .breathing-logo {
-          animation: breathingAnimation 3s ease-in-out infinite;
+          animation: breathingAnimation 4s ease-in-out infinite;
         }
         
-        /* Keyframe Animations */
+        .breathing-logo-bg {
+          animation: breathingBgAnimation 8s ease-in-out infinite;
+        }
+        
+        /* Enhanced Keyframe Animations */
         @keyframes gridPulse {
           0%, 100% { 
-            opacity: 0.3;
+            opacity: 0.4;
             transform: translate(0, 0) scale(1);
           }
           50% { 
-            opacity: 0.6;
-            transform: translate(-30px, -30px) scale(1.1);
+            opacity: 0.8;
+            transform: translate(-30px, -30px) scale(1.05);
           }
         }
         
@@ -576,15 +533,15 @@ function App() {
             opacity: 0.8;
           }
           25% { 
-            transform: translate(-20px, -30px) rotate(90deg);
+            transform: translate(-30px, -40px) rotate(90deg);
             opacity: 1;
           }
           50% { 
-            transform: translate(-40px, 0px) rotate(180deg);
+            transform: translate(-60px, 0px) rotate(180deg);
             opacity: 0.6;
           }
           75% { 
-            transform: translate(-20px, 30px) rotate(270deg);
+            transform: translate(-30px, 40px) rotate(270deg);
             opacity: 1;
           }
         }
@@ -603,13 +560,27 @@ function App() {
           }
         }
         
+        @keyframes dataFlow {
+          0% { 
+            transform: translateX(-100%);
+            opacity: 0;
+          }
+          50% { 
+            opacity: 1;
+          }
+          100% { 
+            transform: translateX(100%);
+            opacity: 0;
+          }
+        }
+        
         @keyframes pulseRing {
           0% {
-            transform: translate(-50%, -50%) scale(0.5);
+            transform: translate(-50%, -50%) scale(0.3);
             opacity: 1;
           }
           100% {
-            transform: translate(-50%, -50%) scale(3);
+            transform: translate(-50%, -50%) scale(2.5);
             opacity: 0;
           }
         }
@@ -617,7 +588,7 @@ function App() {
         @keyframes breathingAnimation {
           0% { 
             transform: scale(1);
-            opacity: 0.8;
+            opacity: 0.9;
           }
           50% { 
             transform: scale(1.1);
@@ -625,7 +596,22 @@ function App() {
           }
           100% { 
             transform: scale(1);
-            opacity: 0.8;
+            opacity: 0.9;
+          }
+        }
+        
+        @keyframes breathingBgAnimation {
+          0% { 
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.3;
+          }
+          50% { 
+            transform: translate(-50%, -50%) scale(1.05);
+            opacity: 0.4;
+          }
+          100% { 
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.3;
           }
         }
       `}</style>

@@ -47,6 +47,7 @@ interface ControlCenterProps {
     postcode: string;
     what3words: string;
   };
+  aiMode: string;
 }
 
 export function ControlCenter({
@@ -59,7 +60,8 @@ export function ControlCenter({
   systemMetrics,
   onMetricClick,
   onSendReport,
-  locationInfo
+  locationInfo,
+  aiMode
 }: ControlCenterProps) {
   
   const formatBytes = (bytes: number) => {
@@ -68,39 +70,44 @@ export function ControlCenter({
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB/s`;
   };
 
-  // Modern Unified Panel Component with Perfect Symmetry
+  // Get unified color based on danger level
+  const getMetricColor = (value: number, thresholds: { good: number; warning: number }) => {
+    if (value <= thresholds.good) return '#007aff'; // Blue for normal
+    if (value <= thresholds.warning) return '#007aff'; // Keep blue for warning
+    return '#ff3b30'; // Red only for dangerous
+  };
+
+  // Modern Unified Panel Component with Technology Font
   const ModernPanel = ({ 
     title, 
     icon: Icon, 
     metrics, 
-    color = '#007aff',
     onClick 
   }: {
     title: string;
     icon: any;
-    metrics: Array<{label: string; value: string | number; unit?: string; subColor?: string}>;
-    color?: string;
+    metrics: Array<{label: string; value: string | number; unit?: string; isDangerous?: boolean}>;
     onClick: () => void;
   }) => {
     return (
       <button
         onClick={onClick}
         className="modern-metrics-panel transition-all duration-500 transform hover:scale-105 active:scale-95 group p-6"
-        style={{ height: '200px' }} // Fixed height for perfect symmetry
+        style={{ height: '200px' }}
       >
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-xl" style={{ backgroundColor: `${color}20` }}>
-              <Icon className="w-6 h-6" style={{ color }} />
+            <div className="p-2 rounded-xl" style={{ backgroundColor: 'rgba(0, 122, 255, 0.2)' }}>
+              <Icon className="w-6 h-6" style={{ color: '#007aff' }} />
             </div>
-            <h3 className="text-lg font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>
+            <h3 className="text-lg font-medium tech-font tracking-tight" style={{ color: '#ffffff' }}>
               {title}
             </h3>
           </div>
           <div className="w-2 h-2 animate-pulse rounded-full" 
                style={{ 
-                 backgroundColor: color,
-                 boxShadow: `0 0 8px ${color}`
+                 backgroundColor: '#007aff',
+                 boxShadow: '0 0 8px #007aff'
                }}></div>
         </div>
         
@@ -108,14 +115,14 @@ export function ControlCenter({
         <div className="grid grid-cols-2 gap-4 h-24">
           {metrics.map((metric, index) => (
             <div key={index} className="text-center flex flex-col justify-center">
-              <div className="text-xl font-medium modern-font mb-1" 
+              <div className="text-xl font-medium tech-font mb-1" 
                    style={{ 
-                     color: metric.subColor || color,
-                     fontFamily: '"SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
+                     color: metric.isDangerous ? '#ff3b30' : '#007aff',
+                     fontFamily: 'Technology, "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace'
                    }}>
                 {metric.value}{metric.unit || ''}
               </div>
-              <div className="text-xs modern-font opacity-70" 
+              <div className="text-xs tech-font opacity-70" 
                    style={{ color: '#ffffff', fontSize: '10px' }}>
                 {metric.label}
               </div>
@@ -127,8 +134,8 @@ export function ControlCenter({
         <div className="mt-4 flex justify-center">
           <div className="w-4 h-4 animate-pulse rounded-full" 
                style={{ 
-                 backgroundColor: color,
-                 boxShadow: `0 0 12px ${color}50`
+                 backgroundColor: '#007aff',
+                 boxShadow: '0 0 12px rgba(0, 122, 255, 0.5)'
                }}></div>
         </div>
       </button>
@@ -142,60 +149,21 @@ export function ControlCenter({
         <div className="floating-elements"></div>
       </div>
 
-      {/* Header with Generate Report Button */}
-      <div className="modern-panel-header p-4 shadow-lg mb-6 relative z-10" style={{ height: '80px' }}>
-        <div className="flex items-center justify-between h-full">
-          <div className="flex-1">
-            <h2 className="text-xl font-medium tracking-tight modern-font" style={{ color: '#ffffff' }}>
-              Command Center
-            </h2>
-            <p className="font-normal text-sm modern-font mt-1" style={{ color: '#8e8e93' }}>
-              Real-time system monitoring and control
-            </p>
-          </div>
-          <div className="flex-1 flex justify-center">
-            <button
-              onClick={() => onSendReport('all')}
-              className="modern-button px-6 py-2 transition-all duration-300 flex items-center space-x-2 modern-font text-sm font-medium"
-              style={{ 
-                backgroundColor: 'rgba(0, 122, 255, 0.1)',
-                color: '#007aff',
-                borderColor: 'rgba(0, 122, 255, 0.3)'
-              }}
-            >
-              <Mail className="w-4 h-4" />
-              <span>Generate Report</span>
-            </button>
-          </div>
-          <div className="flex-1 flex justify-end">
-            <div className="modern-display px-4 py-2 font-medium text-sm modern-font" 
-            style={{ 
-              backgroundColor: temperature < 60 ? 'rgba(52, 199, 89, 0.1)' : temperature < 80 ? 'rgba(255, 149, 0, 0.1)' : 'rgba(255, 59, 48, 0.1)',
-              color: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30',
-              borderColor: temperature < 60 ? 'rgba(52, 199, 89, 0.3)' : temperature < 80 ? 'rgba(255, 149, 0, 0.3)' : 'rgba(255, 59, 48, 0.3)'
-            }}>
-              {temperature < 60 ? 'Optimal' : temperature < 80 ? 'Warning' : 'Critical'}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Perfect 2x2 Grid Layout for Symmetry */}
+      {/* Header with Generate Report Button - Moved to Bottom */}
       <div className="relative z-10 grid grid-cols-2 gap-6" 
-           style={{ height: 'calc(100% - 140px)' }}>
+           style={{ height: 'calc(100% - 80px)' }}>
         
         {/* Top Left - Processing */}
         <div className="w-full">
           <ModernPanel
             title="Processing"
             icon={Cpu}
-            color="#007aff"
             onClick={() => onMetricClick('cpu')}
             metrics={[
-              { label: 'CPU Usage', value: systemMetrics.cpuUsage.toFixed(1), unit: '%' },
-              { label: 'CPU Temp', value: temperature.toFixed(1), unit: '°C', subColor: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30' },
-              { label: 'GPU Usage', value: gpuMetrics.usage.toFixed(1), unit: '%', subColor: '#5856d6' },
-              { label: 'GPU Temp', value: gpuMetrics.temperature.toFixed(1), unit: '°C', subColor: gpuMetrics.temperature < 60 ? '#34c759' : gpuMetrics.temperature < 80 ? '#ff9500' : '#ff3b30' }
+              { label: 'CPU Usage', value: systemMetrics.cpuUsage.toFixed(1), unit: '%', isDangerous: systemMetrics.cpuUsage > 85 },
+              { label: 'CPU Temp', value: temperature.toFixed(1), unit: '°C', isDangerous: temperature > 80 },
+              { label: 'GPU Usage', value: gpuMetrics.usage.toFixed(1), unit: '%', isDangerous: gpuMetrics.usage > 90 },
+              { label: 'GPU Temp', value: gpuMetrics.temperature.toFixed(1), unit: '°C', isDangerous: gpuMetrics.temperature > 80 }
             ]}
           />
         </div>
@@ -205,13 +173,12 @@ export function ControlCenter({
           <ModernPanel
             title="Network"
             icon={Wifi}
-            color="#34c759"
             onClick={() => onMetricClick('network')}
             metrics={[
-              { label: 'Signal', value: networkMetrics.signalStrength.toFixed(1), unit: '%', subColor: networkMetrics.signalStrength > 80 ? '#34c759' : networkMetrics.signalStrength > 50 ? '#ff9500' : '#ff3b30' },
-              { label: 'Latency', value: networkMetrics.latency.toFixed(1), unit: 'ms', subColor: networkMetrics.latency < 50 ? '#34c759' : networkMetrics.latency < 100 ? '#ff9500' : '#ff3b30' },
-              { label: 'Download', value: formatBytes(networkMetrics.downloadSpeed).split(' ')[0], unit: formatBytes(networkMetrics.downloadSpeed).split(' ')[1], subColor: '#007aff' },
-              { label: 'Upload', value: formatBytes(networkMetrics.uploadSpeed).split(' ')[0], unit: formatBytes(networkMetrics.uploadSpeed).split(' ')[1], subColor: '#5856d6' }
+              { label: 'Signal', value: networkMetrics.signalStrength.toFixed(1), unit: '%', isDangerous: networkMetrics.signalStrength < 30 },
+              { label: 'Latency', value: networkMetrics.latency.toFixed(1), unit: 'ms', isDangerous: networkMetrics.latency > 150 },
+              { label: 'Download', value: formatBytes(networkMetrics.downloadSpeed).split(' ')[0], unit: formatBytes(networkMetrics.downloadSpeed).split(' ')[1] },
+              { label: 'Upload', value: formatBytes(networkMetrics.uploadSpeed).split(' ')[0], unit: formatBytes(networkMetrics.uploadSpeed).split(' ')[1] }
             ]}
           />
         </div>
@@ -221,13 +188,12 @@ export function ControlCenter({
           <ModernPanel
             title="Thermal"
             icon={Thermometer}
-            color="#ff9500"
             onClick={() => onMetricClick('temperature')}
             metrics={[
-              { label: 'Core Temp', value: temperature.toFixed(1), unit: '°C', subColor: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30' },
-              { label: 'Fan Speed', value: fanSpeed.toFixed(1), unit: '%', subColor: '#007aff' },
-              { label: 'Status', value: ledColor === 'green' ? 'Optimal' : ledColor === 'yellow' ? 'Warning' : 'Critical', subColor: ledColor === 'green' ? '#34c759' : ledColor === 'yellow' ? '#ff9500' : '#ff3b30' },
-              { label: 'Mode', value: performanceState === 'performance' ? 'Performance' : performanceState === 'balanced' ? 'Balanced' : 'Power Save', subColor: performanceState === 'performance' ? '#34c759' : performanceState === 'balanced' ? '#ff9500' : '#ff3b30' }
+              { label: 'Core Temp', value: temperature.toFixed(1), unit: '°C', isDangerous: temperature > 80 },
+              { label: 'Fan Speed', value: fanSpeed.toFixed(1), unit: '%' },
+              { label: 'Status', value: ledColor === 'green' ? 'Optimal' : ledColor === 'yellow' ? 'Warning' : 'Critical', isDangerous: ledColor === 'red' },
+              { label: 'Mode', value: aiMode.charAt(0).toUpperCase() + aiMode.slice(1) }
             ]}
           />
         </div>
@@ -237,28 +203,36 @@ export function ControlCenter({
           <ModernPanel
             title="System"
             icon={HardDrive}
-            color="#5856d6"
             onClick={() => onMetricClick('memory')}
             metrics={[
-              { label: 'Memory', value: systemMetrics.memoryUsage.toFixed(1), unit: '%', subColor: systemMetrics.memoryUsage < 70 ? '#34c759' : systemMetrics.memoryUsage < 85 ? '#ff9500' : '#ff3b30' },
-              { label: 'Processes', value: systemMetrics.processes, subColor: '#007aff' },
-              { label: 'Uptime', value: systemMetrics.uptime, subColor: '#34c759' },
-              { label: 'Load Avg', value: systemMetrics.loadAverage, subColor: parseFloat(systemMetrics.loadAverage) < 1.0 ? '#34c759' : parseFloat(systemMetrics.loadAverage) < 2.0 ? '#ff9500' : '#ff3b30' }
+              { label: 'Memory', value: systemMetrics.memoryUsage.toFixed(1), unit: '%', isDangerous: systemMetrics.memoryUsage > 90 },
+              { label: 'Processes', value: systemMetrics.processes, isDangerous: systemMetrics.processes > 250 },
+              { label: 'Uptime', value: systemMetrics.uptime },
+              { label: 'Load Avg', value: systemMetrics.loadAverage, isDangerous: parseFloat(systemMetrics.loadAverage) > 2.0 }
             ]}
           />
         </div>
       </div>
 
+      {/* Generate Report Button - Bottom Center */}
+      <div className="relative z-10 mt-6 flex justify-center">
+        <button
+          onClick={() => onSendReport('all')}
+          className="modern-button px-8 py-3 transition-all duration-300 flex items-center space-x-3 tech-font text-sm font-medium hover:scale-105"
+          style={{ 
+            backgroundColor: 'rgba(0, 122, 255, 0.1)',
+            color: '#007aff',
+            borderColor: 'rgba(0, 122, 255, 0.3)',
+            boxShadow: '0 0 20px rgba(0, 122, 255, 0.2)'
+          }}
+        >
+          <Mail className="w-5 h-5" />
+          <span>GENERATE COMPREHENSIVE REPORT</span>
+        </button>
+      </div>
+
       {/* Enhanced Modern CSS animations with perfect symmetry */}
       <style jsx>{`
-        .modern-panel-header {
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 16px;
-          backdrop-filter: blur(20px);
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-        
         .modern-metrics-panel {
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.1);
@@ -294,13 +268,6 @@ export function ControlCenter({
           transform: translateY(-1px);
         }
         
-        .modern-display {
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
-          backdrop-filter: blur(20px);
-        }
-        
         .floating-elements {
           position: absolute;
           top: -50%;
@@ -311,7 +278,7 @@ export function ControlCenter({
             radial-gradient(circle at 20% 20%, rgba(0, 122, 255, 0.03) 0%, transparent 50%),
             radial-gradient(circle at 80% 80%, rgba(52, 199, 89, 0.02) 0%, transparent 50%),
             radial-gradient(circle at 40% 60%, rgba(255, 149, 0, 0.01) 0%, transparent 50%);
-          animation: floatElements 50s linear infinite;
+          animation: floatElements 60s linear infinite;
         }
         
         @keyframes floatElements {
