@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PerformanceState, APEConfig } from '../types/ape';
-import { Thermometer, Fan, Lightbulb, Activity, AlertTriangle, Zap, Shield, ArrowLeft, Mail } from 'lucide-react';
+import { AIOptimalButton } from './AIOptimalButton';
+import { Thermometer, Fan, Lightbulb, Activity, AlertTriangle, Zap, Shield, ArrowLeft, Mail, Droplets, Settings, Plus, Minus } from 'lucide-react';
 
 interface ThermalDetailsProps {
   temperature: number;
@@ -10,6 +11,8 @@ interface ThermalDetailsProps {
   config: APEConfig;
   onBack: () => void;
   onSendReport: (category: string) => void;
+  aiMode: string;
+  onModeChange: (mode: string) => void;
 }
 
 export function ThermalDetails({ 
@@ -19,9 +22,18 @@ export function ThermalDetails({
   ledColor, 
   config,
   onBack,
-  onSendReport
+  onSendReport,
+  aiMode,
+  onModeChange
 }: ThermalDetailsProps) {
   
+  // Water pump simulation state
+  const [waterPumpSpeed, setWaterPumpSpeed] = useState(65);
+  const [waterFlow, setWaterFlow] = useState(2.3);
+  const [waterTemp, setWaterTemp] = useState(28);
+  const [manualFanSpeed, setManualFanSpeed] = useState(fanSpeed);
+  const [isManualMode, setIsManualMode] = useState(false);
+
   const getTemperatureColor = () => {
     if (temperature < 60) return '#34c759';
     if (temperature < 80) return '#ff9500';
@@ -32,6 +44,12 @@ export function ThermalDetails({
     if (fanSpeed < 30) return '#34c759';
     if (fanSpeed < 70) return '#ff9500';
     return '#ff3b30';
+  };
+
+  const getWaterPumpColor = () => {
+    if (waterPumpSpeed < 40) return '#ff3b30';
+    if (waterPumpSpeed < 70) return '#ff9500';
+    return '#34c759';
   };
 
   const getLEDColorClass = () => {
@@ -55,6 +73,20 @@ export function ThermalDetails({
 
   const thresholdInfo = getNextThreshold();
   const ledColors = getLEDColorClass();
+
+  const handleFanSpeedChange = (delta: number) => {
+    const newSpeed = Math.max(0, Math.min(100, manualFanSpeed + delta));
+    setManualFanSpeed(newSpeed);
+  };
+
+  const handleWaterPumpChange = (delta: number) => {
+    const newSpeed = Math.max(20, Math.min(100, waterPumpSpeed + delta));
+    setWaterPumpSpeed(newSpeed);
+    // Simulate water flow changes based on pump speed
+    setWaterFlow(1.5 + (newSpeed / 100) * 2.5);
+    // Simulate water temperature changes
+    setWaterTemp(25 + (newSpeed / 100) * 8);
+  };
 
   return (
     <div className="h-full space-y-8 relative">
@@ -98,6 +130,9 @@ export function ThermalDetails({
             </div>
           </div>
           <div className="flex items-center space-x-6">
+            {/* AI Mode Button */}
+            <AIOptimalButton currentMode={aiMode} onModeChange={onModeChange} />
+            
             <button
               onClick={() => onSendReport('thermal')}
               className="modern-button px-8 py-4 transition-all duration-300 flex items-center space-x-3 modern-font text-base font-semibold"
@@ -110,6 +145,7 @@ export function ThermalDetails({
               <Mail className="w-5 h-5" />
               <span>Send Report</span>
             </button>
+            
             <div className="modern-display px-6 py-3 modern-font text-base font-semibold"
                  style={{ 
                    backgroundColor: `${getTemperatureColor()}20`,
@@ -122,7 +158,7 @@ export function ThermalDetails({
         </div>
       </div>
 
-      <div className="relative grid grid-cols-3 gap-10 h-[calc(100%-180px)]">
+      <div className="relative grid grid-cols-4 gap-10 h-[calc(100%-180px)]">
         {/* Unified Temperature Panel */}
         <div className="modern-panel p-10 shadow-lg">
           <div className="flex items-center justify-between mb-10">
@@ -182,7 +218,7 @@ export function ThermalDetails({
               <div className="p-4 rounded-2xl mr-5" style={{ backgroundColor: 'rgba(0, 122, 255, 0.2)' }}>
                 <Fan className="w-9 h-9" style={{ color: '#007aff' }} />
               </div>
-              Cooling
+              Air Cooling
             </h3>
             <div className="w-4 h-4 animate-pulse rounded-full" 
                  style={{ 
@@ -191,7 +227,7 @@ export function ThermalDetails({
                  }}></div>
           </div>
 
-          {/* Unified Cooling Metrics */}
+          {/* Fan Speed Control */}
           <div className="space-y-10">
             <div className="text-center">
               <div className="font-bold mb-6" 
@@ -200,27 +236,147 @@ export function ThermalDetails({
                      fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                      fontSize: '22px'
                    }}>
-                {fanSpeed.toFixed(1)}%
+                {isManualMode ? manualFanSpeed.toFixed(1) : fanSpeed.toFixed(1)}%
               </div>
-              <div className="text-xl modern-font" style={{ color: '#8e8e93' }}>Fan Efficiency</div>
+              <div className="text-xl modern-font" style={{ color: '#8e8e93' }}>Fan Speed</div>
             </div>
 
-            {/* Fan Configuration */}
+            {/* Manual Control */}
             <div className="modern-display p-8">
-              <h4 className="text-xl font-bold modern-font mb-8" style={{ color: '#ffffff' }}>Configuration</h4>
-              <div className="space-y-6">
-                <div className="flex justify-between text-base modern-font">
-                  <span style={{ color: '#8e8e93' }}>Min Speed</span>
-                  <span style={{ color: '#ffffff' }}>{config.fan_speeds.min.toFixed(1)}%</span>
+              <div className="flex items-center justify-between mb-6">
+                <span className="text-base modern-font font-bold" style={{ color: '#ffffff' }}>Manual Control</span>
+                <button
+                  onClick={() => setIsManualMode(!isManualMode)}
+                  className="modern-button px-4 py-2 text-sm"
+                  style={{ 
+                    backgroundColor: isManualMode ? 'rgba(0, 122, 255, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                    borderColor: isManualMode ? '#007aff' : 'rgba(255, 255, 255, 0.1)',
+                    color: isManualMode ? '#007aff' : '#8e8e93'
+                  }}
+                >
+                  {isManualMode ? 'AUTO' : 'MANUAL'}
+                </button>
+              </div>
+              
+              {isManualMode && (
+                <div className="flex items-center justify-center space-x-4">
+                  <button
+                    onClick={() => handleFanSpeedChange(-5)}
+                    className="modern-button p-3"
+                    style={{ 
+                      backgroundColor: 'rgba(255, 59, 48, 0.1)',
+                      borderColor: 'rgba(255, 59, 48, 0.3)',
+                      color: '#ff3b30'
+                    }}
+                  >
+                    <Minus className="w-5 h-5" />
+                  </button>
+                  <span className="text-2xl font-bold modern-font" style={{ color: '#ffffff' }}>
+                    {manualFanSpeed}%
+                  </span>
+                  <button
+                    onClick={() => handleFanSpeedChange(5)}
+                    className="modern-button p-3"
+                    style={{ 
+                      backgroundColor: 'rgba(52, 199, 89, 0.1)',
+                      borderColor: 'rgba(52, 199, 89, 0.3)',
+                      color: '#34c759'
+                    }}
+                  >
+                    <Plus className="w-5 h-5" />
+                  </button>
                 </div>
-                <div className="flex justify-between text-base modern-font">
-                  <span style={{ color: '#8e8e93' }}>Max Speed</span>
-                  <span style={{ color: '#ffffff' }}>{config.fan_speeds.max.toFixed(1)}%</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Water Cooling Panel */}
+        <div className="modern-panel p-10 shadow-lg">
+          <div className="flex items-center justify-between mb-10">
+            <h3 className="text-2xl font-medium modern-font tracking-tight flex items-center" style={{ color: '#ffffff' }}>
+              <div className="p-4 rounded-2xl mr-5" style={{ backgroundColor: 'rgba(52, 199, 89, 0.2)' }}>
+                <Droplets className="w-9 h-9" style={{ color: '#34c759' }} />
+              </div>
+              Water Cooling
+            </h3>
+            <div className="w-4 h-4 animate-pulse rounded-full" 
+                 style={{ 
+                   backgroundColor: getWaterPumpColor(),
+                   boxShadow: `0 0 8px ${getWaterPumpColor()}`
+                 }}></div>
+          </div>
+
+          {/* Water Pump Metrics */}
+          <div className="space-y-8">
+            <div className="grid grid-cols-2 gap-6">
+              <div className="text-center">
+                <div className="font-bold mb-4" 
+                     style={{ 
+                       color: getWaterPumpColor(),
+                       fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                       fontSize: '22px'
+                     }}>
+                  {waterPumpSpeed}%
                 </div>
-                <div className="flex justify-between text-base modern-font">
-                  <span style={{ color: '#8e8e93' }}>Mode</span>
-                  <span style={{ color: '#34c759' }}>Auto</span>
+                <div className="text-base modern-font" style={{ color: '#8e8e93' }}>Pump Speed</div>
+              </div>
+              <div className="text-center">
+                <div className="font-bold mb-4" 
+                     style={{ 
+                       color: '#34c759',
+                       fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                       fontSize: '22px'
+                     }}>
+                  {waterFlow.toFixed(1)}L/m
                 </div>
+                <div className="text-base modern-font" style={{ color: '#8e8e93' }}>Flow Rate</div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <div className="font-bold mb-4" 
+                   style={{ 
+                     color: '#007aff',
+                     fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                     fontSize: '22px'
+                   }}>
+                {waterTemp.toFixed(1)}°C
+              </div>
+              <div className="text-base modern-font" style={{ color: '#8e8e93' }}>Water Temperature</div>
+            </div>
+
+            {/* Pump Control */}
+            <div className="modern-display p-6">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-base modern-font font-bold" style={{ color: '#ffffff' }}>Pump Control</span>
+              </div>
+              <div className="flex items-center justify-center space-x-4">
+                <button
+                  onClick={() => handleWaterPumpChange(-5)}
+                  className="modern-button p-3"
+                  style={{ 
+                    backgroundColor: 'rgba(255, 59, 48, 0.1)',
+                    borderColor: 'rgba(255, 59, 48, 0.3)',
+                    color: '#ff3b30'
+                  }}
+                >
+                  <Minus className="w-5 h-5" />
+                </button>
+                <span className="text-xl font-bold modern-font" style={{ color: '#ffffff' }}>
+                  {waterPumpSpeed}%
+                </span>
+                <button
+                  onClick={() => handleWaterPumpChange(5)}
+                  className="modern-button p-3"
+                  style={{ 
+                    backgroundColor: 'rgba(52, 199, 89, 0.1)',
+                    borderColor: 'rgba(52, 199, 89, 0.3)',
+                    color: '#34c759'
+                  }}
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
               </div>
             </div>
           </div>
@@ -230,15 +386,15 @@ export function ThermalDetails({
         <div className="modern-panel p-10 shadow-lg">
           <div className="flex items-center justify-between mb-10">
             <h3 className="text-2xl font-medium modern-font tracking-tight flex items-center" style={{ color: '#ffffff' }}>
-              <div className="p-4 rounded-2xl mr-5" style={{ backgroundColor: 'rgba(52, 199, 89, 0.2)' }}>
-                <Lightbulb className="w-9 h-9" style={{ color: '#34c759' }} />
+              <div className="p-4 rounded-2xl mr-5" style={{ backgroundColor: 'rgba(88, 86, 214, 0.2)' }}>
+                <Lightbulb className="w-9 h-9" style={{ color: '#5856d6' }} />
               </div>
               Status
             </h3>
             <div className="w-4 h-4 animate-pulse rounded-full" 
                  style={{ 
-                   backgroundColor: '#34c759',
-                   boxShadow: '0 0 8px #34c759'
+                   backgroundColor: '#5856d6',
+                   boxShadow: '0 0 8px #5856d6'
                  }}></div>
           </div>
 

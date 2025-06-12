@@ -70,41 +70,21 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
 
   return (
     <>
-      {/* Main Button */}
-      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40">
-        <button
-          onClick={() => setIsOpen(true)}
-          className="relative group"
-          disabled={isTransitioning}
-        >
-          {/* Outer Ring */}
-          <div className="absolute inset-0 w-32 h-32 rounded-full animate-pulse"
-               style={{ 
-                 backgroundColor: currentModeData.bgColor,
-                 boxShadow: `0 0 40px ${currentModeData.color}50`
-               }}></div>
-          
-          {/* Inner Button */}
-          <div className="relative w-32 h-32 rounded-full modern-button flex flex-col items-center justify-center transition-all duration-500 group-hover:scale-110"
-               style={{ 
-                 backgroundColor: currentModeData.bgColor,
-                 borderColor: currentModeData.borderColor,
-                 borderWidth: '2px'
-               }}>
-            <currentModeData.icon className="w-8 h-8 mb-2" style={{ color: currentModeData.color }} />
-            <div className="text-sm tech-font font-bold" style={{ color: currentModeData.color }}>
-              {currentModeData.name}
-            </div>
-            <div className="text-xs tech-font" style={{ color: '#8e8e93' }}>
-              AI MODE
-            </div>
-          </div>
-
-          {/* Pulse Rings */}
-          <div className="absolute inset-0 w-32 h-32 rounded-full border-2 animate-ping"
-               style={{ borderColor: currentModeData.color, opacity: 0.3 }}></div>
-        </button>
-      </div>
+      {/* Compact Mode Button */}
+      <button
+        onClick={() => setIsOpen(true)}
+        className="modern-button px-4 py-3 transition-all duration-300 flex items-center space-x-3"
+        disabled={isTransitioning}
+        style={{ 
+          backgroundColor: currentModeData.bgColor,
+          borderColor: currentModeData.borderColor,
+        }}
+      >
+        <currentModeData.icon className="w-5 h-5" style={{ color: currentModeData.color }} />
+        <div className="text-sm modern-font font-bold" style={{ color: currentModeData.color }}>
+          {currentModeData.name}
+        </div>
+      </button>
 
       {/* Mode Selection Modal */}
       {isOpen && (
@@ -121,10 +101,10 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
                   <Settings className="w-8 h-8" style={{ color: '#007aff' }} />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold tech-font" style={{ color: '#ffffff' }}>
+                  <h2 className="text-2xl font-bold modern-font" style={{ color: '#ffffff' }}>
                     AI PERFORMANCE MODES
                   </h2>
-                  <p className="tech-font" style={{ color: '#8e8e93' }}>
+                  <p className="modern-font" style={{ color: '#8e8e93' }}>
                     Intelligent resource allocation and optimization
                   </p>
                 </div>
@@ -160,10 +140,10 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
                       <mode.icon className="w-8 h-8" style={{ color: mode.color }} />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold tech-font" style={{ color: '#ffffff' }}>
+                      <h3 className="text-xl font-bold modern-font" style={{ color: '#ffffff' }}>
                         {mode.name}
                       </h3>
-                      <p className="text-sm tech-font" style={{ color: '#8e8e93' }}>
+                      <p className="text-sm modern-font" style={{ color: '#8e8e93' }}>
                         {mode.description}
                       </p>
                     </div>
@@ -179,7 +159,7 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
                     {mode.features.map((feature, index) => (
                       <div key={index} className="flex items-center space-x-2">
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: mode.color }}></div>
-                        <span className="text-sm tech-font" style={{ color: '#ffffff' }}>{feature}</span>
+                        <span className="text-sm modern-font" style={{ color: '#ffffff' }}>{feature}</span>
                       </div>
                     ))}
                   </div>
@@ -191,15 +171,15 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
             <div className="p-6 border-t border-white/10">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <div className="text-sm tech-font" style={{ color: '#8e8e93' }}>Current Mode:</div>
+                  <div className="text-sm modern-font" style={{ color: '#8e8e93' }}>Current Mode:</div>
                   <div className="flex items-center space-x-2">
                     <currentModeData.icon className="w-5 h-5" style={{ color: currentModeData.color }} />
-                    <span className="text-lg tech-font font-bold" style={{ color: currentModeData.color }}>
+                    <span className="text-lg modern-font font-bold" style={{ color: currentModeData.color }}>
                       {currentModeData.name}
                     </span>
                   </div>
                 </div>
-                <div className="text-sm tech-font" style={{ color: '#8e8e93' }}>
+                <div className="text-sm modern-font" style={{ color: '#8e8e93' }}>
                   AI optimization active
                 </div>
               </div>
@@ -214,13 +194,13 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
           <div className="text-center">
             <div className="w-24 h-24 mx-auto mb-6 rounded-full border-4 border-t-transparent animate-spin"
                  style={{ borderColor: currentModeData.color, borderTopColor: 'transparent' }}></div>
-            <div className="text-2xl tech-font font-bold mb-2" style={{ color: '#ffffff' }}>
+            <div className="text-2xl modern-font font-bold mb-2" style={{ color: '#ffffff' }}>
               AI OPTIMIZING SYSTEM
             </div>
-            <div className="text-lg tech-font" style={{ color: currentModeData.color }}>
+            <div className="text-lg modern-font" style={{ color: currentModeData.color }}>
               Switching to {modes.find(m => m.id !== currentMode)?.name} Mode
             </div>
-            <div className="text-sm tech-font mt-2" style={{ color: '#8e8e93' }}>
+            <div className="text-sm modern-font mt-2" style={{ color: '#8e8e93' }}>
               Reallocating resources and adjusting performance parameters...
             </div>
           </div>
@@ -246,6 +226,10 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
         .modern-button:hover {
           background: rgba(255, 255, 255, 0.1);
           border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .modern-font {
+          font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
       `}</style>
     </>

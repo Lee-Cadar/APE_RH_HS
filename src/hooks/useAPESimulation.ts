@@ -555,6 +555,7 @@ Recommended Actions: ${temperature > 80 ? 'Monitor thermal levels' : 'System ope
     addLog('INFO', 'StatusBeacon', 'Status beacon array activated');
     addLog('INFO', 'NetworkCommand', 'Network monitoring systems online');
     addLog('INFO', 'GPUBattleCore', 'Graphics processing unit monitoring active');
+    addLog('INFO', 'WaterCooling', 'Water pump and flow sensors initialized');
   }, [addLog, config.email]);
 
   // Periodic system status logs
@@ -575,7 +576,9 @@ Recommended Actions: ${temperature > 80 ? 'Monitor thermal levels' : 'System ope
           'GPU performance metrics within acceptable parameters',
           'Thermal management systems operating efficiently',
           'Daily report metrics recorded successfully',
-          'Email service connectivity verified'
+          'Email service connectivity verified',
+          'Water pump flow rate optimized',
+          'Cooling loop pressure stable'
         ];
         addLog('INFO', 'SystemManager', events[Math.floor(Math.random() * events.length)]);
       }
@@ -587,7 +590,8 @@ Recommended Actions: ${temperature > 80 ? 'Monitor thermal levels' : 'System ope
           'GPU memory usage approaching 75% capacity',
           'CPU load balancing adjustment made',
           'Metric recording buffer approaching capacity',
-          'Email queue processing delayed'
+          'Email queue processing delayed',
+          'Water pump speed adjustment recommended'
         ];
         addLog('WARNING', 'SystemMonitor', warnings[Math.floor(Math.random() * warnings.length)]);
       }

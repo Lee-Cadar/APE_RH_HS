@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PerformanceState, APEConfig } from '../types/ape';
 import { RetroGauge } from './RetroGauge';
+import { AIOptimalButton } from './AIOptimalButton';
 import { Cpu, Monitor, Thermometer, Activity, Zap, HardDrive, Shield, ArrowLeft, Mail, Settings, Gamepad2, Film } from 'lucide-react';
 
 interface ProcessingDetailsProps {
@@ -11,6 +12,8 @@ interface ProcessingDetailsProps {
   config: APEConfig;
   onBack: () => void;
   onSendReport: (category: string) => void;
+  aiMode: string;
+  onModeChange: (mode: string) => void;
 }
 
 export function ProcessingDetails({ 
@@ -20,11 +23,11 @@ export function ProcessingDetails({
   gpuMetrics, 
   config,
   onBack,
-  onSendReport
+  onSendReport,
+  aiMode,
+  onModeChange
 }: ProcessingDetailsProps) {
   
-  const [currentMode, setCurrentMode] = useState('optimal');
-
   const getPerformanceColor = () => {
     switch (performanceState) {
       case 'performance': return '#34c759';
@@ -39,13 +42,6 @@ export function ProcessingDetails({
     if (temp < 80) return '#ff9500';
     return '#ff3b30';
   };
-
-  const performanceModes = [
-    { id: 'optimal', name: 'OPTIMAL', icon: Zap, color: '#34c759' },
-    { id: 'gaming', name: 'GAMING', icon: Gamepad2, color: '#ff3b30' },
-    { id: 'cinema', name: 'CINEMA', icon: Film, color: '#5856d6' },
-    { id: 'creative', name: 'CREATIVE', icon: Settings, color: '#ff9500' }
-  ];
 
   return (
     <div className="h-full space-y-8 relative">
@@ -89,27 +85,9 @@ export function ProcessingDetails({
             </div>
           </div>
           
-          {/* Performance Mode Selector */}
           <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-3 modern-display px-6 py-3">
-              {performanceModes.map((mode) => {
-                const Icon = mode.icon;
-                return (
-                  <button
-                    key={mode.id}
-                    onClick={() => setCurrentMode(mode.id)}
-                    className="p-3 rounded-lg transition-all duration-300"
-                    style={{
-                      backgroundColor: currentMode === mode.id ? `${mode.color}20` : 'transparent',
-                      borderColor: currentMode === mode.id ? mode.color : 'transparent',
-                      borderWidth: '1px'
-                    }}
-                  >
-                    <Icon className="w-6 h-6" style={{ color: currentMode === mode.id ? mode.color : '#8e8e93' }} />
-                  </button>
-                );
-              })}
-            </div>
+            {/* AI Mode Button */}
+            <AIOptimalButton currentMode={aiMode} onModeChange={onModeChange} />
             
             <button
               onClick={() => onSendReport('processing')}

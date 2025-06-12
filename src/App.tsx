@@ -189,13 +189,25 @@ function App() {
         color: '#ffffff'
       }}
     >
-      {/* Animated Background Elements */}
+      {/* Enhanced Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="animated-grid"></div>
+        <div className="animated-grid-2"></div>
         <div className="floating-particles"></div>
+        <div className="floating-particles-2"></div>
+        <div className="floating-particles-3"></div>
         <div className="energy-waves"></div>
+        <div className="energy-waves-2"></div>
         <div className="pulse-rings"></div>
+        <div className="pulse-rings-2"></div>
+        <div className="pulse-rings-3"></div>
         <div className="data-streams"></div>
+        <div className="data-streams-2"></div>
+        <div className="data-streams-3"></div>
+        <div className="circuit-lines"></div>
+        <div className="circuit-lines-2"></div>
+        <div className="tech-dots"></div>
+        <div className="tech-dots-2"></div>
       </div>
 
       {/* Logo Background - Right Side - Full Visibility */}
@@ -270,7 +282,7 @@ function App() {
             </div>
           </div>
           
-          {/* Right Side - Status, Logo, Profile */}
+          {/* Right Side - Status, Logo, AI Mode, Profile */}
           <div className="flex items-center space-x-6">
             <div className="modern-display px-6 py-3 font-medium text-base modern-font" 
             style={{ 
@@ -280,6 +292,9 @@ function App() {
             }}>
               {temperature < 60 ? 'OPTIMAL' : temperature < 80 ? 'WARNING' : 'CRITICAL'}
             </div>
+
+            {/* AI Mode Button */}
+            <AIOptimalButton currentMode={aiMode} onModeChange={setAiMode} />
             
             {/* Logo */}
             <div className="relative">
@@ -346,9 +361,6 @@ function App() {
         </nav>
       )}
 
-      {/* AI Optimal Button - Center Screen */}
-      <AIOptimalButton currentMode={aiMode} onModeChange={setAiMode} />
-
       {/* Main Content */}
       <main className="relative overflow-y-auto z-10" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' ? 'calc(900px - 140px)' : 'calc(900px - 80px)' }}>
         <div className="p-8">
@@ -377,6 +389,8 @@ function App() {
               config={config}
               onBack={handleBackToControl}
               onSendReport={handleSendReport}
+              aiMode={aiMode}
+              onModeChange={setAiMode}
             />
           )}
 
@@ -397,6 +411,8 @@ function App() {
               config={config}
               onBack={handleBackToControl}
               onSendReport={handleSendReport}
+              aiMode={aiMode}
+              onModeChange={setAiMode}
             />
           )}
 
@@ -455,7 +471,7 @@ function App() {
         </div>
       )}
 
-      {/* Enhanced Styles with Exciting Animations */}
+      {/* Enhanced Styles with More Background Elements */}
       <style jsx>{`
         .modern-dashboard {
           position: relative;
@@ -468,7 +484,7 @@ function App() {
           letter-spacing: -0.01em;
         }
         
-        /* Animated Grid Background */
+        /* Enhanced Animated Grid Background */
         .animated-grid {
           position: absolute;
           top: -50%;
@@ -482,7 +498,20 @@ function App() {
           animation: gridPulse 8s linear infinite;
         }
         
-        /* Floating Particles */
+        .animated-grid-2 {
+          position: absolute;
+          top: -30%;
+          left: -30%;
+          width: 160%;
+          height: 160%;
+          background-image: 
+            linear-gradient(rgba(52, 199, 89, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(52, 199, 89, 0.05) 1px, transparent 1px);
+          background-size: 120px 120px;
+          animation: gridPulse 12s linear infinite reverse;
+        }
+        
+        /* Multiple Floating Particles */
         .floating-particles {
           position: absolute;
           top: 0;
@@ -492,12 +521,36 @@ function App() {
           background: 
             radial-gradient(circle at 20% 30%, rgba(0, 122, 255, 0.06) 0%, transparent 50%),
             radial-gradient(circle at 80% 70%, rgba(52, 199, 89, 0.04) 0%, transparent 50%),
-            radial-gradient(circle at 40% 80%, rgba(255, 149, 0, 0.03) 0%, transparent 50%),
-            radial-gradient(circle at 70% 20%, rgba(88, 86, 214, 0.05) 0%, transparent 50%);
+            radial-gradient(circle at 40% 80%, rgba(255, 149, 0, 0.03) 0%, transparent 50%);
           animation: particleFloat 15s ease-in-out infinite;
         }
         
-        /* Energy Waves */
+        .floating-particles-2 {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            radial-gradient(circle at 60% 20%, rgba(88, 86, 214, 0.05) 0%, transparent 40%),
+            radial-gradient(circle at 30% 60%, rgba(255, 59, 48, 0.03) 0%, transparent 45%),
+            radial-gradient(circle at 90% 40%, rgba(0, 122, 255, 0.04) 0%, transparent 35%);
+          animation: particleFloat 20s ease-in-out infinite reverse;
+        }
+        
+        .floating-particles-3 {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            radial-gradient(circle at 10% 90%, rgba(255, 149, 0, 0.04) 0%, transparent 30%),
+            radial-gradient(circle at 70% 10%, rgba(52, 199, 89, 0.03) 0%, transparent 40%);
+          animation: particleFloat 25s ease-in-out infinite;
+        }
+        
+        /* Multiple Energy Waves */
         .energy-waves {
           position: absolute;
           top: 0;
@@ -510,7 +563,19 @@ function App() {
           animation: energyWave 12s linear infinite;
         }
         
-        /* Data Streams */
+        .energy-waves-2 {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 50%;
+          height: 100%;
+          background: 
+            linear-gradient(135deg, transparent 45%, rgba(255, 149, 0, 0.02) 55%, transparent 65%),
+            linear-gradient(-135deg, transparent 45%, rgba(88, 86, 214, 0.02) 55%, transparent 65%);
+          animation: energyWave 18s linear infinite reverse;
+        }
+        
+        /* Multiple Data Streams */
         .data-streams {
           position: absolute;
           top: 0;
@@ -522,7 +587,29 @@ function App() {
           animation: dataFlow 20s linear infinite;
         }
         
-        /* Pulse Rings */
+        .data-streams-2 {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            linear-gradient(45deg, transparent 0%, rgba(255, 149, 0, 0.015) 30%, transparent 60%, rgba(88, 86, 214, 0.015) 90%, transparent 100%);
+          animation: dataFlow 30s linear infinite reverse;
+        }
+        
+        .data-streams-3 {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            linear-gradient(-45deg, transparent 10%, rgba(255, 59, 48, 0.01) 40%, transparent 70%);
+          animation: dataFlow 25s linear infinite;
+        }
+        
+        /* Multiple Pulse Rings */
         .pulse-rings {
           position: absolute;
           top: 50%;
@@ -549,6 +636,109 @@ function App() {
         .pulse-rings::after {
           animation-delay: 3s;
           border-color: rgba(52, 199, 89, 0.1);
+        }
+        
+        .pulse-rings-2 {
+          position: absolute;
+          top: 30%;
+          left: 20%;
+          width: 300px;
+          height: 300px;
+        }
+        
+        .pulse-rings-2::before,
+        .pulse-rings-2::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 150px;
+          height: 150px;
+          border: 1px solid rgba(255, 149, 0, 0.08);
+          border-radius: 50%;
+          transform: translate(-50%, -50%);
+          animation: pulseRing 8s ease-out infinite;
+        }
+        
+        .pulse-rings-2::after {
+          animation-delay: 4s;
+          border-color: rgba(88, 86, 214, 0.08);
+        }
+        
+        .pulse-rings-3 {
+          position: absolute;
+          top: 70%;
+          right: 60%;
+          width: 400px;
+          height: 400px;
+        }
+        
+        .pulse-rings-3::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 100px;
+          height: 100px;
+          border: 1px solid rgba(255, 59, 48, 0.06);
+          border-radius: 50%;
+          transform: translate(-50%, -50%);
+          animation: pulseRing 10s ease-out infinite;
+        }
+        
+        /* Circuit Lines */
+        .circuit-lines {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            linear-gradient(0deg, transparent 49%, rgba(0, 122, 255, 0.02) 50%, transparent 51%),
+            linear-gradient(90deg, transparent 49%, rgba(52, 199, 89, 0.02) 50%, transparent 51%);
+          background-size: 200px 200px;
+          animation: circuitMove 15s linear infinite;
+        }
+        
+        .circuit-lines-2 {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            linear-gradient(45deg, transparent 49%, rgba(255, 149, 0, 0.015) 50%, transparent 51%),
+            linear-gradient(-45deg, transparent 49%, rgba(88, 86, 214, 0.015) 50%, transparent 51%);
+          background-size: 300px 300px;
+          animation: circuitMove 22s linear infinite reverse;
+        }
+        
+        /* Tech Dots */
+        .tech-dots {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            radial-gradient(circle at 0% 0%, rgba(0, 122, 255, 0.03) 1px, transparent 1px),
+            radial-gradient(circle at 50% 50%, rgba(52, 199, 89, 0.02) 1px, transparent 1px),
+            radial-gradient(circle at 100% 100%, rgba(255, 149, 0, 0.02) 1px, transparent 1px);
+          background-size: 150px 150px, 200px 200px, 250px 250px;
+          animation: techDots 20s linear infinite;
+        }
+        
+        .tech-dots-2 {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            radial-gradient(circle at 25% 75%, rgba(88, 86, 214, 0.02) 1px, transparent 1px),
+            radial-gradient(circle at 75% 25%, rgba(255, 59, 48, 0.015) 1px, transparent 1px);
+          background-size: 180px 180px, 220px 220px;
+          animation: techDots 25s linear infinite reverse;
         }
         
         /* Header and Navigation Styles */
@@ -670,6 +860,24 @@ function App() {
           100% {
             transform: translate(-50%, -50%) scale(2.5);
             opacity: 0;
+          }
+        }
+        
+        @keyframes circuitMove {
+          0% { 
+            transform: translate(0, 0);
+          }
+          100% { 
+            transform: translate(200px, 200px);
+          }
+        }
+        
+        @keyframes techDots {
+          0% { 
+            transform: translate(0, 0) rotate(0deg);
+          }
+          100% { 
+            transform: translate(150px, 150px) rotate(360deg);
           }
         }
         
