@@ -24,7 +24,7 @@ function App() {
     elevation: "10m",
     isp: "Verizon Business",
     postcode: "10118",
-    what3words: "///index.home.raft"
+    what3words: "///hiking.stream.closed"
   });
   
   const {
@@ -85,7 +85,7 @@ function App() {
           elevation: "16m",
           isp: "Comcast Business",
           postcode: "94103",
-          what3words: "///filled.count.soap"
+          what3words: "///hiking.stream.closed"
         };
         setLocationInfo(ipLocationData);
         addLog('INFO', 'IPLocation', `IP-based location: ${ipLocationData.city}`);
@@ -112,7 +112,7 @@ function App() {
         elevation: "10m",
         isp: "Verizon FiOS Business",
         postcode: "10118",
-        what3words: "///index.home.raft"
+        what3words: "///hiking.stream.closed"
       },
       {
         lat: 37.7749, lng: -122.4194,
@@ -125,7 +125,7 @@ function App() {
         elevation: "16m",
         isp: "AT&T Business Fiber",
         postcode: "94025",
-        what3words: "///filled.count.soap"
+        what3words: "///hiking.stream.closed"
       },
       {
         lat: 51.5074, lng: -0.1278,
@@ -138,7 +138,7 @@ function App() {
         elevation: "35m",
         isp: "BT Business",
         postcode: "EC3A 8EP",
-        what3words: "///index.home.raft"
+        what3words: "///hiking.stream.closed"
       }
     ];
 
@@ -154,7 +154,7 @@ function App() {
       elevation: "Unknown",
       isp: "Local Network",
       postcode: "00000",
-      what3words: "///unknown.location.here"
+      what3words: "///hiking.stream.closed"
     };
 
     return closest;
@@ -233,17 +233,6 @@ function App() {
         color: '#ffffff'
       }}
     >
-      {/* Watermark Logo Background - Right Side */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="logo-watermark-container">
-          <img 
-            src="/Triangle_logo_black_nobg.png" 
-            alt="APE Logo Watermark" 
-            className="logo-watermark"
-          />
-        </div>
-      </div>
-
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="animated-grid"></div>
@@ -310,6 +299,22 @@ function App() {
           </div>
         </div>
       </header>
+
+      {/* Centered Logo with Breathing Animation - Original Format */}
+      <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="relative">
+          <img 
+            src="/Triangle_logo_black_nobg.png" 
+            alt="APE Logo" 
+            className="object-contain breathing-logo"
+            style={{ 
+              width: '80px', 
+              height: '80px',
+              filter: 'brightness(0) saturate(100%) invert(100%)',
+            }}
+          />
+        </div>
+      </div>
 
       {/* Navigation for Control, Config, Logs */}
       {(currentView === 'control' || currentView === 'config' || currentView === 'logs') && (
@@ -447,29 +452,6 @@ function App() {
           letter-spacing: -0.01em;
         }
         
-        /* Logo Watermark Background */
-        .logo-watermark-container {
-          position: absolute;
-          top: 0;
-          right: 0;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: flex-end;
-          overflow: hidden;
-        }
-        
-        .logo-watermark {
-          width: 800px;
-          height: 800px;
-          opacity: 0.3;
-          filter: brightness(0) saturate(100%) invert(100%);
-          transform: translateX(50%);
-          animation: logoFloat 8s ease-in-out infinite, logoGlow 4s ease-in-out infinite alternate;
-          object-fit: contain;
-        }
-        
         /* Animated Grid Background */
         .animated-grid {
           position: absolute;
@@ -571,33 +553,11 @@ function App() {
           border: 1px solid rgba(255, 59, 48, 0.3);
         }
         
+        .breathing-logo {
+          animation: breathingAnimation 3s ease-in-out infinite;
+        }
+        
         /* Keyframe Animations */
-        @keyframes logoFloat {
-          0%, 100% { 
-            transform: translateX(50%) translateY(0px) scale(1);
-          }
-          25% { 
-            transform: translateX(50%) translateY(-10px) scale(1.02);
-          }
-          50% { 
-            transform: translateX(50%) translateY(0px) scale(1.05);
-          }
-          75% { 
-            transform: translateX(50%) translateY(10px) scale(1.02);
-          }
-        }
-        
-        @keyframes logoGlow {
-          0% { 
-            opacity: 0.3;
-            filter: brightness(0) saturate(100%) invert(100%) drop-shadow(0 0 20px rgba(255, 255, 255, 0.1));
-          }
-          100% { 
-            opacity: 0.4;
-            filter: brightness(0) saturate(100%) invert(100%) drop-shadow(0 0 40px rgba(0, 122, 255, 0.2));
-          }
-        }
-        
         @keyframes gridPulse {
           0%, 100% { 
             opacity: 0.3;
@@ -650,6 +610,21 @@ function App() {
           100% {
             transform: translate(-50%, -50%) scale(3);
             opacity: 0;
+          }
+        }
+        
+        @keyframes breathingAnimation {
+          0% { 
+            transform: scale(1);
+            opacity: 0.8;
+          }
+          50% { 
+            transform: scale(1.1);
+            opacity: 1;
+          }
+          100% { 
+            transform: scale(1);
+            opacity: 0.8;
           }
         }
       `}</style>
