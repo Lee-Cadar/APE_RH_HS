@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { IntroPage } from './components/IntroPage';
-import { SteamDeckInterface } from './components/SteamDeckInterface';
-import { CameraFeed } from './components/CameraFeed';
-import { SystemControls } from './components/SystemControls';
 import { VPNPage } from './components/VPNPage';
 import { ExitPage } from './components/ExitPage';
 import { ControlCenter } from './components/ControlCenter';
@@ -34,23 +31,17 @@ import {
   InformationCircleIcon, 
   PowerIcon, 
   Rotate01Icon, 
-  Moon01Icon, 
-  GameController01Icon, 
-  MusicNote01Icon, 
-  VideoReplayIcon, 
-  Camera01Icon, 
+  Moon01Icon,
   Cancel01Icon 
 } from '@hugeicons/react';
 
 type ViewType = 'control' | 'processing' | 'network' | 'thermal' | 'system' | 'config' | 'logs' | 'network-analyzer' | 'pc-info' | 'vpn' | 'exit' | 'settings';
-type ScreenMode = 'intro' | 'main' | 'steamdeck' | 'exit';
-type LeftScreenMode = 'steamdeck' | 'camera' | 'controls';
+type ScreenMode = 'intro' | 'main' | 'exit';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentView, setCurrentView] = useState<ViewType>('control');
   const [screenMode, setScreenMode] = useState<ScreenMode>('intro');
-  const [leftScreenMode, setLeftScreenMode] = useState<LeftScreenMode>('steamdeck');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [isSecurityOpen, setIsSecurityOpen] = useState(false);
@@ -61,17 +52,10 @@ function App() {
   
   // Settings state
   const [settings, setSettings] = useState({
-    fontSize: 'medium',
-    primaryScreen: 'right',
-    steamDeckShortcuts: Array(10).fill(null).map((_, i) => ({
-      id: i,
-      name: i < 6 ? ['Steam', 'Discord', 'Chrome', 'Spotify', 'OBS', 'VS Code'][i] : `App ${i + 1}`,
-      icon: [GameController01Icon, MusicNote01Icon, Globe01Icon, MusicNote01Icon, Camera01Icon, Monitor01Icon, VideoReplayIcon, Settings01Icon, Activity01Icon, Shield01Icon][i % 10],
-      color: ['#007aff', '#5865f2', '#4285f4', '#1db954', '#302e31', '#007acc', '#ff9500', '#5856d6', '#ff3b30', '#34c759'][i % 10]
-    }))
+    fontSize: 'medium'
   });
 
-  // Font sizes based on accessibility setting (5% smaller)
+  // Font sizes based on accessibility setting
   const fontSizes = {
     small: { h1: '21px', h2: '13px', h3: '9px', iconSize: '19', value: '17px' },
     medium: { h1: '26px', h2: '16px', h3: '11px', iconSize: '24', value: '21px' },
@@ -274,40 +258,23 @@ function App() {
   // Render based on screen mode and authentication status
   if (screenMode === 'intro' || !isAuthenticated) {
     return (
-      <div className="flex" style={{ width: '100vw', height: '100vh', padding: '10px', gap: '10px' }}>
-        {/* Left Screen - Intro Page */}
-        <div style={{ width: '1024px', height: '600px' }}>
-          <IntroPage 
-            onAuthenticated={() => setIsAuthenticated(true)} 
-            fontSizes={fontSizes}
-            currentTime={currentTime}
-          />
-        </div>
-        
-        {/* Right Screen - Intro Page */}
-        <div style={{ width: '1024px', height: '600px' }}>
-          <IntroPage 
-            onAuthenticated={() => setIsAuthenticated(true)} 
-            fontSizes={fontSizes}
-            currentTime={currentTime}
-          />
-        </div>
+      <div className="w-full h-screen">
+        <IntroPage 
+          onAuthenticated={() => setIsAuthenticated(true)} 
+          fontSizes={fontSizes}
+          currentTime={currentTime}
+        />
       </div>
     );
   }
 
   if (screenMode === 'exit') {
     return (
-      <div className="flex" style={{ width: '100vw', height: '100vh', padding: '10px', gap: '10px' }}>
-        {/* Left Screen - Exit Page */}
-        <div style={{ width: '1024px', height: '600px' }}>
-          <ExitPage currentTime={currentTime} isLeftScreen={true} fontSizes={fontSizes} />
-        </div>
-        
-        {/* Right Screen - Exit Page */}
-        <div style={{ width: '1024px', height: '600px' }}>
-          <ExitPage currentTime={currentTime} isLeftScreen={false} fontSizes={fontSizes} />
-        </div>
+      <div className="w-full h-screen">
+        <ExitPage 
+          currentTime={currentTime} 
+          fontSizes={fontSizes} 
+        />
       </div>
     );
   }
@@ -339,35 +306,9 @@ function App() {
   }
 
   return (
-    <div className="flex" style={{ width: '100vw', height: '100vh', padding: '10px', gap: '10px' }}>
-      {/* Left Screen - Multiple Modes */}
-      <div style={{ width: '1024px', height: '600px' }}>
-        {leftScreenMode === 'steamdeck' && (
-          <SteamDeckInterface 
-            currentTime={currentTime} 
-            settings={settings}
-            onSettingsChange={setSettings}
-            fontSizes={fontSizes}
-          />
-        )}
-        {leftScreenMode === 'camera' && (
-          <CameraFeed 
-            currentTime={currentTime}
-            fontSizes={fontSizes}
-            onModeChange={setLeftScreenMode}
-          />
-        )}
-        {leftScreenMode === 'controls' && (
-          <SystemControls 
-            currentTime={currentTime}
-            fontSizes={fontSizes}
-            onModeChange={setLeftScreenMode}
-          />
-        )}
-      </div>
-      
-      {/* Right Screen - Main Application */}
-      <div style={{ width: '1024px', height: '600px' }}>
+    <div className="w-full h-screen p-2">
+      {/* Main Application */}
+      <div style={{ width: '100%', height: '100%' }}>
         <div 
           className="relative overflow-hidden select-none modern-dashboard"
           style={{ 
@@ -400,7 +341,7 @@ function App() {
             <div className="tech-dots-2"></div>
           </div>
 
-          {/* Logo Background - Right Side */}
+          {/* Logo Background */}
           <div className="absolute top-0 right-0 w-full h-full overflow-visible pointer-events-none z-0">
             <div className="absolute -right-1/6 top-1/2 transform -translate-y-1/2">
               <img 
@@ -585,7 +526,7 @@ function App() {
           )}
 
           {/* Main Content */}
-          <main className="relative overflow-y-auto z-10" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' || currentView === 'network-analyzer' || currentView === 'pc-info' ? 'calc(600px - 110px)' : 'calc(600px - 60px)' }}>
+          <main className="relative overflow-y-auto z-10" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' || currentView === 'network-analyzer' || currentView === 'pc-info' ? 'calc(100vh - 130px)' : 'calc(100vh - 80px)' }}>
             <div className="p-4">
               {currentView === 'control' && (
                 <ControlCenter
@@ -916,7 +857,7 @@ function App() {
               animation: dataFlow 25s linear infinite;
             }
             
-            /* Multiple Pulse Rings - 20% smaller */
+            /* Multiple Pulse Rings */
             .pulse-rings {
               position: absolute;
               top: 50%;
@@ -1229,57 +1170,29 @@ function App() {
         </div>
       </div>
 
-      {/* Scanner Transition Overlay - Covers both screens */}
+      {/* Scanner Transition Overlay */}
       {showScanner && (
-        <div className="fixed inset-0 z-[9999] bg-black flex">
-          {/* Left Screen Scanner */}
-          <div className="w-1/2 relative">
-            <div 
-              className="absolute left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent shadow-lg"
-              style={{ 
-                top: `${scannerProgress}%`,
-                boxShadow: '0 0 20px #34c759, 0 0 40px #34c759',
-                transition: 'top 0.04s linear'
-              }}
-            />
-            <div className="absolute inset-0 opacity-20">
-              {Array.from({ length: 30 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="absolute left-0 w-full h-px bg-green-400"
-                  style={{ 
-                    top: `${i * 3.33}%`,
-                    opacity: scannerProgress > i * 3.33 ? 0.3 : 0,
-                    transition: 'opacity 0.1s ease'
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-          
-          {/* Right Screen Scanner */}
-          <div className="w-1/2 relative">
-            <div 
-              className="absolute left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent shadow-lg"
-              style={{ 
-                top: `${scannerProgress}%`,
-                boxShadow: '0 0 20px #34c759, 0 0 40px #34c759',
-                transition: 'top 0.04s linear'
-              }}
-            />
-            <div className="absolute inset-0 opacity-20">
-              {Array.from({ length: 30 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="absolute left-0 w-full h-px bg-green-400"
-                  style={{ 
-                    top: `${i * 3.33}%`,
-                    opacity: scannerProgress > i * 3.33 ? 0.3 : 0,
-                    transition: 'opacity 0.1s ease'
-                  }}
-                />
-              ))}
-            </div>
+        <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center">
+          <div 
+            className="absolute left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent shadow-lg"
+            style={{ 
+              top: `${scannerProgress}%`,
+              boxShadow: '0 0 20px #34c759, 0 0 40px #34c759',
+              transition: 'top 0.04s linear'
+            }}
+          />
+          <div className="absolute inset-0 opacity-20">
+            {Array.from({ length: 30 }).map((_, i) => (
+              <div
+                key={i}
+                className="absolute left-0 w-full h-px bg-green-400"
+                style={{ 
+                  top: `${i * 3.33}%`,
+                  opacity: scannerProgress > i * 3.33 ? 0.3 : 0,
+                  transition: 'opacity 0.1s ease'
+                }}
+              />
+            ))}
           </div>
           
           {/* Scanner progress text */}
