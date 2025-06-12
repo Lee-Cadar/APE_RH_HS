@@ -4,9 +4,10 @@ import { Shield, Power, RotateCcw, Moon, X, CheckCircle, AlertCircle, User, Came
 interface IntroPageProps {
   onAuthenticated: () => void;
   fontSizes: any;
+  currentTime: Date;
 }
 
-export function IntroPage({ onAuthenticated, fontSizes }: IntroPageProps) {
+export function IntroPage({ onAuthenticated, fontSizes, currentTime }: IntroPageProps) {
   const [authMethod, setAuthMethod] = useState<'face' | 'fingerprint' | 'pin'>('face');
   const [pin, setPin] = useState('');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
@@ -122,12 +123,27 @@ export function IntroPage({ onAuthenticated, fontSizes }: IntroPageProps) {
 
   const currentMethod = authMethods.find(method => method.id === authMethod);
 
+  const formatTimeWithTimezone = (date: Date) => {
+    const time = date.toLocaleTimeString('en-US', {
+      hour12: true,
+      hour: 'numeric',
+      minute: '2-digit'
+    });
+    const dateStr = date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+    return `${time} BST, ${dateStr}`;
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-black overflow-hidden"
          style={{ 
            width: 'calc(100% - 20px)', 
            height: 'calc(100vh - 20px)',
-           margin: '10px'
+           margin: '10px',
+           borderRadius: '20px'
          }}>
       {/* Animated Background matching main app */}
       <div className="absolute inset-0 overflow-hidden">
@@ -163,6 +179,16 @@ export function IntroPage({ onAuthenticated, fontSizes }: IntroPageProps) {
               filter: 'brightness(0.3) sepia(1) hue-rotate(200deg) saturate(2)'
             }}
           />
+        </div>
+      </div>
+
+      {/* Time and Date - Top Left (same position on both screens) */}
+      <div className="absolute top-8 left-8 z-10">
+        <div className="font-bold modern-font mb-2" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
+          {currentTime.toLocaleTimeString('en-US', { hour12: true, hour: 'numeric', minute: '2-digit' })}
+        </div>
+        <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
+          {formatTimeWithTimezone(currentTime)}
         </div>
       </div>
 
@@ -302,7 +328,7 @@ export function IntroPage({ onAuthenticated, fontSizes }: IntroPageProps) {
                   </p>
                 </div>
 
-                <div className="max-w-xs mx-auto">
+                <div className="relative max-w-xs mx-auto">
                   <input
                     type="password"
                     value={pin}
@@ -325,7 +351,7 @@ export function IntroPage({ onAuthenticated, fontSizes }: IntroPageProps) {
                 <button
                   onClick={handlePinSubmit}
                   disabled={pin.length !== 4 || isAuthenticating}
-                  className="modern-button px-12 py-4 transition-all duration-300 disabled:opacity-50"
+                  className="modern-button px-8 py-3 transition-all duration-300 disabled:opacity-50"
                   style={{
                     backgroundColor: pin.length === 4 ? 'rgba(255, 149, 0, 0.2)' : 'rgba(255, 255, 255, 0.05)',
                     borderColor: pin.length === 4 ? '#ff9500' : 'rgba(255, 255, 255, 0.1)',
@@ -537,6 +563,10 @@ export function IntroPage({ onAuthenticated, fontSizes }: IntroPageProps) {
         }
         
         .tech-font {
+          font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        
+        .modern-font {
           font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
         

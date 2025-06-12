@@ -16,16 +16,19 @@ import { SecurityModal } from './components/SecurityModal';
 import { NetworkAnalyzer } from './components/NetworkAnalyzer';
 import { PCInfoPage } from './components/PCInfoPage';
 import { SettingsPage } from './components/SettingsPage';
+import { CameraFeed } from './components/CameraFeed';
 import { useAPESimulation } from './hooks/useAPESimulation';
-import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap, Globe, User, Monitor, Info, Power, RotateCcw, Moon } from 'lucide-react';
+import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap, Globe, User, Monitor, Info, Power, RotateCcw, Moon, Camera } from 'lucide-react';
 
 type ViewType = 'control' | 'processing' | 'network' | 'thermal' | 'system' | 'config' | 'logs' | 'network-analyzer' | 'pc-info' | 'vpn' | 'exit' | 'settings';
 type ScreenMode = 'intro' | 'main' | 'steamdeck' | 'exit';
 type FontSize = 'small' | 'medium' | 'large';
+type LeftScreenMode = 'steamdeck' | 'camera' | 'controls';
 
 interface AppSettings {
   primaryScreen: 'left' | 'right';
   fontSize: FontSize;
+  leftScreenMode: LeftScreenMode;
   steamDeckShortcuts: Array<{
     id: number;
     name: string;
@@ -49,6 +52,7 @@ function App() {
   const [appSettings, setAppSettings] = useState<AppSettings>({
     primaryScreen: 'right',
     fontSize: 'small',
+    leftScreenMode: 'steamdeck',
     steamDeckShortcuts: Array(20).fill(null).map((_, i) => ({
       id: i,
       name: `App ${i + 1}`,
@@ -334,34 +338,96 @@ function App() {
     </div>
   );
 
-  // Render based on screen mode and authentication status
-  if (screenMode === 'intro' || !isAuthenticated) {
-    return (
-      <div className="w-screen h-screen bg-black overflow-hidden"
-           style={{ 
-             fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-             position: 'fixed',
-             top: 0,
-             left: 0,
-             right: 0,
-             bottom: 0,
-             display: 'flex'
-           }}>
-        {/* Left Screen - Steam Deck Interface (Intro) */}
-        <div className="w-1/2 h-full" style={{ padding: '10px' }}>
+  // Left screen content based on mode
+  const renderLeftScreen = () => {
+    switch (appSettings.leftScreenMode) {
+      case 'camera':
+        return (
+          <CameraFeed 
+            currentTime={currentTime}
+            fontSizes={fontSizes}
+            onModeChange={(mode) => setAppSettings(prev => ({ ...prev, leftScreenMode: mode }))}
+          />
+        );
+      case 'controls':
+        return (
+          <div className="w-full h-full bg-black text-white overflow-hidden select-none relative"
+               style={{ 
+                 background: 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 30%, #1a1a1a 70%, #0a0a0a 100%)',
+                 fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                 borderRadius: '20px'
+               }}>
+            {/* All Controls Interface */}
+            <div className="p-8">
+              <h2 className="font-bold modern-font mb-6" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
+                SYSTEM CONTROLS
+              </h2>
+              
+              {/* RGB, Audio, Brightness controls here */}
+              <div className="space-y-6">
+                <div className="modern-panel p-6">
+                  <h3 className="font-bold modern-font mb-4" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
+                    RGB Lighting
+                  </h3>
+                  {/* RGB controls */}
+                </div>
+                
+                <div className="modern-panel p-6">
+                  <h3 className="font-bold modern-font mb-4" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
+                    Audio Controls
+                  </h3>
+                  {/* Audio controls */}
+                </div>
+                
+                <div className="modern-panel p-6">
+                  <h3 className="font-bold modern-font mb-4" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
+                    Screen Brightness
+                  </h3>
+                  {/* Brightness controls */}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      default:
+        return (
           <SteamDeckInterface 
             currentTime={currentTime} 
             settings={appSettings}
             onSettingsChange={setAppSettings}
             fontSizes={fontSizes}
           />
-        </div>
-        
-        {/* Right Screen - Intro Page */}
-        <div className="w-1/2 h-full" style={{ padding: '10px' }}>
+        );
+    }
+  };
+
+  // Render based on screen mode and authentication status
+  if (screenMode === 'intro' || !isAuthenticated) {
+    return (
+      <div className="w-screen h-screen bg-black overflow-hidden flex"
+           style={{ 
+             fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+             position: 'fixed',
+             top: 0,
+             left: 0,
+             right: 0,
+             bottom: 0
+           }}>
+        {/* Left Screen - Exact 1024x600 */}
+        <div style={{ width: '1024px', height: '600px', padding: '10px' }}>
           <IntroPage 
             onAuthenticated={() => setIsAuthenticated(true)} 
             fontSizes={fontSizes}
+            currentTime={currentTime}
+          />
+        </div>
+        
+        {/* Right Screen - Exact 1024x600 */}
+        <div style={{ width: '1024px', height: '600px', padding: '10px' }}>
+          <IntroPage 
+            onAuthenticated={() => setIsAuthenticated(true)} 
+            fontSizes={fontSizes}
+            currentTime={currentTime}
           />
         </div>
 
@@ -373,18 +439,17 @@ function App() {
 
   if (screenMode === 'exit') {
     return (
-      <div className="w-screen h-screen bg-black overflow-hidden"
+      <div className="w-screen h-screen bg-black overflow-hidden flex"
            style={{ 
              fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
              position: 'fixed',
              top: 0,
              left: 0,
              right: 0,
-             bottom: 0,
-             display: 'flex'
+             bottom: 0
            }}>
-        {/* Left Screen - Exit Page */}
-        <div className="w-1/2 h-full" style={{ padding: '10px' }}>
+        {/* Left Screen - Exact 1024x600 */}
+        <div style={{ width: '1024px', height: '600px', padding: '10px' }}>
           <ExitPage 
             currentTime={currentTime} 
             isLeftScreen={true} 
@@ -392,8 +457,8 @@ function App() {
           />
         </div>
         
-        {/* Right Screen - Exit Page */}
-        <div className="w-1/2 h-full" style={{ padding: '10px' }}>
+        {/* Right Screen - Exact 1024x600 */}
+        <div style={{ width: '1024px', height: '600px', padding: '10px' }}>
           <ExitPage 
             currentTime={currentTime} 
             isLeftScreen={false} 
@@ -417,34 +482,29 @@ function App() {
   }
 
   return (
-    <div className="w-screen h-screen bg-black overflow-hidden"
+    <div className="w-screen h-screen bg-black overflow-hidden flex"
          style={{ 
            fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
            position: 'fixed',
            top: 0,
            left: 0,
            right: 0,
-           bottom: 0,
-           display: 'flex'
+           bottom: 0
          }}>
-      {/* Left Screen - Steam Deck Interface */}
-      <div className="w-1/2 h-full" style={{ padding: '10px' }}>
-        <SteamDeckInterface 
-          currentTime={currentTime} 
-          settings={appSettings}
-          onSettingsChange={setAppSettings}
-          fontSizes={fontSizes}
-        />
+      {/* Left Screen - Exact 1024x600 */}
+      <div style={{ width: '1024px', height: '600px', padding: '10px' }}>
+        {renderLeftScreen()}
       </div>
       
-      {/* Right Screen - Main Application */}
-      <div className="w-1/2 h-full" style={{ padding: '10px' }}>
+      {/* Right Screen - Exact 1024x600 */}
+      <div style={{ width: '1024px', height: '600px', padding: '10px' }}>
         <div 
           className="relative overflow-hidden select-none modern-dashboard w-full h-full"
           style={{ 
             background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 30%, #2a2a2a 70%, #1a1a1a 100%)',
             fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-            color: '#ffffff'
+            color: '#ffffff',
+            borderRadius: '20px'
           }}
         >
           {/* Enhanced Animated Background Elements */}
@@ -500,10 +560,7 @@ function App() {
                   <Calendar className="w-5 h-5" style={{ color: '#007aff' }} />
                   <div>
                     <div className="font-medium modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
-                      {formatDate(currentTime)}
-                    </div>
-                    <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
-                      {formatTime(currentTime)} {locationInfo.timezone}
+                      {formatTimeWithTimezone(currentTime)}
                     </div>
                   </div>
                 </div>
@@ -781,31 +838,31 @@ function App() {
           {/* Power Confirmation Modal */}
           {showPowerConfirm && (
             <div className="fixed inset-0 z-60 bg-black/80 backdrop-blur-sm flex items-center justify-center">
-              <div className="modern-panel p-6 max-w-md w-full mx-4">
+              <div className="modern-panel p-8 max-w-md w-full mx-4">
                 <div className="text-center">
-                  <div className="p-3 rounded-2xl mx-auto mb-4 w-fit"
+                  <div className="p-4 rounded-2xl mx-auto mb-6 w-fit"
                        style={{ 
                          backgroundColor: showPowerConfirm === 'reset' ? 'rgba(255, 59, 48, 0.2)' :
                                          showPowerConfirm === 'shutdown' ? 'rgba(255, 149, 0, 0.2)' :
                                          'rgba(88, 86, 214, 0.2)'
                        }}>
-                    {showPowerConfirm === 'reset' && <RotateCcw className="w-8 h-8" style={{ color: '#ff3b30' }} />}
-                    {showPowerConfirm === 'shutdown' && <Power className="w-8 h-8" style={{ color: '#ff9500' }} />}
-                    {showPowerConfirm === 'sleep' && <Moon className="w-8 h-8" style={{ color: '#5856d6' }} />}
+                    {showPowerConfirm === 'reset' && <RotateCcw className="w-12 h-12" style={{ color: '#ff3b30' }} />}
+                    {showPowerConfirm === 'shutdown' && <Power className="w-12 h-12" style={{ color: '#ff9500' }} />}
+                    {showPowerConfirm === 'sleep' && <Moon className="w-12 h-12" style={{ color: '#5856d6' }} />}
                   </div>
                   
-                  <h3 className="font-bold tech-font mb-3" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
+                  <h3 className="font-bold tech-font mb-4" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
                     Confirm {showPowerConfirm.charAt(0).toUpperCase() + showPowerConfirm.slice(1)}
                   </h3>
                   
-                  <p className="tech-font mb-6" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
+                  <p className="tech-font mb-8" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
                     Are you sure you want to {showPowerConfirm} the system?
                   </p>
                   
-                  <div className="flex space-x-3">
+                  <div className="flex space-x-4">
                     <button
                       onClick={() => setShowPowerConfirm(null)}
-                      className="flex-1 modern-button px-4 py-2 transition-all duration-300"
+                      className="flex-1 modern-button px-6 py-3 transition-all duration-300"
                       style={{ 
                         backgroundColor: 'rgba(142, 142, 147, 0.1)',
                         borderColor: 'rgba(142, 142, 147, 0.3)',
@@ -816,7 +873,7 @@ function App() {
                     </button>
                     <button
                       onClick={() => handlePowerAction(showPowerConfirm)}
-                      className="flex-1 modern-button px-4 py-2 transition-all duration-300"
+                      className="flex-1 modern-button px-6 py-3 transition-all duration-300"
                       style={{ 
                         backgroundColor: showPowerConfirm === 'reset' ? 'rgba(255, 59, 48, 0.2)' :
                                         showPowerConfirm === 'shutdown' ? 'rgba(255, 149, 0, 0.2)' :
