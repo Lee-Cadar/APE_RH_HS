@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Volume2, Palette, Settings, Gamepad2, Music, Film, Globe, Camera, Mic, Headphones, Speaker, Sliders } from 'lucide-react';
+import { Volume2, Palette, Settings, Gamepad2, Music, Film, Globe, Camera, Mic, Headphones, Speaker, Sliders, X } from 'lucide-react';
 
 interface SteamDeckInterfaceProps {
   currentTime: Date;
+  settings: any;
+  onSettingsChange: (settings: any) => void;
+  fontSizes: any;
 }
 
-export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
-  const [shortcuts, setShortcuts] = useState(Array(20).fill(null).map((_, i) => ({
-    id: i,
-    name: `App ${i + 1}`,
-    icon: i % 5 === 0 ? Gamepad2 : i % 5 === 1 ? Music : i % 5 === 2 ? Film : i % 5 === 3 ? Globe : Camera,
-    color: ['#007aff', '#34c759', '#ff9500', '#5856d6', '#ff3b30'][i % 5]
-  })));
-
+export function SteamDeckInterface({ currentTime, settings, onSettingsChange, fontSizes }: SteamDeckInterfaceProps) {
   const [showRGBOverlay, setShowRGBOverlay] = useState(false);
   const [showAudioOverlay, setShowAudioOverlay] = useState(false);
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
@@ -78,6 +74,12 @@ export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
     });
   };
 
+  const formatTimeWithTimezone = (date: Date) => {
+    const time = formatTime(date);
+    const dateStr = formatDate(date);
+    return `${time} BST, ${dateStr}`;
+  };
+
   const updateRGBZone = (zoneId: number, property: string, value: any) => {
     setRgbZones(prev => prev.map(zone => 
       zone.id === zoneId ? { ...zone, [property]: value } : zone
@@ -92,10 +94,11 @@ export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
     <div 
       className="fixed inset-0 bg-black text-white overflow-hidden select-none"
       style={{ 
-        width: '1440px', 
-        height: '900px',
+        width: 'calc(100% - 20px)', 
+        height: 'calc(100vh - 20px)',
         background: 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 30%, #1a1a1a 70%, #0a0a0a 100%)',
-        fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        margin: '10px'
       }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
@@ -109,11 +112,11 @@ export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
 
       {/* Time and Date - Top Left */}
       <div className="absolute top-8 left-8 z-10">
-        <div className="text-4xl font-bold modern-font mb-2" style={{ color: '#ffffff' }}>
+        <div className="font-bold modern-font mb-2" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
           {formatTime(currentTime)}
         </div>
-        <div className="text-xl modern-font" style={{ color: '#8e8e93' }}>
-          {formatDate(currentTime)}
+        <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
+          {formatTimeWithTimezone(currentTime)}
         </div>
       </div>
 
@@ -121,21 +124,35 @@ export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
       <div className="flex items-center justify-center h-full relative z-10">
         {/* 4x5 Grid of Shortcuts */}
         <div className="grid grid-cols-5 gap-8 p-8">
-          {shortcuts.map((shortcut) => {
+          {settings.steamDeckShortcuts.map((shortcut: any) => {
             const Icon = shortcut.icon;
             return (
               <button
                 key={shortcut.id}
                 className="deck-shortcut transition-all duration-300 transform hover:scale-110 active:scale-95"
-                style={{ width: '120px', height: '120px' }}
+                style={{ 
+                  width: parseInt(fontSizes.iconSize) * 6 + 'px', 
+                  height: parseInt(fontSizes.iconSize) * 6 + 'px' 
+                }}
               >
                 <div className="w-full h-full rounded-2xl flex flex-col items-center justify-center"
                      style={{ 
                        backgroundColor: `${shortcut.color}20`,
                        border: `2px solid ${shortcut.color}50`
                      }}>
-                  <Icon className="w-12 h-12 mb-3" style={{ color: shortcut.color }} />
-                  <span className="text-sm modern-font font-medium" style={{ color: '#ffffff' }}>
+                  <Icon 
+                    className="mb-3" 
+                    style={{ 
+                      color: shortcut.color,
+                      width: parseInt(fontSizes.iconSize) * 2.4 + 'px',
+                      height: parseInt(fontSizes.iconSize) * 2.4 + 'px'
+                    }} 
+                  />
+                  <span className="modern-font font-medium text-center" 
+                        style={{ 
+                          color: '#ffffff',
+                          fontSize: fontSizes.h2
+                        }}>
                     {shortcut.name}
                   </span>
                 </div>
@@ -146,25 +163,25 @@ export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
       </div>
 
       {/* APE DECK Branding - Bottom */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
-        <div className="text-2xl font-bold modern-font" style={{ color: '#007aff', opacity: 0.7 }}>
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 text-center">
+        <div className="font-bold modern-font" style={{ color: '#007aff', opacity: 0.7, fontSize: fontSizes.h1 }}>
           APE DECK
         </div>
-        <div className="text-sm modern-font text-center" style={{ color: '#8e8e93' }}>
+        <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
           Advanced Performance Engine Interface
         </div>
       </div>
 
       {/* RGB Control Overlay */}
       {showRGBOverlay && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[1000]">
           <div className="w-[90%] max-w-4xl modern-panel p-8">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center space-x-4">
                 <div className="p-3 rounded-xl" style={{ backgroundColor: 'rgba(255, 59, 48, 0.2)' }}>
                   <Palette className="w-8 h-8" style={{ color: '#ff3b30' }} />
                 </div>
-                <h2 className="text-3xl font-bold modern-font" style={{ color: '#ffffff' }}>
+                <h2 className="font-bold modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
                   RGB LIGHTING CONTROL
                 </h2>
               </div>
@@ -176,7 +193,7 @@ export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
                   borderColor: 'rgba(255, 59, 48, 0.3)',
                 }}
               >
-                <span className="text-xl" style={{ color: '#ff3b30' }}>✕</span>
+                <X className="w-6 h-6" style={{ color: '#ff3b30' }} />
               </button>
             </div>
 
@@ -189,14 +206,14 @@ export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
                            backgroundColor: zone.color,
                            boxShadow: `0 0 20px ${zone.color}80`
                          }}></div>
-                    <h3 className="text-lg font-bold modern-font" style={{ color: '#ffffff' }}>
+                    <h3 className="font-bold modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
                       {zone.name}
                     </h3>
                   </div>
 
                   {/* Color Picker */}
                   <div className="mb-4">
-                    <label className="block text-sm modern-font mb-2" style={{ color: '#8e8e93' }}>
+                    <label className="block modern-font mb-2" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
                       Color
                     </label>
                     <input
@@ -210,8 +227,8 @@ export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
 
                   {/* Brightness Slider */}
                   <div>
-                    <label className="block text-sm modern-font mb-2" style={{ color: '#8e8e93' }}>
-                      Brightness: {zone.brightness}%
+                    <label className="block modern-font mb-2" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
+                      Brightness: <span className="font-bold" style={{ fontSize: fontSizes.value }}>{zone.brightness}%</span>
                     </label>
                     <input
                       type="range"
@@ -228,7 +245,7 @@ export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
             </div>
 
             <div className="mt-8 text-center">
-              <div className="text-sm modern-font" style={{ color: '#8e8e93' }}>
+              <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
                 Swipe up from bottom to access RGB controls • Tap outside to close
               </div>
             </div>
@@ -238,14 +255,14 @@ export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
 
       {/* Audio Control Overlay */}
       {showAudioOverlay && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[1000]">
           <div className="w-[90%] max-w-3xl modern-panel p-8">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center space-x-4">
                 <div className="p-3 rounded-xl" style={{ backgroundColor: 'rgba(52, 199, 89, 0.2)' }}>
                   <Volume2 className="w-8 h-8" style={{ color: '#34c759' }} />
                 </div>
-                <h2 className="text-3xl font-bold modern-font" style={{ color: '#ffffff' }}>
+                <h2 className="font-bold modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
                   AUDIO CONTROL CENTER
                 </h2>
               </div>
@@ -257,7 +274,7 @@ export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
                   borderColor: 'rgba(255, 59, 48, 0.3)',
                 }}
               >
-                <span className="text-xl" style={{ color: '#ff3b30' }}>✕</span>
+                <X className="w-6 h-6" style={{ color: '#ff3b30' }} />
               </button>
             </div>
 
@@ -266,12 +283,12 @@ export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
               <div className="modern-display p-6">
                 <div className="flex items-center space-x-3 mb-6">
                   <Speaker className="w-6 h-6" style={{ color: '#007aff' }} />
-                  <h3 className="text-xl font-bold modern-font" style={{ color: '#ffffff' }}>
+                  <h3 className="font-bold modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
                     Master Volume
                   </h3>
                 </div>
                 <div className="text-center mb-4">
-                  <div className="text-4xl font-bold modern-font" style={{ color: '#007aff' }}>
+                  <div className="font-bold modern-font" style={{ color: '#007aff', fontSize: fontSizes.h1 }}>
                     {audioSettings.volume}%
                   </div>
                 </div>
@@ -290,12 +307,12 @@ export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
               <div className="modern-display p-6">
                 <div className="flex items-center space-x-3 mb-6">
                   <Sliders className="w-6 h-6" style={{ color: '#ff9500' }} />
-                  <h3 className="text-xl font-bold modern-font" style={{ color: '#ffffff' }}>
+                  <h3 className="font-bold modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
                     Treble
                   </h3>
                 </div>
                 <div className="text-center mb-4">
-                  <div className="text-4xl font-bold modern-font" style={{ color: '#ff9500' }}>
+                  <div className="font-bold modern-font" style={{ color: '#ff9500', fontSize: fontSizes.h1 }}>
                     {audioSettings.treble}%
                   </div>
                 </div>
@@ -314,12 +331,12 @@ export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
               <div className="modern-display p-6">
                 <div className="flex items-center space-x-3 mb-6">
                   <Headphones className="w-6 h-6" style={{ color: '#5856d6' }} />
-                  <h3 className="text-xl font-bold modern-font" style={{ color: '#ffffff' }}>
+                  <h3 className="font-bold modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
                     Bass
                   </h3>
                 </div>
                 <div className="text-center mb-4">
-                  <div className="text-4xl font-bold modern-font" style={{ color: '#5856d6' }}>
+                  <div className="font-bold modern-font" style={{ color: '#5856d6', fontSize: fontSizes.h1 }}>
                     {audioSettings.bass}%
                   </div>
                 </div>
@@ -338,12 +355,12 @@ export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
               <div className="modern-display p-6">
                 <div className="flex items-center space-x-3 mb-6">
                   <Mic className="w-6 h-6" style={{ color: '#34c759' }} />
-                  <h3 className="text-xl font-bold modern-font" style={{ color: '#ffffff' }}>
+                  <h3 className="font-bold modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
                     Mid Range
                   </h3>
                 </div>
                 <div className="text-center mb-4">
-                  <div className="text-4xl font-bold modern-font" style={{ color: '#34c759' }}>
+                  <div className="font-bold modern-font" style={{ color: '#34c759', fontSize: fontSizes.h1 }}>
                     {audioSettings.mid}%
                   </div>
                 </div>
@@ -360,7 +377,7 @@ export function SteamDeckInterface({ currentTime }: SteamDeckInterfaceProps) {
             </div>
 
             <div className="mt-8 text-center">
-              <div className="text-sm modern-font" style={{ color: '#8e8e93' }}>
+              <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
                 Swipe right to left to access audio controls • Tap outside to close
               </div>
             </div>

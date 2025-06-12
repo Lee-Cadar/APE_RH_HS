@@ -15,11 +15,24 @@ import { AIOptimalButton } from './components/AIOptimalButton';
 import { SecurityModal } from './components/SecurityModal';
 import { NetworkAnalyzer } from './components/NetworkAnalyzer';
 import { PCInfoPage } from './components/PCInfoPage';
+import { SettingsModal } from './components/SettingsModal';
 import { useAPESimulation } from './hooks/useAPESimulation';
 import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap, Globe, User, Monitor, Info, Power, RotateCcw, Moon } from 'lucide-react';
 
 type ViewType = 'control' | 'processing' | 'network' | 'thermal' | 'system' | 'config' | 'logs' | 'network-analyzer' | 'pc-info' | 'vpn' | 'exit';
 type ScreenMode = 'intro' | 'main' | 'steamdeck' | 'exit';
+type FontSize = 'small' | 'medium' | 'large';
+
+interface AppSettings {
+  primaryScreen: 'left' | 'right';
+  fontSize: FontSize;
+  steamDeckShortcuts: Array<{
+    id: number;
+    name: string;
+    icon: any;
+    color: string;
+  }>;
+}
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -28,8 +41,23 @@ function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [isSecurityOpen, setIsSecurityOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showPowerConfirm, setShowPowerConfirm] = useState<string | null>(null);
   const [aiMode, setAiMode] = useState('optimal');
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
+  
+  const [appSettings, setAppSettings] = useState<AppSettings>({
+    primaryScreen: 'right',
+    fontSize: 'small',
+    steamDeckShortcuts: Array(20).fill(null).map((_, i) => ({
+      id: i,
+      name: `App ${i + 1}`,
+      icon: i % 5 === 0 ? Activity : i % 5 === 1 ? Monitor : i % 5 === 2 ? Globe : i % 5 === 3 ? Shield : Settings,
+      color: ['#007aff', '#34c759', '#ff9500', '#5856d6', '#ff3b30'][i % 5]
+    }))
+  });
+
   const [locationInfo, setLocationInfo] = useState({
     coordinates: "53.5074°N, 2.3372°W",
     address: "32 Hereford Drive",
@@ -58,38 +86,64 @@ function App() {
     sendCategoryReport
   } = useAPESimulation();
 
+  // Font size calculations based on specifications
+  const getFontSizes = () => {
+    switch (appSettings.fontSize) {
+      case 'small':
+        return {
+          h1: '22px',
+          h2: '14px',
+          h3: '10px',
+          value: '10px',
+          iconSize: '20px'
+        };
+      case 'medium':
+        return {
+          h1: '27px',
+          h2: '17px',
+          h3: '12px',
+          value: '12px',
+          iconSize: '25px'
+        };
+      case 'large':
+        return {
+          h1: '33px',
+          h2: '21px',
+          h3: '15px',
+          value: '15px',
+          iconSize: '30px'
+        };
+    }
+  };
+
+  const fontSizes = getFontSizes();
+
   // Play system sounds
   const playSound = (type: 'startup' | 'click' | 'alert' | 'success') => {
     try {
-      const audio = new Audio();
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
       switch (type) {
         case 'startup':
-          // Create a synthetic startup sound
-          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-          const oscillator = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
-          
-          oscillator.connect(gainNode);
-          gainNode.connect(audioContext.destination);
-          
           oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
           oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.5);
           oscillator.frequency.exponentialRampToValueAtTime(660, audioContext.currentTime + 1);
-          
           gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
           gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
-          
           oscillator.start(audioContext.currentTime);
           oscillator.stop(audioContext.currentTime + 1);
           break;
         case 'click':
-          // Subtle click sound
-          break;
-        case 'alert':
-          // Alert beep
-          break;
-        case 'success':
-          // Success chime
+          oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+          gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+          oscillator.start(audioContext.currentTime);
+          oscillator.stop(audioContext.currentTime + 0.1);
           break;
       }
     } catch (error) {
@@ -104,12 +158,32 @@ function App() {
     return () => clearInterval(timer);
   }, []);
 
+  // Scanner transition effect
+  const startScannerTransition = async () => {
+    setIsScanning(true);
+    setScanProgress(0);
+    
+    // Animate scanner line from top to bottom over 2 seconds
+    const scanInterval = setInterval(() => {
+      setScanProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(scanInterval);
+          setTimeout(() => {
+            setIsScanning(false);
+            setScreenMode('main');
+          }, 500);
+          return 100;
+        }
+        return prev + 2; // 50 steps over 2 seconds
+      });
+    }, 40);
+  };
+
   // Play startup sound when system unlocks
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !isScanning) {
       playSound('startup');
-      setScreenMode('main');
-      // Add startup log
+      startScannerTransition();
       addLog('INFO', 'SystemAudio', 'All systems active - Audio feedback enabled');
     }
   }, [isAuthenticated, addLog]);
@@ -169,7 +243,6 @@ function App() {
   const handlePowerAction = async (action: string) => {
     setShowPowerConfirm(null);
     
-    // Simulate backend command execution
     let command = '';
     switch (action) {
       case 'reset':
@@ -177,20 +250,15 @@ function App() {
         break;
       case 'shutdown':
         command = 'shutdown /s /t 0';
-        setScreenMode('exit'); // Show exit page for shutdown
+        setScreenMode('exit');
         break;
       case 'sleep':
         command = 'rundll32.exe powrprof.dll,SetSuspendState 0,1,0';
         break;
     }
     
-    // Show confirmation
     alert(`Power Command Executed:\n${command}\n\nAction: ${action.toUpperCase()}\nStatus: Command sent to system\nUser: Administrator\nTimestamp: ${new Date().toLocaleString()}`);
-    
-    // Log the action
     addLog('INFO', 'PowerManagement', `Power action executed: ${action.toUpperCase()} - Command: ${command}`);
-    
-    // In a real implementation, this would send the command to the backend
     console.log(`Executing power command: ${command}`);
   };
 
@@ -212,34 +280,107 @@ function App() {
     });
   };
 
+  const formatTimeWithTimezone = (date: Date) => {
+    const time = date.toLocaleTimeString('en-US', {
+      hour12: true,
+      hour: 'numeric',
+      minute: '2-digit'
+    });
+    const dateStr = date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+    return `${time} ${locationInfo.timezone}, ${dateStr}`;
+  };
+
+  // Scanner overlay for both screens
+  const ScannerOverlay = () => (
+    <div className="fixed inset-0 z-[9999] bg-black">
+      {/* Vertical green scan line */}
+      <div 
+        className="absolute left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent shadow-lg"
+        style={{ 
+          top: `${scanProgress}%`,
+          boxShadow: '0 0 20px #34c759, 0 0 40px #34c759',
+          transition: 'top 0.04s linear'
+        }}
+      />
+      
+      {/* Scan lines effect */}
+      <div className="absolute inset-0 opacity-20">
+        {Array.from({ length: 50 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute left-0 w-full h-px bg-green-400"
+            style={{ 
+              top: `${i * 2}%`,
+              opacity: scanProgress > i * 2 ? 0.3 : 0,
+              transition: 'opacity 0.1s ease'
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* Scanner progress text */}
+      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 text-center">
+        <div className="text-2xl font-bold tech-font mb-2" style={{ color: '#34c759' }}>
+          SYSTEM SCAN IN PROGRESS
+        </div>
+        <div className="text-lg tech-font" style={{ color: '#8e8e93' }}>
+          {scanProgress.toFixed(0)}% Complete
+        </div>
+      </div>
+    </div>
+  );
+
   // Render based on screen mode and authentication status
   if (screenMode === 'intro' || !isAuthenticated) {
     return (
-      <div className="flex">
+      <div className="flex" style={{ fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
         {/* Left Screen - Steam Deck Interface (Intro) */}
-        <div className="w-1/2">
-          <SteamDeckInterface currentTime={currentTime} />
+        <div className="w-1/2" style={{ padding: '10px' }}>
+          <SteamDeckInterface 
+            currentTime={currentTime} 
+            settings={appSettings}
+            onSettingsChange={setAppSettings}
+            fontSizes={fontSizes}
+          />
         </div>
         
         {/* Right Screen - Intro Page */}
-        <div className="w-1/2">
-          <IntroPage onAuthenticated={() => setIsAuthenticated(true)} />
+        <div className="w-1/2" style={{ padding: '10px' }}>
+          <IntroPage 
+            onAuthenticated={() => setIsAuthenticated(true)} 
+            fontSizes={fontSizes}
+          />
         </div>
+
+        {/* Scanner overlay for both screens */}
+        {isScanning && <ScannerOverlay />}
       </div>
     );
   }
 
   if (screenMode === 'exit') {
     return (
-      <div className="flex">
+      <div className="flex" style={{ fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
         {/* Left Screen - Exit Page */}
-        <div className="w-1/2">
-          <ExitPage currentTime={currentTime} isLeftScreen={true} />
+        <div className="w-1/2" style={{ padding: '10px' }}>
+          <ExitPage 
+            currentTime={currentTime} 
+            isLeftScreen={true} 
+            fontSizes={fontSizes}
+          />
         </div>
         
         {/* Right Screen - Exit Page */}
-        <div className="w-1/2">
-          <ExitPage currentTime={currentTime} isLeftScreen={false} />
+        <div className="w-1/2" style={{ padding: '10px' }}>
+          <ExitPage 
+            currentTime={currentTime} 
+            isLeftScreen={false} 
+            fontSizes={fontSizes}
+          />
         </div>
       </div>
     );
@@ -252,27 +393,34 @@ function App() {
         onBack={() => setCurrentView('control')}
         locationInfo={locationInfo}
         onLocationChange={handleLocationChange}
+        fontSizes={fontSizes}
       />
     );
   }
 
   return (
-    <div className="flex">
+    <div className="flex" style={{ fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
       {/* Left Screen - Steam Deck Interface */}
-      <div className="w-1/2">
-        <SteamDeckInterface currentTime={currentTime} />
+      <div className="w-1/2" style={{ padding: '10px' }}>
+        <SteamDeckInterface 
+          currentTime={currentTime} 
+          settings={appSettings}
+          onSettingsChange={setAppSettings}
+          fontSizes={fontSizes}
+        />
       </div>
       
       {/* Right Screen - Main Application */}
-      <div className="w-1/2">
+      <div className="w-1/2" style={{ padding: '10px' }}>
         <div 
           className="relative overflow-hidden select-none modern-dashboard"
           style={{ 
-            width: '720px', 
-            height: '900px',
+            width: 'calc(100% - 20px)', 
+            height: 'calc(100vh - 20px)',
             background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 30%, #2a2a2a 70%, #1a1a1a 100%)',
             fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-            color: '#ffffff'
+            color: '#ffffff',
+            margin: '10px'
           }}
         >
           {/* Enhanced Animated Background Elements */}
@@ -296,7 +444,7 @@ function App() {
             <div className="tech-dots-2"></div>
           </div>
 
-          {/* Logo Background - Right Side - 40% Bigger with Random Movement */}
+          {/* Logo Background - Right Side */}
           <div className="absolute top-0 right-0 w-full h-full overflow-visible pointer-events-none z-0">
             <div className="absolute -right-1/6 top-1/2 transform -translate-y-1/2">
               <img 
@@ -327,10 +475,10 @@ function App() {
                 <div className="flex items-center space-x-2">
                   <Calendar className="w-5 h-5" style={{ color: '#007aff' }} />
                   <div>
-                    <div className="text-sm font-medium modern-font" style={{ color: '#ffffff' }}>
+                    <div className="font-medium modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
                       {formatDate(currentTime)}
                     </div>
-                    <div className="text-xs modern-font" style={{ color: '#8e8e93' }}>
+                    <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
                       {formatTime(currentTime)} {locationInfo.timezone}
                     </div>
                   </div>
@@ -346,30 +494,30 @@ function App() {
                 >
                   <MapPin className="w-5 h-5" style={{ color: '#34c759' }} />
                   <div>
-                    <div className="text-sm font-medium modern-font" style={{ color: '#ffffff' }}>
+                    <div className="font-medium modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
                       {locationInfo.postcode}
                     </div>
-                    <div className="text-xs modern-font" style={{ color: '#8e8e93' }}>
+                    <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
                       {locationInfo.city.split(',')[0]}
                     </div>
                   </div>
                 </button>
               </div>
               
-              {/* Right Side - Status, Power Buttons, AI Mode, Profile */}
+              {/* Right Side - Status, Power Buttons, AI Mode, Settings, Profile */}
               <div className="flex items-center space-x-3">
-                <div className="modern-display px-3 py-2 font-medium text-sm modern-font" 
-                style={{ 
-                  backgroundColor: temperature < 60 ? 'rgba(52, 199, 89, 0.1)' : temperature < 80 ? 'rgba(255, 149, 0, 0.1)' : 'rgba(255, 59, 48, 0.1)',
-                  borderColor: temperature < 60 ? 'rgba(52, 199, 89, 0.3)' : temperature < 80 ? 'rgba(255, 149, 0, 0.3)' : 'rgba(255, 59, 48, 0.3)',
-                  color: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30'
-                }}>
+                <div className="modern-display px-3 py-2 font-medium modern-font" 
+                     style={{ 
+                       backgroundColor: temperature < 60 ? 'rgba(52, 199, 89, 0.1)' : temperature < 80 ? 'rgba(255, 149, 0, 0.1)' : 'rgba(255, 59, 48, 0.1)',
+                       borderColor: temperature < 60 ? 'rgba(52, 199, 89, 0.3)' : temperature < 80 ? 'rgba(255, 149, 0, 0.3)' : 'rgba(255, 59, 48, 0.3)',
+                       color: temperature < 60 ? '#34c759' : temperature < 80 ? '#ff9500' : '#ff3b30',
+                       fontSize: fontSizes.h2
+                     }}>
                   {temperature < 60 ? 'OPTIMAL' : temperature < 80 ? 'WARNING' : 'CRITICAL'}
                 </div>
 
                 {/* Power Button Module */}
                 <div className="flex items-center space-x-1">
-                  {/* Reset Button */}
                   <button
                     onClick={() => setShowPowerConfirm('reset')}
                     className="modern-button p-2 transition-all duration-300 hover:scale-105"
@@ -382,7 +530,6 @@ function App() {
                     <RotateCcw className="w-4 h-4" style={{ color: '#ff3b30' }} />
                   </button>
 
-                  {/* Shutdown Button */}
                   <button
                     onClick={() => setShowPowerConfirm('shutdown')}
                     className="modern-button p-2 transition-all duration-300 hover:scale-105"
@@ -395,7 +542,6 @@ function App() {
                     <Power className="w-4 h-4" style={{ color: '#ff9500' }} />
                   </button>
 
-                  {/* Sleep Button */}
                   <button
                     onClick={() => setShowPowerConfirm('sleep')}
                     className="modern-button p-2 transition-all duration-300 hover:scale-105"
@@ -409,9 +555,13 @@ function App() {
                   </button>
                 </div>
 
-                {/* AI Mode Button with higher z-index */}
+                {/* AI Mode Button */}
                 <div style={{ zIndex: 2000 }}>
-                  <AIOptimalButton currentMode={aiMode} onModeChange={setAiMode} />
+                  <AIOptimalButton 
+                    currentMode={aiMode} 
+                    onModeChange={setAiMode} 
+                    fontSizes={fontSizes}
+                  />
                 </div>
                 
                 {/* Logo */}
@@ -426,6 +576,18 @@ function App() {
                     }}
                   />
                 </div>
+
+                {/* Settings Button */}
+                <button 
+                  onClick={() => setIsSettingsOpen(true)}
+                  className="modern-button p-2 transition-all duration-300 hover:scale-105"
+                  style={{ 
+                    backgroundColor: 'rgba(255, 149, 0, 0.1)',
+                    borderColor: 'rgba(255, 149, 0, 0.3)',
+                  }}
+                >
+                  <Settings className="w-4 h-4" style={{ color: '#ff9500' }} />
+                </button>
 
                 {/* Profile Button */}
                 <button 
@@ -461,13 +623,14 @@ function App() {
                         playSound('click');
                         setCurrentView(tab.id as ViewType);
                       }}
-                      className={`flex-1 flex items-center justify-center space-x-2 font-medium text-sm transition-all duration-300 transform active:scale-95 modern-font modern-tab ${
+                      className={`flex-1 flex items-center justify-center space-x-2 font-medium transition-all duration-300 transform active:scale-95 modern-font modern-tab ${
                         currentView === tab.id ? 'active' : ''
                       }`}
                       style={{ 
                         backgroundColor: currentView === tab.id ? 'rgba(0, 122, 255, 0.1)' : 'transparent',
                         color: currentView === tab.id ? '#007aff' : '#8e8e93',
-                        borderBottom: currentView === tab.id ? '3px solid #007aff' : '3px solid transparent'
+                        borderBottom: currentView === tab.id ? '3px solid #007aff' : '3px solid transparent',
+                        fontSize: fontSizes.h2
                       }}
                     >
                       <Icon className="w-4 h-4" />
@@ -480,7 +643,7 @@ function App() {
           )}
 
           {/* Main Content */}
-          <main className="relative overflow-y-auto z-10" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' || currentView === 'network-analyzer' || currentView === 'pc-info' ? 'calc(900px - 140px)' : 'calc(900px - 80px)' }}>
+          <main className="relative overflow-y-auto z-10" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' || currentView === 'network-analyzer' || currentView === 'pc-info' ? 'calc(100% - 140px)' : 'calc(100% - 80px)' }}>
             <div className="p-4">
               {currentView === 'control' && (
                 <ControlCenter
@@ -495,6 +658,7 @@ function App() {
                   onSendReport={handleSendReport}
                   locationInfo={locationInfo}
                   aiMode={aiMode}
+                  fontSizes={fontSizes}
                 />
               )}
 
@@ -509,6 +673,7 @@ function App() {
                   onSendReport={handleSendReport}
                   aiMode={aiMode}
                   onModeChange={setAiMode}
+                  fontSizes={fontSizes}
                 />
               )}
 
@@ -517,6 +682,7 @@ function App() {
                   networkMetrics={networkMetrics} 
                   onBack={handleBackToControl}
                   onSendReport={handleSendReport}
+                  fontSizes={fontSizes}
                 />
               )}
 
@@ -531,6 +697,7 @@ function App() {
                   onSendReport={handleSendReport}
                   aiMode={aiMode}
                   onModeChange={setAiMode}
+                  fontSizes={fontSizes}
                 />
               )}
 
@@ -539,6 +706,7 @@ function App() {
                   systemMetrics={systemMetrics} 
                   onBack={handleBackToControl}
                   onSendReport={handleSendReport}
+                  fontSizes={fontSizes}
                 />
               )}
 
@@ -546,19 +714,28 @@ function App() {
                 <ConfigPanel 
                   config={config}
                   onConfigUpdate={updateConfig}
+                  fontSizes={fontSizes}
                 />
               )}
 
               {currentView === 'logs' && (
-                <SystemLogs logs={logs} />
+                <SystemLogs 
+                  logs={logs} 
+                  fontSizes={fontSizes}
+                />
               )}
 
               {currentView === 'network-analyzer' && (
-                <NetworkAnalyzer networkMetrics={networkMetrics} />
+                <NetworkAnalyzer 
+                  networkMetrics={networkMetrics} 
+                  fontSizes={fontSizes}
+                />
               )}
 
               {currentView === 'pc-info' && (
-                <PCInfoPage />
+                <PCInfoPage 
+                  fontSizes={fontSizes}
+                />
               )}
             </div>
           </main>
@@ -569,6 +746,7 @@ function App() {
             onClose={() => setIsMapOpen(false)}
             locationInfo={locationInfo}
             onLocationChange={handleLocationChange}
+            fontSizes={fontSizes}
           />
 
           {/* Security Modal */}
@@ -576,6 +754,16 @@ function App() {
             isOpen={isSecurityOpen}
             onClose={() => setIsSecurityOpen(false)}
             onSuccess={handleSecuritySuccess}
+            fontSizes={fontSizes}
+          />
+
+          {/* Settings Modal */}
+          <SettingsModal 
+            isOpen={isSettingsOpen}
+            onClose={() => setIsSettingsOpen(false)}
+            settings={appSettings}
+            onSettingsChange={setAppSettings}
+            fontSizes={fontSizes}
           />
 
           {/* Power Confirmation Modal */}
@@ -594,11 +782,11 @@ function App() {
                     {showPowerConfirm === 'sleep' && <Moon className="w-8 h-8" style={{ color: '#5856d6' }} />}
                   </div>
                   
-                  <h3 className="text-xl font-bold tech-font mb-3" style={{ color: '#ffffff' }}>
+                  <h3 className="font-bold tech-font mb-3" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
                     Confirm {showPowerConfirm.charAt(0).toUpperCase() + showPowerConfirm.slice(1)}
                   </h3>
                   
-                  <p className="text-sm tech-font mb-6" style={{ color: '#8e8e93' }}>
+                  <p className="tech-font mb-6" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
                     Are you sure you want to {showPowerConfirm} the system?
                   </p>
                   
@@ -612,7 +800,7 @@ function App() {
                         color: '#8e8e93'
                       }}
                     >
-                      <span className="tech-font font-bold text-sm">Cancel</span>
+                      <span className="tech-font font-bold" style={{ fontSize: fontSizes.h2 }}>Cancel</span>
                     </button>
                     <button
                       onClick={() => handlePowerAction(showPowerConfirm)}
@@ -629,7 +817,7 @@ function App() {
                               '#5856d6'
                       }}
                     >
-                      <span className="tech-font font-bold text-sm">Confirm</span>
+                      <span className="tech-font font-bold" style={{ fontSize: fontSizes.h2 }}>Confirm</span>
                     </button>
                   </div>
                 </div>
@@ -649,7 +837,7 @@ function App() {
               <div className="flex items-center space-x-3">
                 <div className="w-4 h-4 animate-ping rounded-full" 
                      style={{ backgroundColor: '#ff3b30' }}></div>
-                <span className="font-medium text-sm modern-font" style={{ color: '#ff3b30' }}>
+                <span className="font-medium modern-font" style={{ color: '#ff3b30', fontSize: fontSizes.h2 }}>
                   CRITICAL TEMPERATURE
                 </span>
               </div>

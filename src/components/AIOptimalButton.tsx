@@ -4,9 +4,10 @@ import { Zap, Gamepad2, Film, Cpu, Settings, X, ChevronDown } from 'lucide-react
 interface AIOptimalButtonProps {
   currentMode: string;
   onModeChange: (mode: string) => void;
+  fontSizes: any;
 }
 
-export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonProps) {
+export function AIOptimalButton({ currentMode, onModeChange, fontSizes }: AIOptimalButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -84,7 +85,7 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
         }}
       >
         <currentModeData.icon className="w-5 h-5" style={{ color: currentModeData.color }} />
-        <div className="text-sm modern-font font-bold" style={{ color: currentModeData.color }}>
+        <div className="modern-font font-bold" style={{ color: currentModeData.color, fontSize: fontSizes.h2 }}>
           {currentModeData.name}
         </div>
         <ChevronDown 
@@ -99,7 +100,7 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
              style={{
                animation: 'slideDown 0.3s ease-out',
                transformOrigin: 'top',
-               zIndex: 2000 // Higher than the main app z-index
+               zIndex: 2000
              }}>
           {/* Header */}
           <div className="p-4 border-b border-white/10">
@@ -109,10 +110,10 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
                   <Settings className="w-5 h-5" style={{ color: '#007aff' }} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold modern-font" style={{ color: '#ffffff' }}>
+                  <h3 className="font-bold modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
                     AI MODES
                   </h3>
-                  <p className="text-xs modern-font" style={{ color: '#8e8e93' }}>
+                  <p className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
                     Performance optimization
                   </p>
                 </div>
@@ -148,7 +149,7 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-base font-bold modern-font" style={{ color: '#ffffff' }}>
+                      <h4 className="font-bold modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h2 }}>
                         {mode.name}
                       </h4>
                       {currentMode === mode.id && (
@@ -156,7 +157,7 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
                              style={{ backgroundColor: mode.color }}></div>
                       )}
                     </div>
-                    <p className="text-sm modern-font" style={{ color: '#8e8e93' }}>
+                    <p className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
                       {mode.description}
                     </p>
                   </div>
@@ -166,7 +167,7 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
                   {mode.features.slice(0, 2).map((feature, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <div className="w-1 h-1 rounded-full" style={{ backgroundColor: mode.color }}></div>
-                      <span className="text-xs modern-font" style={{ color: '#8e8e93' }}>{feature}</span>
+                      <span className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -177,10 +178,10 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
           {/* Current Status */}
           <div className="p-4 border-t border-white/10">
             <div className="flex items-center justify-between">
-              <div className="text-xs modern-font" style={{ color: '#8e8e93' }}>Current:</div>
+              <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>Current:</div>
               <div className="flex items-center space-x-2">
                 <currentModeData.icon className="w-4 h-4" style={{ color: currentModeData.color }} />
-                <span className="text-sm modern-font font-bold" style={{ color: currentModeData.color }}>
+                <span className="modern-font font-bold" style={{ color: currentModeData.color, fontSize: fontSizes.h2 }}>
                   {currentModeData.name}
                 </span>
               </div>
@@ -196,10 +197,10 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
           <div className="text-center">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full border-4 border-t-transparent animate-spin"
                  style={{ borderColor: currentModeData.color, borderTopColor: 'transparent' }}></div>
-            <div className="text-xl modern-font font-bold mb-2" style={{ color: '#ffffff' }}>
+            <div className="font-bold modern-font mb-2" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
               AI OPTIMIZING
             </div>
-            <div className="text-base modern-font" style={{ color: currentModeData.color }}>
+            <div className="modern-font" style={{ color: currentModeData.color, fontSize: fontSizes.h2 }}>
               Switching to {modes.find(m => m.id !== currentMode)?.name} Mode
             </div>
           </div>

@@ -3,22 +3,30 @@ import React, { useEffect, useState } from 'react';
 interface ExitPageProps {
   currentTime: Date;
   isLeftScreen?: boolean;
+  fontSizes: any;
 }
 
-export function ExitPage({ currentTime, isLeftScreen = false }: ExitPageProps) {
+export function ExitPage({ currentTime, isLeftScreen = false, fontSizes }: ExitPageProps) {
   const [fadeOut, setFadeOut] = useState(false);
+  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
-    // Auto-close after 5 seconds
-    const timer = setTimeout(() => {
-      setFadeOut(true);
-      setTimeout(() => {
-        // In a real app, this would close the application
-        console.log('Application closing...');
-      }, 1000);
-    }, 5000);
+    // Countdown timer
+    const countdownTimer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(countdownTimer);
+          setFadeOut(true);
+          setTimeout(() => {
+            console.log('Application closing...');
+          }, 1000);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
-    return () => clearTimeout(timer);
+    return () => clearInterval(countdownTimer);
   }, []);
 
   const formatTime = (date: Date) => {
@@ -37,16 +45,23 @@ export function ExitPage({ currentTime, isLeftScreen = false }: ExitPageProps) {
     });
   };
 
+  const formatTimeWithTimezone = (date: Date) => {
+    const time = formatTime(date);
+    const dateStr = formatDate(date);
+    return `${time} BST, ${dateStr}`;
+  };
+
   return (
     <div 
       className={`fixed inset-0 bg-black text-white flex flex-col items-center justify-center transition-opacity duration-1000 ${
         fadeOut ? 'opacity-0' : 'opacity-100'
       }`}
       style={{ 
-        width: '1440px', 
-        height: '900px',
+        width: 'calc(100% - 20px)', 
+        height: 'calc(100vh - 20px)',
         background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 30%, #2a2a2a 70%, #1a1a1a 100%)',
-        fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        margin: '10px'
       }}
     >
       {/* Animated Background */}
@@ -68,10 +83,10 @@ export function ExitPage({ currentTime, isLeftScreen = false }: ExitPageProps) {
                 }}>
           <div className="flex items-center justify-between h-full px-8">
             <div className="flex items-center space-x-4">
-              <div className="text-xl font-bold modern-font" style={{ color: '#ffffff' }}>
+              <div className="font-bold modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
                 APE SYSTEM
               </div>
-              <div className="text-sm modern-font" style={{ color: '#8e8e93' }}>
+              <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
                 Advanced Performance Engine
               </div>
             </div>
@@ -94,11 +109,11 @@ export function ExitPage({ currentTime, isLeftScreen = false }: ExitPageProps) {
       {/* Time and Date for left screen only */}
       {isLeftScreen && (
         <div className="absolute top-8 left-8 z-10">
-          <div className="text-4xl font-bold modern-font mb-2" style={{ color: '#ffffff' }}>
+          <div className="font-bold modern-font mb-2" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
             {formatTime(currentTime)}
           </div>
-          <div className="text-xl modern-font" style={{ color: '#8e8e93' }}>
-            {formatDate(currentTime)}
+          <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
+            {formatTimeWithTimezone(currentTime)}
           </div>
         </div>
       )}
@@ -120,11 +135,11 @@ export function ExitPage({ currentTime, isLeftScreen = false }: ExitPageProps) {
 
       {/* APE DECK branding for left screen only */}
       {isLeftScreen && (
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
-          <div className="text-2xl font-bold modern-font" style={{ color: '#007aff', opacity: 0.7 }}>
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 text-center">
+          <div className="font-bold modern-font" style={{ color: '#007aff', opacity: 0.7, fontSize: fontSizes.h1 }}>
             APE DECK
           </div>
-          <div className="text-sm modern-font text-center" style={{ color: '#8e8e93' }}>
+          <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
             Advanced Performance Engine Interface
           </div>
         </div>
@@ -132,14 +147,14 @@ export function ExitPage({ currentTime, isLeftScreen = false }: ExitPageProps) {
 
       {/* Shutdown message */}
       <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 text-center z-10">
-        <div className="text-xl font-medium modern-font mb-2" style={{ color: '#ffffff' }}>
+        <div className="font-medium modern-font mb-2" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
           System Shutdown Complete
         </div>
-        <div className="text-sm modern-font" style={{ color: '#8e8e93' }}>
+        <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
           Thank you for using APE System
         </div>
-        <div className="mt-4 text-xs modern-font" style={{ color: '#8e8e93' }}>
-          Auto-close in {Math.max(0, 5 - Math.floor(Date.now() / 1000) % 60)} seconds
+        <div className="mt-4 modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
+          Auto-close in {countdown} seconds
         </div>
       </div>
 

@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Power, RotateCcw, Moon, X, CheckCircle, AlertCircle, User, Camera, Fingerprint, Lock } from 'lucide-react';
+import { Shield, Power, RotateCcw, Moon, X, CheckCircle, AlertCircle, User, Camera, Fingerprint, Lock, ArrowLeft } from 'lucide-react';
 
 interface IntroPageProps {
   onAuthenticated: () => void;
+  fontSizes: any;
 }
 
-export function IntroPage({ onAuthenticated }: IntroPageProps) {
+export function IntroPage({ onAuthenticated, fontSizes }: IntroPageProps) {
   const [authMethod, setAuthMethod] = useState<'face' | 'fingerprint' | 'pin'>('face');
   const [pin, setPin] = useState('');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [authProgress, setAuthProgress] = useState(0);
   const [authStatus, setAuthStatus] = useState<'idle' | 'scanning' | 'success' | 'failed'>('idle');
-  const [showScanner, setShowScanner] = useState(false);
-  const [scannerProgress, setScannerProgress] = useState(0);
   const [showPowerConfirm, setShowPowerConfirm] = useState<string | null>(null);
 
   const handleAuthentication = async () => {
@@ -40,7 +39,7 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
     if (isSuccess) {
       setAuthStatus('success');
       setTimeout(() => {
-        startScannerTransition();
+        onAuthenticated();
       }, 1000);
     } else {
       setAuthStatus('failed');
@@ -65,7 +64,7 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
     if (pin === '1234' || pin.length === 4) {
       setAuthStatus('success');
       setTimeout(() => {
-        startScannerTransition();
+        onAuthenticated();
       }, 1000);
     } else {
       setAuthStatus('failed');
@@ -77,30 +76,9 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
     }
   };
 
-  const startScannerTransition = () => {
-    setShowScanner(true);
-    setScannerProgress(0);
-    
-    // Animate scanner line from top to bottom over 2 seconds
-    const scanInterval = setInterval(() => {
-      setScannerProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(scanInterval);
-          // Fade out and transition to main app
-          setTimeout(() => {
-            onAuthenticated();
-          }, 500);
-          return 100;
-        }
-        return prev + 2; // 50 steps over 2 seconds
-      });
-    }, 40);
-  };
-
   const handlePowerAction = async (action: string) => {
     setShowPowerConfirm(null);
     
-    // Simulate backend command execution
     let command = '';
     switch (action) {
       case 'reset':
@@ -114,10 +92,7 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
         break;
     }
     
-    // Show confirmation
     alert(`Power Command Executed:\n${command}\n\nAction: ${action.toUpperCase()}\nStatus: Command sent to system\nUser: Administrator\nTimestamp: ${new Date().toLocaleString()}`);
-    
-    // In a real implementation, this would send the command to the backend
     console.log(`Executing power command: ${command}`);
   };
 
@@ -148,7 +123,12 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
   const currentMethod = authMethods.find(method => method.id === authMethod);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-black overflow-hidden">
+    <div className="fixed inset-0 z-50 flex flex-col bg-black overflow-hidden"
+         style={{ 
+           width: 'calc(100% - 20px)', 
+           height: 'calc(100vh - 20px)',
+           margin: '10px'
+         }}>
       {/* Animated Background matching main app */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="animated-grid"></div>
@@ -203,10 +183,10 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
                 <Shield className="w-8 h-8" style={{ color: '#007aff' }} />
               </div>
               <div>
-                <div className="text-xl font-bold modern-font" style={{ color: '#ffffff' }}>
+                <div className="font-bold modern-font" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
                   APE SECURITY SYSTEM
                 </div>
-                <div className="text-sm modern-font" style={{ color: '#8e8e93' }}>
+                <div className="modern-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
                   Advanced Performance Engine - Authentication Required
                 </div>
               </div>
@@ -272,7 +252,7 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
 
       {/* Main Authentication Content */}
       <main className="relative flex-1 flex items-center justify-center z-10">
-        <div className="w-[90vw] max-w-4xl modern-panel shadow-2xl">
+        <div className="w-[90vw] max-w-2xl modern-panel shadow-2xl">
           {/* Authentication Methods */}
           <div className="p-8 border-b border-white/10">
             <div className="grid grid-cols-3 gap-6 mb-8">
@@ -288,13 +268,20 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
                     borderWidth: '2px'
                   }}
                 >
-                  <method.icon className="w-10 h-10 mx-auto mb-3" 
-                              style={{ color: authMethod === method.id ? method.color : '#8e8e93' }} />
-                  <div className="text-lg tech-font font-bold" 
-                       style={{ color: authMethod === method.id ? method.color : '#ffffff' }}>
+                  <method.icon className="mx-auto mb-3" 
+                              style={{ 
+                                color: authMethod === method.id ? method.color : '#8e8e93',
+                                width: parseInt(fontSizes.iconSize) * 2 + 'px',
+                                height: parseInt(fontSizes.iconSize) * 2 + 'px'
+                              }} />
+                  <div className="font-bold tech-font" 
+                       style={{ 
+                         color: authMethod === method.id ? method.color : '#ffffff',
+                         fontSize: fontSizes.h2
+                       }}>
                     {method.name}
                   </div>
-                  <div className="text-sm tech-font mt-2" style={{ color: '#8e8e93' }}>
+                  <div className="tech-font mt-2" style={{ color: '#8e8e93', fontSize: fontSizes.h3 }}>
                     {method.description}
                   </div>
                 </button>
@@ -307,10 +294,10 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
             {authMethod === 'pin' ? (
               <div className="text-center space-y-6">
                 <div>
-                  <h3 className="text-2xl tech-font font-bold mb-3" style={{ color: '#ffffff' }}>
+                  <h3 className="font-bold tech-font mb-3" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
                     Enter Security PIN
                   </h3>
-                  <p className="text-lg tech-font" style={{ color: '#8e8e93' }}>
+                  <p className="tech-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
                     Enter your 4-digit security code
                   </p>
                 </div>
@@ -321,12 +308,13 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
                     value={pin}
                     onChange={(e) => setPin(e.target.value.slice(0, 4))}
                     onKeyPress={(e) => e.key === 'Enter' && pin.length === 4 && handlePinSubmit()}
-                    className="w-full px-6 py-4 text-center text-3xl tech-font tracking-widest modern-input"
+                    className="w-full px-6 py-4 text-center tracking-widest modern-input"
                     style={{
                       backgroundColor: 'rgba(255, 255, 255, 0.05)',
                       borderColor: 'rgba(255, 255, 255, 0.2)',
                       color: '#ffffff',
-                      fontFamily: 'Technology, monospace'
+                      fontFamily: 'Technology, monospace',
+                      fontSize: fontSizes.h1
                     }}
                     placeholder="••••"
                     maxLength={4}
@@ -344,7 +332,7 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
                     color: pin.length === 4 ? '#ff9500' : '#8e8e93'
                   }}
                 >
-                  <span className="tech-font font-bold text-lg">
+                  <span className="tech-font font-bold" style={{ fontSize: fontSizes.h2 }}>
                     {isAuthenticating ? 'AUTHENTICATING...' : 'AUTHENTICATE'}
                   </span>
                 </button>
@@ -352,18 +340,22 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
             ) : (
               <div className="text-center space-y-8">
                 <div>
-                  <currentMethod.icon className="w-20 h-20 mx-auto mb-6" 
-                                   style={{ color: currentMethod.color }} />
-                  <h3 className="text-2xl tech-font font-bold mb-3" style={{ color: '#ffffff' }}>
+                  <currentMethod.icon className="mx-auto mb-6" 
+                                   style={{ 
+                                     color: currentMethod.color,
+                                     width: parseInt(fontSizes.iconSize) * 4 + 'px',
+                                     height: parseInt(fontSizes.iconSize) * 4 + 'px'
+                                   }} />
+                  <h3 className="font-bold tech-font mb-3" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
                     {currentMethod.name}
                   </h3>
-                  <p className="text-lg tech-font" style={{ color: '#8e8e93' }}>
+                  <p className="tech-font" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
                     {authMethod === 'face' ? 'Position your face in front of the camera' : 'Place your finger on the sensor'}
                   </p>
                 </div>
 
                 {/* Biometric Scanner Visualization */}
-                <div className="relative w-64 h-64 mx-auto">
+                <div className="relative w-48 h-48 mx-auto">
                   <div className="absolute inset-0 rounded-full border-4 border-dashed animate-spin"
                        style={{ 
                          borderColor: currentMethod.color,
@@ -371,15 +363,15 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
                          animationDuration: '3s'
                        }}></div>
                   
-                  <div className="absolute inset-6 rounded-full flex items-center justify-center"
+                  <div className="absolute inset-4 rounded-full flex items-center justify-center"
                        style={{ 
                          backgroundColor: `${currentMethod.color}10`,
                          border: `2px solid ${currentMethod.color}50`
                        }}>
                     {authMethod === 'face' ? (
-                      <User className="w-20 h-20" style={{ color: currentMethod.color }} />
+                      <User className="w-16 h-16" style={{ color: currentMethod.color }} />
                     ) : (
-                      <Fingerprint className="w-20 h-20" style={{ color: currentMethod.color }} />
+                      <Fingerprint className="w-16 h-16" style={{ color: currentMethod.color }} />
                     )}
                   </div>
 
@@ -389,13 +381,13 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
                       <circle
                         cx="50%"
                         cy="50%"
-                        r="120"
+                        r="90"
                         fill="none"
                         stroke={currentMethod.color}
-                        strokeWidth="6"
+                        strokeWidth="4"
                         strokeLinecap="round"
-                        strokeDasharray={`${2 * Math.PI * 120}`}
-                        strokeDashoffset={`${2 * Math.PI * 120 * (1 - authProgress / 100)}`}
+                        strokeDasharray={`${2 * Math.PI * 90}`}
+                        strokeDashoffset={`${2 * Math.PI * 90 * (1 - authProgress / 100)}`}
                         className="transition-all duration-200"
                       />
                     </svg>
@@ -405,14 +397,14 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
                 <button
                   onClick={handleAuthentication}
                   disabled={isAuthenticating}
-                  className="modern-button px-12 py-4 transition-all duration-300 disabled:opacity-50"
+                  className="modern-button px-8 py-3 transition-all duration-300 disabled:opacity-50"
                   style={{
                     backgroundColor: `${currentMethod.color}20`,
                     borderColor: currentMethod.color,
                     color: currentMethod.color
                   }}
                 >
-                  <span className="tech-font font-bold text-lg">
+                  <span className="tech-font font-bold" style={{ fontSize: fontSizes.h2 }}>
                     {isAuthenticating ? 'SCANNING...' : 'START SCAN'}
                   </span>
                 </button>
@@ -423,7 +415,7 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
             {authStatus === 'success' && (
               <div className="mt-8 flex items-center justify-center space-x-3">
                 <CheckCircle className="w-8 h-8" style={{ color: '#34c759' }} />
-                <span className="tech-font font-bold text-xl" style={{ color: '#34c759' }}>
+                <span className="tech-font font-bold" style={{ color: '#34c759', fontSize: fontSizes.h2 }}>
                   Authentication Successful - Initializing System...
                 </span>
               </div>
@@ -432,7 +424,7 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
             {authStatus === 'failed' && (
               <div className="mt-8 flex items-center justify-center space-x-3">
                 <AlertCircle className="w-8 h-8" style={{ color: '#ff3b30' }} />
-                <span className="tech-font font-bold text-xl" style={{ color: '#ff3b30' }}>
+                <span className="tech-font font-bold" style={{ color: '#ff3b30', fontSize: fontSizes.h2 }}>
                   Authentication Failed - Please Try Again
                 </span>
               </div>
@@ -457,11 +449,11 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
                 {showPowerConfirm === 'sleep' && <Moon className="w-12 h-12" style={{ color: '#5856d6' }} />}
               </div>
               
-              <h3 className="text-2xl font-bold tech-font mb-4" style={{ color: '#ffffff' }}>
+              <h3 className="font-bold tech-font mb-4" style={{ color: '#ffffff', fontSize: fontSizes.h1 }}>
                 Confirm {showPowerConfirm.charAt(0).toUpperCase() + showPowerConfirm.slice(1)}
               </h3>
               
-              <p className="text-lg tech-font mb-8" style={{ color: '#8e8e93' }}>
+              <p className="tech-font mb-8" style={{ color: '#8e8e93', fontSize: fontSizes.h2 }}>
                 Are you sure you want to {showPowerConfirm} the system?
                 {showPowerConfirm === 'reset' && ' This will restart the computer immediately.'}
                 {showPowerConfirm === 'shutdown' && ' This will power off the computer immediately.'}
@@ -478,7 +470,7 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
                     color: '#8e8e93'
                   }}
                 >
-                  <span className="tech-font font-bold">Cancel</span>
+                  <span className="tech-font font-bold" style={{ fontSize: fontSizes.h2 }}>Cancel</span>
                 </button>
                 <button
                   onClick={() => handlePowerAction(showPowerConfirm)}
@@ -495,49 +487,9 @@ export function IntroPage({ onAuthenticated }: IntroPageProps) {
                           '#5856d6'
                   }}
                 >
-                  <span className="tech-font font-bold">Confirm</span>
+                  <span className="tech-font font-bold" style={{ fontSize: fontSizes.h2 }}>Confirm</span>
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Scanner Transition Overlay */}
-      {showScanner && (
-        <div className="fixed inset-0 z-70 bg-black">
-          {/* Vertical green scan line */}
-          <div 
-            className="absolute left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent shadow-lg"
-            style={{ 
-              top: `${scannerProgress}%`,
-              boxShadow: '0 0 20px #34c759, 0 0 40px #34c759',
-              transition: 'top 0.04s linear'
-            }}
-          />
-          
-          {/* Scan lines effect */}
-          <div className="absolute inset-0 opacity-20">
-            {Array.from({ length: 50 }).map((_, i) => (
-              <div
-                key={i}
-                className="absolute left-0 w-full h-px bg-green-400"
-                style={{ 
-                  top: `${i * 2}%`,
-                  opacity: scannerProgress > i * 2 ? 0.3 : 0,
-                  transition: 'opacity 0.1s ease'
-                }}
-              />
-            ))}
-          </div>
-          
-          {/* Scanner progress text */}
-          <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 text-center">
-            <div className="text-2xl font-bold tech-font mb-2" style={{ color: '#34c759' }}>
-              SYSTEM SCAN IN PROGRESS
-            </div>
-            <div className="text-lg tech-font" style={{ color: '#8e8e93' }}>
-              {scannerProgress.toFixed(0)}% Complete
             </div>
           </div>
         </div>
