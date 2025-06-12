@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { IntroPage } from './components/IntroPage';
 import { ControlCenter } from './components/ControlCenter';
 import { ProcessingDetails } from './components/ProcessingDetails';
 import { NetworkDetails } from './components/NetworkDetails';
@@ -17,11 +18,11 @@ import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Z
 type ViewType = 'control' | 'processing' | 'network' | 'thermal' | 'system' | 'config' | 'logs' | 'network-analyzer' | 'pc-info';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentView, setCurrentView] = useState<ViewType>('control');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [isSecurityOpen, setIsSecurityOpen] = useState(false);
-  const [isSystemUnlocked, setIsSystemUnlocked] = useState(false);
   const [aiMode, setAiMode] = useState('optimal');
   const [locationInfo, setLocationInfo] = useState({
     coordinates: "53.5074°N, 2.3372°W",
@@ -99,12 +100,12 @@ function App() {
 
   // Play startup sound when system unlocks
   useEffect(() => {
-    if (isSystemUnlocked) {
+    if (isAuthenticated) {
       playSound('startup');
       // Add startup log
       addLog('INFO', 'SystemAudio', 'All systems active - Audio feedback enabled');
     }
-  }, [isSystemUnlocked, addLog]);
+  }, [isAuthenticated, addLog]);
 
   const navigationTabs = [
     { id: 'control', label: 'CONTROL', icon: Shield },
@@ -154,7 +155,6 @@ function App() {
   };
 
   const handleSecuritySuccess = () => {
-    setIsSystemUnlocked(true);
     setIsSecurityOpen(false);
     addLog('INFO', 'SecuritySystem', 'User authentication successful - System unlocked');
   };
@@ -177,9 +177,9 @@ function App() {
     });
   };
 
-  // Show security modal if system is not unlocked
-  if (!isSystemUnlocked) {
-    return <SecurityModal onSuccess={handleSecuritySuccess} />;
+  // Show intro page if not authenticated
+  if (!isAuthenticated) {
+    return <IntroPage onAuthenticated={() => setIsAuthenticated(true)} />;
   }
 
   return (
@@ -297,8 +297,10 @@ function App() {
               {temperature < 60 ? 'OPTIMAL' : temperature < 80 ? 'WARNING' : 'CRITICAL'}
             </div>
 
-            {/* AI Mode Button */}
-            <AIOptimalButton currentMode={aiMode} onModeChange={setAiMode} />
+            {/* AI Mode Button with higher z-index */}
+            <div style={{ zIndex: 1000 }}>
+              <AIOptimalButton currentMode={aiMode} onModeChange={setAiMode} />
+            </div>
             
             {/* Logo */}
             <div className="relative">

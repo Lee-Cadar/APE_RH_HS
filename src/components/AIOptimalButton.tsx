@@ -93,12 +93,13 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
         />
       </button>
 
-      {/* Slide-down Options Menu */}
+      {/* Slide-down Options Menu with higher z-index */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-80 modern-panel shadow-2xl z-50 overflow-hidden"
+        <div className="absolute top-full left-0 mt-2 w-80 modern-panel shadow-2xl overflow-hidden"
              style={{
                animation: 'slideDown 0.3s ease-out',
-               transformOrigin: 'top'
+               transformOrigin: 'top',
+               zIndex: 2000 // Higher than the main app z-index
              }}>
           {/* Header */}
           <div className="p-4 border-b border-white/10">
@@ -188,9 +189,10 @@ export function AIOptimalButton({ currentMode, onModeChange }: AIOptimalButtonPr
         </div>
       )}
 
-      {/* Transition Overlay */}
+      {/* Transition Overlay with higher z-index */}
       {isTransitioning && (
-        <div className="fixed inset-0 z-60 bg-black/90 backdrop-blur-sm flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center"
+             style={{ zIndex: 3000 }}>
           <div className="text-center">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full border-4 border-t-transparent animate-spin"
                  style={{ borderColor: currentModeData.color, borderTopColor: 'transparent' }}></div>
