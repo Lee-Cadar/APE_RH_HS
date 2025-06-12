@@ -15,15 +15,15 @@ function App() {
   const [currentView, setCurrentView] = useState<ViewType>('control');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [locationInfo, setLocationInfo] = useState({
-    coordinates: "40.7128°N, 74.0060°W",
-    address: "350 Fifth Avenue, Manhattan",
-    city: "New York City, NY 10118",
-    district: "Midtown Manhattan",
-    country: "United States",
-    timezone: "EST",
-    elevation: "10m",
-    isp: "Verizon Business",
-    postcode: "10118",
+    coordinates: "53.5074°N, 2.3372°W",
+    address: "32 Hereford Drive",
+    city: "Swinton, M27 5PT",
+    district: "Greater Manchester",
+    country: "United Kingdom",
+    timezone: "GMT",
+    elevation: "45m",
+    isp: "BT Business",
+    postcode: "M27 5PT",
     what3words: "///hiking.stream.closed"
   });
   
@@ -76,15 +76,15 @@ function App() {
     const getIPLocation = async () => {
       try {
         const ipLocationData = {
-          coordinates: "37.7749°N, 122.4194°W",
-          address: "1 Hacker Way, Menlo Park",
-          city: "San Francisco, CA 94103",
-          district: "SOMA District",
-          country: "United States",
-          timezone: "PST",
-          elevation: "16m",
-          isp: "Comcast Business",
-          postcode: "94103",
+          coordinates: "53.5074°N, 2.3372°W",
+          address: "32 Hereford Drive",
+          city: "Swinton, M27 5PT",
+          district: "Greater Manchester",
+          country: "United Kingdom",
+          timezone: "GMT",
+          elevation: "45m",
+          isp: "BT Business",
+          postcode: "M27 5PT",
           what3words: "///hiking.stream.closed"
         };
         setLocationInfo(ipLocationData);
@@ -102,42 +102,42 @@ function App() {
     
     const locations = [
       {
+        lat: 53.5074, lng: -2.3372,
+        coordinates: `${lat.toFixed(4)}°N, ${Math.abs(lng).toFixed(4)}°W`,
+        address: "32 Hereford Drive",
+        city: "Swinton, M27 5PT",
+        district: "Greater Manchester",
+        country: "United Kingdom",
+        timezone: "GMT",
+        elevation: "45m",
+        isp: "BT Business",
+        postcode: "M27 5PT",
+        what3words: "///hiking.stream.closed"
+      },
+      {
         lat: 40.7128, lng: -74.0060,
         coordinates: `${lat.toFixed(4)}°N, ${Math.abs(lng).toFixed(4)}°W`,
-        address: "350 Fifth Avenue, Empire State Building",
-        city: "New York City, NY 10118",
-        district: "Midtown Manhattan",
-        country: "United States",
-        timezone: "EST",
-        elevation: "10m",
-        isp: "Verizon FiOS Business",
-        postcode: "10118",
+        address: "32 Hereford Drive",
+        city: "Swinton, M27 5PT",
+        district: "Greater Manchester",
+        country: "United Kingdom",
+        timezone: "GMT",
+        elevation: "45m",
+        isp: "BT Business",
+        postcode: "M27 5PT",
         what3words: "///hiking.stream.closed"
       },
       {
         lat: 37.7749, lng: -122.4194,
         coordinates: `${lat.toFixed(4)}°N, ${Math.abs(lng).toFixed(4)}°W`,
-        address: "1 Hacker Way, Meta Headquarters",
-        city: "Menlo Park, CA 94025",
-        district: "Silicon Valley",
-        country: "United States",
-        timezone: "PST",
-        elevation: "16m",
-        isp: "AT&T Business Fiber",
-        postcode: "94025",
-        what3words: "///hiking.stream.closed"
-      },
-      {
-        lat: 51.5074, lng: -0.1278,
-        coordinates: `${lat.toFixed(4)}°N, ${Math.abs(lng).toFixed(4)}°W`,
-        address: "30 St Mary Axe, The Gherkin",
-        city: "London, EC3A 8EP",
-        district: "City of London",
+        address: "32 Hereford Drive",
+        city: "Swinton, M27 5PT",
+        district: "Greater Manchester",
         country: "United Kingdom",
         timezone: "GMT",
-        elevation: "35m",
+        elevation: "45m",
         isp: "BT Business",
-        postcode: "EC3A 8EP",
+        postcode: "M27 5PT",
         what3words: "///hiking.stream.closed"
       }
     ];
@@ -146,14 +146,14 @@ function App() {
       Math.abs(loc.lat - lat) < 1 && Math.abs(loc.lng - lng) < 1
     ) || {
       coordinates: `${lat.toFixed(4)}°${lat >= 0 ? 'N' : 'S'}, ${Math.abs(lng).toFixed(4)}°${lng >= 0 ? 'E' : 'W'}`,
-      address: `${Math.abs(lat).toFixed(2)}°, ${Math.abs(lng).toFixed(2)}° Coordinates`,
-      city: "Current Location",
-      district: "GPS Coordinates",
-      country: "Unknown Region",
-      timezone: "UTC",
-      elevation: "Unknown",
-      isp: "Local Network",
-      postcode: "00000",
+      address: "32 Hereford Drive",
+      city: "Swinton, M27 5PT",
+      district: "Greater Manchester",
+      country: "United Kingdom",
+      timezone: "GMT",
+      elevation: "45m",
+      isp: "BT Business",
+      postcode: "M27 5PT",
       what3words: "///hiking.stream.closed"
     };
 
@@ -241,9 +241,10 @@ function App() {
         <div className="pulse-rings"></div>
       </div>
 
-      {/* Top Header with Date, GPS, Location */}
-      <header className="relative modern-header h-16 border-b z-20" 
+      {/* Top Header with Date, GPS, Location - Consistent Height */}
+      <header className="relative modern-header border-b z-20" 
               style={{ 
+                height: '64px',
                 borderColor: 'rgba(255, 255, 255, 0.1)',
                 borderWidth: '1px',
                 background: 'rgba(255, 255, 255, 0.05)',
@@ -301,25 +302,25 @@ function App() {
       </header>
 
       {/* Centered Logo with Breathing Animation - Original Format */}
-      <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50">
+      <div className="absolute top-16 left-1/2 transform -translate-x-1/2 z-50">
         <div className="relative">
           <img 
-            src="/Triangle_logo_black_nobg.png" 
+            src="/Triangle_logo_black_nobg_no_letters copy.png" 
             alt="APE Logo" 
             className="object-contain breathing-logo"
             style={{ 
               width: '80px', 
               height: '80px',
-              filter: 'brightness(0) saturate(100%) invert(100%)',
             }}
           />
         </div>
       </div>
 
-      {/* Navigation for Control, Config, Logs */}
+      {/* Navigation for Control, Config, Logs - Consistent Height */}
       {(currentView === 'control' || currentView === 'config' || currentView === 'logs') && (
-        <nav className="relative modern-nav h-12 border-b z-20" 
+        <nav className="relative modern-nav border-b z-20" 
              style={{ 
+               height: '48px',
                borderColor: 'rgba(255, 255, 255, 0.1)',
                borderWidth: '1px',
                background: 'rgba(255, 255, 255, 0.03)'
@@ -349,7 +350,7 @@ function App() {
         </nav>
       )}
 
-      {/* Main Content - Now Scrollable */}
+      {/* Main Content - Scrollable with Consistent Height */}
       <main className="relative overflow-y-auto z-10" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' ? 'calc(620px - 112px)' : 'calc(620px - 64px)' }}>
         <div className="p-6">
           {currentView === 'control' && (

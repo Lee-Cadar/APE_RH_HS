@@ -35,14 +35,15 @@ export function SystemDetails({ systemMetrics, onBack, onSendReport }: SystemDet
         <div className="floating-particles"></div>
       </div>
 
-      {/* Header */}
+      {/* Header - Consistent Height */}
       <div className="relative modern-panel-header p-6 shadow-lg"
            style={{ 
+             height: '80px',
              background: 'rgba(255, 255, 255, 0.05)',
              borderColor: 'rgba(255, 255, 255, 0.1)',
              borderWidth: '1px'
            }}>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between h-full">
           <div className="flex items-center space-x-4">
             <button
               onClick={onBack}
@@ -62,10 +63,10 @@ export function SystemDetails({ systemMetrics, onBack, onSendReport }: SystemDet
               <Shield className="w-8 h-8" style={{ color: '#5856d6' }} />
             </div>
             <div>
-              <h2 className="text-3xl font-bold modern-font tracking-tight" style={{ color: '#ffffff' }}>
+              <h2 className="text-xl font-medium modern-font tracking-tight" style={{ color: '#ffffff' }}>
                 System Core
               </h2>
-              <p className="modern-font text-lg" style={{ color: '#8e8e93' }}>System resources and performance metrics</p>
+              <p className="modern-font text-sm" style={{ color: '#8e8e93' }}>System resources and performance metrics</p>
             </div>
           </div>
           <div className="flex items-center space-x-4">
@@ -97,7 +98,7 @@ export function SystemDetails({ systemMetrics, onBack, onSendReport }: SystemDet
         {/* Unified Processing Panel */}
         <div className="modern-panel p-8 shadow-lg">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-2xl font-bold modern-font tracking-tight flex items-center" style={{ color: '#ffffff' }}>
+            <h3 className="text-xl font-medium modern-font tracking-tight flex items-center" style={{ color: '#ffffff' }}>
               <div className="p-3 rounded-2xl mr-4" style={{ backgroundColor: 'rgba(0, 122, 255, 0.2)' }}>
                 <Cpu className="w-8 h-8" style={{ color: '#007aff' }} />
               </div>
@@ -154,7 +155,7 @@ export function SystemDetails({ systemMetrics, onBack, onSendReport }: SystemDet
         {/* Unified System Panel */}
         <div className="modern-panel p-8 shadow-lg">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-2xl font-bold modern-font tracking-tight flex items-center" style={{ color: '#ffffff' }}>
+            <h3 className="text-xl font-medium modern-font tracking-tight flex items-center" style={{ color: '#ffffff' }}>
               <div className="p-3 rounded-2xl mr-4" style={{ backgroundColor: 'rgba(255, 149, 0, 0.2)' }}>
                 <Server className="w-8 h-8" style={{ color: '#ff9500' }} />
               </div>
@@ -216,7 +217,7 @@ export function SystemDetails({ systemMetrics, onBack, onSendReport }: SystemDet
         {/* Unified Performance Panel */}
         <div className="modern-panel p-8 shadow-lg">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-2xl font-bold modern-font tracking-tight flex items-center" style={{ color: '#ffffff' }}>
+            <h3 className="text-xl font-medium modern-font tracking-tight flex items-center" style={{ color: '#ffffff' }}>
               <div className="p-3 rounded-2xl mr-4" style={{ backgroundColor: 'rgba(88, 86, 214, 0.2)' }}>
                 <Zap className="w-8 h-8" style={{ color: '#5856d6' }} />
               </div>
