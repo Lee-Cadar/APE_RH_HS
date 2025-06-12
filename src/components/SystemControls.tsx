@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Volume2, Palette, Brightness, Gamepad2, Camera, Monitor, X, Plus, Minus } from 'lucide-react';
+import { Settings, Volume2, Palette, Copyright as Brightness, Gamepad2, Camera, Monitor, X, Plus, Minus } from 'lucide-react';
 
 interface SystemControlsProps {
   currentTime: Date;
