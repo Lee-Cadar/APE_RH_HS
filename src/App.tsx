@@ -42,19 +42,19 @@ function App() {
   const [settings, setSettings] = useState({
     fontSize: 'medium',
     primaryScreen: 'right',
-    steamDeckShortcuts: Array(12).fill(null).map((_, i) => ({
+    steamDeckShortcuts: Array(10).fill(null).map((_, i) => ({
       id: i,
       name: i < 6 ? ['Steam', 'Discord', 'Chrome', 'Spotify', 'OBS', 'VS Code'][i] : `App ${i + 1}`,
-      icon: [Gamepad2, Music, Globe, Music, Camera, Monitor, Film, Settings, Activity, Shield, Info, Zap][i % 12],
-      color: ['#007aff', '#5865f2', '#4285f4', '#1db954', '#302e31', '#007acc', '#ff9500', '#5856d6', '#ff3b30', '#34c759', '#8e8e93', '#ff59b3'][i % 12]
+      icon: [Gamepad2, Music, Globe, Music, Camera, Monitor, Film, Settings, Activity, Shield][i % 10],
+      color: ['#007aff', '#5865f2', '#4285f4', '#1db954', '#302e31', '#007acc', '#ff9500', '#5856d6', '#ff3b30', '#34c759'][i % 10]
     }))
   });
 
-  // Font sizes based on accessibility setting
+  // Font sizes based on accessibility setting (5% smaller)
   const fontSizes = {
-    small: { h1: '22px', h2: '14px', h3: '10px', iconSize: '20', value: '18px' },
-    medium: { h1: '27px', h2: '17px', h3: '12px', iconSize: '25', value: '22px' },
-    large: { h1: '33px', h2: '21px', h3: '15px', iconSize: '30', value: '28px' }
+    small: { h1: '21px', h2: '13px', h3: '9px', iconSize: '19', value: '17px' },
+    medium: { h1: '26px', h2: '16px', h3: '11px', iconSize: '24', value: '21px' },
+    large: { h1: '31px', h2: '20px', h3: '14px', iconSize: '29', value: '27px' }
   }[settings.fontSize];
 
   const [locationInfo, setLocationInfo] = useState({
