@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Shield01Icon, 
-  PowerIcon, 
-  Rotate01Icon, 
-  Moon01Icon, 
-  Cancel01Icon, 
-  CheckmarkCircle01Icon, 
-  AlertCircleIcon, 
-  User01Icon, 
-  Camera01Icon, 
-  Fingerprint01Icon, 
-  Lock01Icon, 
-  ArrowLeft01Icon
-} from '@hugeicons/react';
-import { Eye, EyeOff } from 'lucide-react';
+  Shield, 
+  Power, 
+  RotateCcw, 
+  Moon, 
+  X, 
+  CheckCircle, 
+  AlertCircle, 
+  User, 
+  Camera, 
+  Fingerprint, 
+  Lock, 
+  ArrowLeft,
+  Eye,
+  EyeOff
+} from 'lucide-react';
 
 interface IntroPageProps {
   onAuthenticated: () => void;
@@ -184,21 +185,21 @@ export function IntroPage({ onAuthenticated, fontSizes, currentTime }: IntroPage
           className="windows-power-button"
           title="Sleep"
         >
-          <Moon01Icon className="w-5 h-5 text-white" />
+          <Moon className="w-5 h-5 text-white" />
         </button>
         <button
           onClick={() => setShowPowerConfirm('reset')}
           className="windows-power-button"
           title="Restart"
         >
-          <Rotate01Icon className="w-5 h-5 text-white" />
+          <RotateCcw className="w-5 h-5 text-white" />
         </button>
         <button
           onClick={() => setShowPowerConfirm('shutdown')}
           className="windows-power-button"
           title="Shut down"
         >
-          <PowerIcon className="w-5 h-5 text-white" />
+          <Power className="w-5 h-5 text-white" />
         </button>
       </div>
 
@@ -218,7 +219,7 @@ export function IntroPage({ onAuthenticated, fontSizes, currentTime }: IntroPage
           {/* User Avatar */}
           <div className="text-center mb-8">
             <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-2xl">
-              <User01Icon className="w-16 h-16 text-white" />
+              <User className="w-16 h-16 text-white" />
             </div>
             <h2 className="text-2xl font-normal text-white mb-2">Administrator</h2>
             <p className="text-blue-200 text-sm">APE System</p>
@@ -296,9 +297,9 @@ export function IntroPage({ onAuthenticated, fontSizes, currentTime }: IntroPage
                   <div className="absolute inset-0 rounded-full border-4 border-blue-300 animate-pulse"></div>
                   <div className="w-full h-full rounded-full bg-blue-100 flex items-center justify-center">
                     {authMethod === 'face' ? (
-                      <Camera01Icon className="w-12 h-12 text-blue-600" />
+                      <Camera className="w-12 h-12 text-blue-600" />
                     ) : (
-                      <Fingerprint01Icon className="w-12 h-12 text-blue-600" />
+                      <Fingerprint className="w-12 h-12 text-blue-600" />
                     )}
                   </div>
                   
@@ -337,14 +338,14 @@ export function IntroPage({ onAuthenticated, fontSizes, currentTime }: IntroPage
             {/* Status Messages */}
             {authStatus === 'success' && (
               <div className="flex items-center justify-center space-x-2 text-green-400">
-                <CheckmarkCircle01Icon className="w-5 h-5" />
+                <CheckCircle className="w-5 h-5" />
                 <span className="text-sm">Welcome! Starting system...</span>
               </div>
             )}
 
             {authStatus === 'failed' && (
               <div className="flex items-center justify-center space-x-2 text-red-400">
-                <AlertCircleIcon className="w-5 h-5" />
+                <AlertCircle className="w-5 h-5" />
                 <span className="text-sm">Sign-in failed. Please try again.</span>
               </div>
             )}
@@ -365,28 +366,28 @@ export function IntroPage({ onAuthenticated, fontSizes, currentTime }: IntroPage
                   onClick={() => setAuthMethod('password')}
                   className={`windows-auth-option ${authMethod === 'password' ? 'active' : ''}`}
                 >
-                  <Lock01Icon className="w-5 h-5" />
+                  <Lock className="w-5 h-5" />
                   <span className="text-xs">Password</span>
                 </button>
                 <button
                   onClick={() => setAuthMethod('pin')}
                   className={`windows-auth-option ${authMethod === 'pin' ? 'active' : ''}`}
                 >
-                  <Shield01Icon className="w-5 h-5" />
+                  <Shield className="w-5 h-5" />
                   <span className="text-xs">PIN</span>
                 </button>
                 <button
                   onClick={() => setAuthMethod('face')}
                   className={`windows-auth-option ${authMethod === 'face' ? 'active' : ''}`}
                 >
-                  <Camera01Icon className="w-5 h-5" />
+                  <Camera className="w-5 h-5" />
                   <span className="text-xs">Face</span>
                 </button>
                 <button
                   onClick={() => setAuthMethod('fingerprint')}
                   className={`windows-auth-option ${authMethod === 'fingerprint' ? 'active' : ''}`}
                 >
-                  <Fingerprint01Icon className="w-5 h-5" />
+                  <Fingerprint className="w-5 h-5" />
                   <span className="text-xs">Fingerprint</span>
                 </button>
               </div>
@@ -401,9 +402,9 @@ export function IntroPage({ onAuthenticated, fontSizes, currentTime }: IntroPage
           <div className="windows-modal">
             <div className="text-center">
               <div className="p-4 rounded-full mx-auto mb-4 w-fit bg-blue-100">
-                {showPowerConfirm === 'reset' && <Rotate01Icon className="w-8 h-8 text-blue-600" />}
-                {showPowerConfirm === 'shutdown' && <PowerIcon className="w-8 h-8 text-blue-600" />}
-                {showPowerConfirm === 'sleep' && <Moon01Icon className="w-8 h-8 text-blue-600" />}
+                {showPowerConfirm === 'reset' && <RotateCcw className="w-8 h-8 text-blue-600" />}
+                {showPowerConfirm === 'shutdown' && <Power className="w-8 h-8 text-blue-600" />}
+                {showPowerConfirm === 'sleep' && <Moon className="w-8 h-8 text-blue-600" />}
               </div>
               
               <h3 className="text-xl font-semibold text-gray-800 mb-2">
