@@ -1,5 +1,6 @@
 import React from 'react';
 import { PerformanceState } from '../types/ape';
+import { RetroGauge } from './RetroGauge';
 import { 
   Cpu, 
   Monitor, 
@@ -68,13 +69,6 @@ export function ControlCenter({
     if (bytes < 1024) return `${bytes.toFixed(1)} B/s`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB/s`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB/s`;
-  };
-
-  // Get unified color based on danger level
-  const getMetricColor = (value: number, thresholds: { good: number; warning: number }) => {
-    if (value <= thresholds.good) return '#007aff'; // Blue for normal
-    if (value <= thresholds.warning) return '#007aff'; // Keep blue for warning
-    return '#ff3b30'; // Red only for dangerous
   };
 
   // Modern Unified Panel Component with Technology Font
@@ -149,11 +143,11 @@ export function ControlCenter({
         <div className="floating-elements"></div>
       </div>
 
-      {/* Header with Generate Report Button - Moved to Bottom */}
-      <div className="relative z-10 grid grid-cols-2 gap-6" 
+      {/* Main Grid Layout */}
+      <div className="relative z-10 grid grid-cols-4 gap-6" 
            style={{ height: 'calc(100% - 80px)' }}>
         
-        {/* Top Left - Processing */}
+        {/* Top Left - Processing Panel */}
         <div className="w-full">
           <ModernPanel
             title="Processing"
@@ -167,8 +161,32 @@ export function ControlCenter({
             ]}
           />
         </div>
+
+        {/* Top Center - CPU Retro Gauge */}
+        <div className="w-full flex items-center justify-center">
+          <RetroGauge
+            value={systemMetrics.cpuUsage}
+            max={100}
+            label="CPU UTILIZATION"
+            unit="%"
+            color={systemMetrics.cpuUsage > 85 ? '#ff3b30' : '#007aff'}
+            size={140}
+          />
+        </div>
+
+        {/* Top Right - GPU Retro Gauge */}
+        <div className="w-full flex items-center justify-center">
+          <RetroGauge
+            value={gpuMetrics.usage}
+            max={100}
+            label="GPU UTILIZATION"
+            unit="%"
+            color={gpuMetrics.usage > 90 ? '#ff3b30' : '#5856d6'}
+            size={140}
+          />
+        </div>
         
-        {/* Top Right - Network */}
+        {/* Top Far Right - Network Panel */}
         <div className="w-full">
           <ModernPanel
             title="Network"
@@ -183,7 +201,7 @@ export function ControlCenter({
           />
         </div>
 
-        {/* Bottom Left - Thermal */}
+        {/* Bottom Left - Thermal Panel */}
         <div className="w-full">
           <ModernPanel
             title="Thermal"
@@ -198,8 +216,8 @@ export function ControlCenter({
           />
         </div>
 
-        {/* Bottom Right - System */}
-        <div className="w-full">
+        {/* Bottom Center & Right - System Panel (spans 2 columns) */}
+        <div className="w-full col-span-2">
           <ModernPanel
             title="System"
             icon={HardDrive}
@@ -211,6 +229,26 @@ export function ControlCenter({
               { label: 'Load Avg', value: systemMetrics.loadAverage, isDangerous: parseFloat(systemMetrics.loadAverage) > 2.0 }
             ]}
           />
+        </div>
+
+        {/* Bottom Far Right - AI Mode Status */}
+        <div className="w-full flex items-center justify-center">
+          <div className="modern-display p-6 text-center w-full h-full flex flex-col justify-center">
+            <div className="text-lg tech-font font-bold mb-2" style={{ color: '#ffffff' }}>
+              AI MODE
+            </div>
+            <div className="text-2xl tech-font font-bold mb-3" 
+                 style={{ 
+                   color: aiMode === 'optimal' ? '#34c759' : 
+                          aiMode === 'gaming' ? '#ff3b30' : 
+                          aiMode === 'cinema' ? '#5856d6' : '#ff9500'
+                 }}>
+              {aiMode.toUpperCase()}
+            </div>
+            <div className="text-xs tech-font" style={{ color: '#8e8e93' }}>
+              ACTIVE OPTIMIZATION
+            </div>
+          </div>
         </div>
       </div>
 
@@ -231,7 +269,7 @@ export function ControlCenter({
         </button>
       </div>
 
-      {/* Enhanced Modern CSS animations with perfect symmetry */}
+      {/* Enhanced Modern CSS animations */}
       <style jsx>{`
         .modern-metrics-panel {
           background: rgba(255, 255, 255, 0.05);
@@ -266,6 +304,13 @@ export function ControlCenter({
           background: rgba(255, 255, 255, 0.1);
           border-color: rgba(255, 255, 255, 0.2);
           transform: translateY(-1px);
+        }
+        
+        .modern-display {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          backdrop-filter: blur(20px);
         }
         
         .floating-elements {

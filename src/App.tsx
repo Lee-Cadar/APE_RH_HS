@@ -9,7 +9,7 @@ import { SystemLogs } from './components/SystemLogs';
 import { LocationMap } from './components/LocationMap';
 import { AIOptimalButton } from './components/AIOptimalButton';
 import { useAPESimulation } from './hooks/useAPESimulation';
-import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap, Globe } from 'lucide-react';
+import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap, Globe, User } from 'lucide-react';
 
 type ViewType = 'control' | 'processing' | 'network' | 'thermal' | 'system' | 'config' | 'logs';
 
@@ -205,7 +205,7 @@ function App() {
             </div>
           </div>
           
-          {/* Logo - Top Right Corner */}
+          {/* Right Side - Status, Logo, Profile */}
           <div className="flex items-center space-x-4">
             <div className="modern-display px-4 py-2 font-medium text-sm tech-font" 
             style={{ 
@@ -216,6 +216,7 @@ function App() {
               {temperature < 60 ? 'OPTIMAL' : temperature < 80 ? 'WARNING' : 'CRITICAL'}
             </div>
             
+            {/* Logo */}
             <div className="relative">
               <img 
                 src="/Triangle_logo_black_nobg_no_letters copy.png" 
@@ -227,6 +228,15 @@ function App() {
                 }}
               />
             </div>
+
+            {/* Profile Button */}
+            <button className="modern-button p-3 transition-all duration-300 hover:scale-105"
+                    style={{ 
+                      backgroundColor: 'rgba(88, 86, 214, 0.1)',
+                      borderColor: 'rgba(88, 86, 214, 0.3)',
+                    }}>
+              <User className="w-5 h-5" style={{ color: '#5856d6' }} />
+            </button>
           </div>
         </div>
       </header>
