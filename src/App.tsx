@@ -9,10 +9,12 @@ import { SystemLogs } from './components/SystemLogs';
 import { LocationMap } from './components/LocationMap';
 import { AIOptimalButton } from './components/AIOptimalButton';
 import { SecurityModal } from './components/SecurityModal';
+import { NetworkAnalyzer } from './components/NetworkAnalyzer';
+import { PCInfoPage } from './components/PCInfoPage';
 import { useAPESimulation } from './hooks/useAPESimulation';
-import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap, Globe, User } from 'lucide-react';
+import { Settings, Activity, Thermometer, Shield, ArrowLeft, MapPin, Calendar, Zap, Globe, User, Monitor, Info } from 'lucide-react';
 
-type ViewType = 'control' | 'processing' | 'network' | 'thermal' | 'system' | 'config' | 'logs';
+type ViewType = 'control' | 'processing' | 'network' | 'thermal' | 'system' | 'config' | 'logs' | 'network-analyzer' | 'pc-info';
 
 function App() {
   const [currentView, setCurrentView] = useState<ViewType>('control');
@@ -107,7 +109,9 @@ function App() {
   const navigationTabs = [
     { id: 'control', label: 'CONTROL', icon: Shield },
     { id: 'config', label: 'CONFIG', icon: Settings },
-    { id: 'logs', label: 'LOGS', icon: Thermometer }
+    { id: 'logs', label: 'LOGS', icon: Thermometer },
+    { id: 'network-analyzer', label: 'NETWORK', icon: Monitor },
+    { id: 'pc-info', label: 'PC INFO', icon: Info }
   ];
 
   const handleMetricClick = (metricType: string) => {
@@ -210,16 +214,16 @@ function App() {
         <div className="tech-dots-2"></div>
       </div>
 
-      {/* Logo Background - Right Side - Full Visibility */}
+      {/* Logo Background - Right Side - 40% Bigger with Random Movement */}
       <div className="absolute top-0 right-0 w-full h-full overflow-visible pointer-events-none z-0">
         <div className="absolute -right-1/6 top-1/2 transform -translate-y-1/2">
           <img 
             src="/Triangle_logo_black_nobg_no_letters copy.png" 
             alt="APE Logo Background" 
-            className="object-contain opacity-30 breathing-logo-bg"
+            className="object-contain opacity-30 breathing-logo-bg-random"
             style={{ 
-              width: '900px', 
-              height: '900px',
+              width: '1260px', 
+              height: '1260px',
               filter: 'brightness(0.3) sepia(1) hue-rotate(200deg) saturate(2)'
             }}
           />
@@ -324,8 +328,8 @@ function App() {
         </div>
       </header>
 
-      {/* Navigation for Control, Config, Logs */}
-      {(currentView === 'control' || currentView === 'config' || currentView === 'logs') && (
+      {/* Navigation for Control, Config, Logs, Network Analyzer, PC Info */}
+      {(currentView === 'control' || currentView === 'config' || currentView === 'logs' || currentView === 'network-analyzer' || currentView === 'pc-info') && (
         <nav className="relative modern-nav border-b z-20" 
              style={{ 
                height: '60px',
@@ -362,7 +366,7 @@ function App() {
       )}
 
       {/* Main Content */}
-      <main className="relative overflow-y-auto z-10" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' ? 'calc(900px - 140px)' : 'calc(900px - 80px)' }}>
+      <main className="relative overflow-y-auto z-10" style={{ height: currentView === 'control' || currentView === 'config' || currentView === 'logs' || currentView === 'network-analyzer' || currentView === 'pc-info' ? 'calc(900px - 140px)' : 'calc(900px - 80px)' }}>
         <div className="p-8">
           {currentView === 'control' && (
             <ControlCenter
@@ -433,6 +437,14 @@ function App() {
 
           {currentView === 'logs' && (
             <SystemLogs logs={logs} />
+          )}
+
+          {currentView === 'network-analyzer' && (
+            <NetworkAnalyzer networkMetrics={networkMetrics} />
+          )}
+
+          {currentView === 'pc-info' && (
+            <PCInfoPage />
           )}
         </div>
       </main>
@@ -789,8 +801,8 @@ function App() {
           animation: breathingAnimation 4s ease-in-out infinite;
         }
         
-        .breathing-logo-bg {
-          animation: breathingBgAnimation 8s ease-in-out infinite;
+        .breathing-logo-bg-random {
+          animation: breathingBgRandomAnimation 8s ease-in-out infinite;
         }
         
         /* Enhanced Keyframe Animations */
@@ -896,17 +908,25 @@ function App() {
           }
         }
         
-        @keyframes breathingBgAnimation {
+        @keyframes breathingBgRandomAnimation {
           0% { 
-            transform: translate(-50%, -50%) scale(1);
+            transform: translate(-50%, -50%) scale(1) rotate(0deg);
             opacity: 0.3;
           }
+          25% { 
+            transform: translate(-48%, -52%) scale(1.02) rotate(2deg);
+            opacity: 0.35;
+          }
           50% { 
-            transform: translate(-50%, -50%) scale(1.05);
+            transform: translate(-52%, -48%) scale(1.05) rotate(-1deg);
             opacity: 0.4;
           }
+          75% { 
+            transform: translate(-49%, -51%) scale(1.03) rotate(1deg);
+            opacity: 0.35;
+          }
           100% { 
-            transform: translate(-50%, -50%) scale(1);
+            transform: translate(-50%, -50%) scale(1) rotate(0deg);
             opacity: 0.3;
           }
         }
